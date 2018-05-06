@@ -3,7 +3,6 @@
 #include <string>
 #include <stdlib.h>
 #include <math.h>
-#define S 256
 
 #ifndef __ECA__
 #define __ECA__
@@ -14,39 +13,43 @@ class ECA{
 		std::bitset<8> rule;
 		int* t0;
 		int* t1;
+		int* tFreq;
 		int cells;
 		int gens;
 		int den;
-		int freq;
+		int gFreq;
+		float avg;
 
 		ECA(std::bitset<8> rule, int cells, int gens, int den){
+			this->tFreq=(int*) malloc(gens*sizeof(int));
 			for(int i=0; i<8; i++){
 				this->rule[i]=rule[i];
 			}
 			this->cells=cells;
 			this->gens=gens;
 			this->den=den;
-			this->freq=0;
+			this->gFreq=0;
 		}
 
 		ECA(std::bitset<8> rule, int cells, int gens, std::string t0){
 			int i;
 			std::string str("1");
+			this->tFreq=(int*) malloc(gens*sizeof(int));
 			for(i=0; i<8; i++){
 				this->rule[i]=rule[i];
 			}
 			this->cells=cells;
 			this->gens=gens;
-			this->freq=0;
+			this->gFreq=0;
 			this->t0=(int*) malloc(cells*sizeof(int));
 			for(i=0; i<(t0.size()); i++){
 				if((str.compare(t0.substr(i, 1)))==0){
-					this->t0[i]=1;	
+					this->t0[i]=1;
+					this->gFreq+=1;	
 				}
 				else{
 					this->t0[i]=0;		
-				}
-				
+				}	
 			}
 		}
 
@@ -61,6 +64,7 @@ class ECA{
 
 		int binToInt(int* bin){
 			int num=0;
+
 			for(int i=0; i<(this->cells); i++){
 				if(bin[i]){
 					num+=(int) pow(2.0, 0.0+i);
@@ -73,29 +77,31 @@ class ECA{
 			this->t0=(int*) malloc(cells*sizeof(int));
 			int dens=((this->den)*(this->cells))/100;
 			int n, x, d=0;
+
 			for(int i=0; i<(this->cells); i++){
 				n=3214847 + (rand()%static_cast<int>(52178912397 - 3214847 + 1));
 				x=n%2;
 				if(x){
 					this->t0[i]=1;
-					this->freq+=1;
+					this->gFreq+=1;
 					d+=1;
 				}
 			}
-			while(this->freq>dens){
+
+			while(this->gFreq>dens){
 				n=0+(rand()%static_cast<int>(((this->cells)-0)+1));
-				//n=rand()%((this->cells)-1);
 				if(t0[n]){
 					t0[n]=0;
-					this->freq-=1;
+					this->gFreq-=1;
 				}
 			}
 		}
 
 		void setOneCellFirstGen(){
 			this->t0=(int*) malloc(cells*sizeof(int));
-			this->freq=1;
+			this->gFreq=1;
 			int x=(this->cells)/2;
+
 			for(int i=0; i<(this->cells); i++){
 				if(i==x){
 					this->t0[i]=1;
@@ -108,9 +114,10 @@ class ECA{
 
 		void getNextGen(){
 			this->t1=(int*) malloc(cells*sizeof(int));
-			this->freq=0;
+			this->gFreq=0;
 			int n;
 			std::bitset<3> next;
+
 			for(int i=0; i<(this->cells); i++){
 				next[0]=(this->t0[mod(i-1)]);
 				next[1]=(this->t0[i]);
@@ -126,7 +133,7 @@ class ECA{
 					n+=1;
 				}
 				if(this->rule.test(n)){
-					freq+=1;
+					gFreq+=1;
 					this->t1[i]=1;
 				}
 				else{
@@ -147,6 +154,51 @@ class ECA{
 				
 			}
 			std::cout << "" << std::endl;
+		}
+
+		void startSim(int mode){
+			int i;
+			switch(mode){
+				case 0:
+					setRandomFirstGen();
+					for(i=0; i<this->gens; i++){
+						printGen();
+						tFreq[i]=gFreq;
+						getNextGen();	
+					}
+					std::cout << "Avg=" << getAvg() << std::endl;
+				break;
+				case 1:
+					setOneCellFirstGen();
+					for(i=0; i<this->gens; i++){
+						printGen();
+						tFreq[i]=gFreq;
+						getNextGen();
+					}
+					std::cout << "Avg=" << getAvg() << std::endl;
+				break;
+				case 2:
+					for(i=0; i<this->gens; i++){
+						printGen();
+						tFreq[i]=gFreq;
+						getNextGen();	
+					}
+					std::cout << "Avg=" << getAvg() << std::endl;
+				break;
+				default:
+					std::cout << "Something went worng :c" << std::endl;
+				break;
+			}
+		}
+
+		float getAvg(){
+			float avg=0.0;
+
+			for(int i=0; i<this->gens; i++){
+				avg+=(float) tFreq[i];
+			}
+			avg/=(float) this->gens;
+			return avg;
 		}
 };
 
