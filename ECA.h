@@ -160,15 +160,6 @@ class ECA{
 			int i;
 			switch(mode){
 				case 0:
-					setRandomFirstGen();
-					for(i=0; i<this->gens; i++){
-						printGen();
-						tFreq[i]=gFreq;
-						getNextGen();	
-					}
-					std::cout << "Avg=" << getAvg() << std::endl;
-				break;
-				case 1:
 					setOneCellFirstGen();
 					for(i=0; i<this->gens; i++){
 						printGen();
@@ -176,6 +167,15 @@ class ECA{
 						getNextGen();
 					}
 					std::cout << "Avg=" << getAvg() << std::endl;
+				break;
+				case 1:
+					setRandomFirstGen();
+					for(i=0; i<this->gens; i++){
+						printGen();
+						tFreq[i]=gFreq;
+						getNextGen();	
+					}
+					std::cout << "Avg=" << getAvg() << std::endl;	
 				break;
 				case 2:
 					for(i=0; i<this->gens; i++){

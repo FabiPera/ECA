@@ -2,35 +2,93 @@
 #include <bitset>
 #include <stdlib.h>
 #include <iostream>
+#include <sstream>
+
+int readIntegerInput(int number, std::string input){
+	while(true){
+		getline(std::cin, input);
+		std::stringstream myStream(input);
+		if(myStream >> number)
+	  		break;
+		std::cout << "Invalid number, please try again" << std::endl;
+	}
+	return number;
+}
 
 int main(int argc, char const *argv[]){
-
-	std::string s0="0000010101000101010101011110111011011011101010101010101110001101";
 	
-	std::cout << static_cast<int>(s0.size()) << std::endl;
-	//ECA eca(30, static_cast<int>(s0.size()), 100, s0);
-	ECA eca(30, 64, 100, 50);
+	bool run=true;
+	int rule=0;
+	int cells=0;
+	int gens=0;
+	int den=0;
+	int option=0;
+	std::string input="";
 
-	int i;
+	do{
+		std::cout << ".::Choose first generation mode::." << std::endl;
+		std::cout << "1.-One cell" << std::endl;
+		std::cout << "2.-Random" << std::endl;
+		std::cout << "3.-From a string" << std::endl;
+		std::cout << "4.-Exit" << std::endl;
 
-	//std::cout << eca.t0[10] << std::endl;
-	//eca.setOneCellFirstGen();
-	/*for(i=0; i<8 ; ++i){
-		if(eca.rule.test(i)){
-			std::cout << "*" << std::ends;
+		option=readIntegerInput(option, input);
+
+		switch(option){
+			case 1:{
+				std::cout << "Introduce rule" << std::endl;
+				rule=readIntegerInput(rule, input);
+				input="";
+				std::cout << "How many cells?" << std::endl;
+				cells=readIntegerInput(cells, input);
+				input="";
+				std::cout << "How many generations?" << std::endl;
+				gens=readIntegerInput(gens, input);
+				input="";
+				ECA eca1(rule, cells, gens, 0);
+				eca1.startSim(0);
+				break;
+			}
+			case 2:{
+				std::cout << "Introduce rule" << std::endl;
+				rule=readIntegerInput(rule, input);
+				input="";
+				std::cout << "How many cells?" << std::endl;
+				cells=readIntegerInput(cells, input);
+				input="";
+				std::cout << "How many generations?" << std::endl;
+				gens=readIntegerInput(gens, input);
+				input="";
+				std::cout << "Introduce the initial density" << std::endl;
+				cells=readIntegerInput(den, input);
+				input="";
+				ECA eca2(rule, cells, gens, den);
+				eca2.startSim(1);
+				break;
+			}
+			case 3:{
+				std::cout << "Introduce rule" << std::endl;
+				rule=readIntegerInput(rule, input);
+				input="";
+				std::cout << "How many generations?" << std::endl;
+				gens=readIntegerInput(gens, input);
+				input="";
+				std::cout << "Introduce the first generation string" << std::endl;
+				getline(std::cin, input);
+				ECA eca3(30, static_cast<int>(input.size()), 100, input);
+				eca3.startSim(2);
+				break;
+			}
+			case 4:{
+				run=false;
+				break;
+			}
+			default:{
+				std::cout << "Invalid option, please try again" << std::endl;
+				break;
+			}
 		}
-		else{
-			std::cout << "_" << std::ends;		
-		}
-		
 	}
-	std::cout << "" << std::endl;
-	*/
-	eca.setRandomFirstGen();
-
-	for(i=0; i<eca.gens; i++){
-		eca.printGen();
-		eca.getNextGen();	
-	}
+	while(run);
 	return 0;
 }
