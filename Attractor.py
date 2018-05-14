@@ -42,26 +42,6 @@ class attractor:
 		g=igraph.Graph.Read_Ncol("graph.txt", directed=False)
 		igraph.plot(g, vertex_label=None, vertex_size=vs, width=5000, height=5000, target="graph.svg")
 
-	def getGardens(self):
-		for x in range(0, 2**sSize):
-			n=intToBin(x, sSize)
-			for y in range(len(self.ad)):
-				garden=True
-				if n==self.ad[y][1]:
-					garden=False
-					#print(n,"<->",self.ad[y][1])
-					break
-			if garden:
-				print(n)
-				self.gardens.append(n)
-
-	def printGardens(self):
-		if len(self.gardens)==0:
-			print("No hay Jardines del Edén")
-		else:
-			for x in range(len(self.gardens)):
-				print(self.gardens[x])
-
 
 def listToString(li):
 	string=""
@@ -106,4 +86,5 @@ print("Calculando atractor...")
 att.printAd()
 print("Graficando atractor...")
 att.plotGraph()
+print("Atractor listo")
 
