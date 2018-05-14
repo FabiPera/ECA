@@ -132,6 +132,7 @@ else:
 
 init(rule, cells, gens)
 avO=[]
+print("Calculando evoluciones...")
 for y in range(aut.gens):
 	update_screen(aut.t0)
 	aut.getNextGen()
@@ -144,8 +145,10 @@ plt.bar(a, height=avO)
 gs=[str(x+1) for x in range(gens)]
 plt.xticks(a, gs)
 av=getAv(avO, gens)
+print("Calculando media...")
 print("Media=",av)
 var=getVar(av, avO, gens)
+print("Calculando varianza...")
 print("Varianza=",var)
 
 showAut()
