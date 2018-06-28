@@ -49,6 +49,14 @@ class celAut:
 			else:
 				self.t0.append(0)
 
+	def setStringFirstGen(self, s0):
+		for x in range(len(s0)):
+			if s0[x]=='1':
+				self.t0.append(1)
+				self.oFreq+=1
+			else:
+				self.t0.append(0)
+
 	def getNextGen(self):
 		self.oFreq=0
 		for i in range(self.cells):
@@ -60,21 +68,22 @@ class celAut:
 		self.t0=self.t1
 		self.t1=[]
 
+
 def update_screen(gen):
 	global sy
 	x=0
 	for elem in gen:
 		if elem:
-			screen.fill(color_cell, (x, sy, 1, 1))
+			screen.fill(color_cell, (x, sy, 5, 5))
 		else:
-			screen.fill(color_background, (x, sy, 1, 1))
-		x+=1
-	sy+=1
+			screen.fill(color_background, (x, sy, 5, 5))
+		x+=5
+	sy+=5
 
 def init(rule, w, h):
 	global background, screen
 	pygame.init()
-	screen=pygame.display.set_mode((w, h))
+	screen=pygame.display.set_mode((w*5, h*5))
 	pygame.display.set_caption("Regla "+str(rule))
 	screen.fill(color_background)
 
@@ -84,6 +93,10 @@ def getRule(rule):
 		b.append(rule%2)
 		rule=rule//2
 	return b
+
+def saveAut():
+	pygame.image.save(screen, "evolution.png")
+	print("Simulación guardada")
 
 def showAut():
 	while 1:
@@ -110,25 +123,38 @@ def getVar(av, freq, gens):
 
 print("1 Random")
 print("2 Una célula")
+print("3 Cadena")
 option=int(input())
 print("Introduzca regla")
 rule=int(input())
 rulea=getRule(rule)
-print("Cuantas células?")
-cells=int(input())
-print("Cuantas generaciones?")
-gens=int(input())
-aut=celAut(rulea, cells, gens)
-if option==1:
-	print("Introduzca su densidad")
-	dens=int(input())
-	densC=dens*aut.cells
-	densC=densC//100
-	aut.setRandomFirstGen(densC)
-elif option==2:
-	aut.setOneCellFirstGen()
+cells=0
+
+if option==3:
+	print("Introduzca cadena")
+	firstGen=input()
+	print("Cuantas generaciones?")
+	gens=int(input())
+	cells=len(firstGen)
+	aut=celAut(rulea, cells, gens)
+	aut.setStringFirstGen(firstGen)
 else:
-	print("Opción incorrecta")
+	print("Cuantas células?")
+	cells=int(input())
+	print("Cuantas generaciones?")
+	gens=int(input())
+	aut=celAut(rulea, cells, gens)
+
+	if option==1:
+		print("Introduzca su densidad")
+		dens=int(input())
+		densC=dens*aut.cells
+		densC=densC//100
+		aut.setRandomFirstGen(densC)
+	elif option==2:
+		aut.setOneCellFirstGen()
+	else:
+		print("Opción incorrecta")
 
 init(rule, cells, gens)
 avO=[]
@@ -138,7 +164,9 @@ for y in range(aut.gens):
 	aut.getNextGen()
 	pygame.display.flip()
 	avO.append(aut.oFreq)
-	
+
+saveAut()
+"""	
 plt.ion()
 a=np.arange(gens)
 plt.bar(a, height=avO)
@@ -150,6 +178,6 @@ print("Media=",av)
 var=getVar(av, avO, gens)
 print("Calculando varianza...")
 print("Varianza=",var)
-
+"""
 showAut()
 
