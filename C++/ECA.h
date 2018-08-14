@@ -20,29 +20,56 @@ class ECA{
 		int gFreq;
 		float avg;
 
+		ECA(){
+			this->gFreq=0;
+			std::cout << "ECA created" << std::ends;
+		}
+
 		ECA(std::bitset<8> rule, int cells, int gens, int den){
-			this->tFreq=(int*) malloc(gens*sizeof(int));
-			for(int i=0; i<8; i++){
-				this->rule[i]=rule[i];
-			}
-			this->cells=cells;
-			this->gens=gens;
-			this->den=den;
+			setRule(rule);
+			setCells(cells);
+			setGens(gens);
+			setDen(den);
+			setTFreq(gens);
 			this->gFreq=0;
 		}
 
 		ECA(std::bitset<8> rule, int cells, int gens, std::string t0){
 			int i;
-			std::string str("1");
-			this->tFreq=(int*) malloc(gens*sizeof(int));
-			for(i=0; i<8; i++){
+			this->gFreq=0;
+			setRule(rule);
+			setCells(cells);
+			setGens(gens);
+			setTFreq(gens);
+			setT0(t0);
+		}
+
+		void setRule(std::bitset<8> rule){
+			for(int i=0; i<8; i++){
 				this->rule[i]=rule[i];
 			}
+		}
+
+		void setCells(int cells){
 			this->cells=cells;
+		}
+
+		void setGens(int gens){
 			this->gens=gens;
-			this->gFreq=0;
-			this->t0=(int*) malloc(cells*sizeof(int));
-			for(i=0; i<(t0.size()); i++){
+		}
+
+		void setDen(int den){
+			this->den=den;
+		}
+
+		void setTFreq(int gens){
+			this->tFreq=(int*) malloc(gens*sizeof(int));
+		}
+
+		void setT0(std::string t0){
+			std::string str("1");
+			this->t0=(int*) malloc(this->cells*sizeof(int));
+			for(int i=0; i<(t0.size()); i++){
 				if((str.compare(t0.substr(i, 1)))==0){
 					this->t0[i]=1;
 					this->gFreq+=1;	
@@ -140,6 +167,7 @@ class ECA{
 					this->t1[i]=0;
 				}
 			}
+			printGen();
 			this->t0=this->t1;
 		}
 
@@ -156,7 +184,7 @@ class ECA{
 			std::cout << "" << std::endl;
 		}
 
-		void startSim(int mode){
+		/*void startSim(int mode){
 			int i;
 			switch(mode){
 				case 0:
@@ -189,9 +217,9 @@ class ECA{
 					std::cout << "Something went worng :c" << std::endl;
 				break;
 			}
-		}
+		}*/
 
-		float getAvg(){
+		/*float getAvg(){
 			float avg=0.0;
 
 			for(int i=0; i<this->gens; i++){
@@ -199,7 +227,7 @@ class ECA{
 			}
 			avg/=(float) this->gens;
 			return avg;
-		}
+		}*/
 };
 
 #endif
