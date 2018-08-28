@@ -31,6 +31,7 @@ GtkWidget *layout4;
 GtkWidget *layout5;
 GtkWidget *layout6;
 GtkWidget *layout7;
+GtkWidget *layout8;
 GtkWidget *label1;
 GtkWidget *label2;
 GtkWidget *label3;
@@ -38,12 +39,14 @@ GtkWidget *label4;
 GtkWidget *label5;
 GtkWidget *label6;
 GtkWidget *label7;
+GtkWidget *label8;
 GtkAdjustment *adj;
 GtkWidget *spinButton;
 GtkWidget *entry1;
 GtkWidget *entry2;
 GtkWidget *entry3;
 GtkWidget *entry4;
+GtkWidget *entry5;
 GtkWidget *switcher;
 GtkWidget *button1;
 GtkWidget *button2;
@@ -55,6 +58,7 @@ ECA eca;
 
 static void drawDamSimulation(cairo_t *cr, ECA eca){
 	int x=0, y=0;
+	cairo_set_line_width(cr, 0);
 	for(int i=0; i<eca.steps; i++){	
 		for(int j=0; j<(eca.nCells); j++){
 			if(eca.t0[j]!=eca.tDam[j]){
@@ -90,15 +94,6 @@ static void drawDamSimulation(cairo_t *cr, ECA eca){
 
 static void drawSimulation(cairo_t *cr, ECA eca){
   	int x=0, y=0;
-  	int* bin=eca.intToBin(10, 8);
-	int n=eca.binToInt(bin, 8);
-	cairo_set_line_width(cr, 0);
-	cout << "bin" << endl;
-	for(int a=0; a<8; a++){
-		cout << bin[a] << ends;
-	}
-	cout << "" << endl;
-	cout << "int=" << n << endl;
 	cairo_set_line_width(cr, 0);
 	for(int i=0; i<eca.steps; i++){		
 		for(int j=0; j<(eca.nCells); j++){
@@ -197,6 +192,9 @@ static void startSimulation(GtkWidget *btn, gpointer user_data){
 }
 
 static void startAnalysis(GtkWidget *btn, gpointer user_data){
+	const gchar *str1=gtk_entry_get_text(GTK_ENTRY(entry5));
+	string l(str1);
+	int lenght=atoi(l.c_str());
 	eca.phenotipicAnalysis();
 	anWindow=gtk_application_window_new(app);
 	gtk_window_set_title(GTK_WINDOW(anWindow), "Analysis");
@@ -237,6 +235,8 @@ static void activate(GtkApplication *app, gpointer user_data){
 	layout4=gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 	layout5=gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 	layout6=gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+	layout7=gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+	layout8=gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 
 	/* Create labels */
    label1=gtk_label_new("Rule: ");
@@ -245,12 +245,14 @@ static void activate(GtkApplication *app, gpointer user_data){
 	label4=gtk_label_new("Steps: ");
 	label5=gtk_label_new("Cells: ");
 	label6=gtk_label_new("Density (%): ");
+	label7=gtk_label_new("String lenght: ");
 
 	/* Create widgets */
    entry1=gtk_entry_new();
    entry2=gtk_entry_new();
    entry3=gtk_entry_new();
    entry4=gtk_entry_new();
+   entry5=gtk_entry_new();
    adj=gtk_adjustment_new(0, 0, 256, 1, 1, 1);
    spinButton=gtk_spin_button_new(adj, 1, 0);
    switcher=gtk_switch_new();
@@ -265,6 +267,7 @@ static void activate(GtkApplication *app, gpointer user_data){
 	gtk_widget_set_halign(layout3, GTK_ALIGN_FILL);
 	gtk_widget_set_halign(layout4, GTK_ALIGN_FILL);
 	gtk_widget_set_halign(layout5, GTK_ALIGN_FILL);
+	gtk_widget_set_halign(layout6, GTK_ALIGN_FILL);
 	gtk_switch_set_active(GTK_SWITCH(switcher), FALSE);
    gtk_widget_set_sensitive(entry3, FALSE);
    gtk_widget_set_sensitive(entry4, FALSE);
@@ -272,6 +275,7 @@ static void activate(GtkApplication *app, gpointer user_data){
    gtk_entry_set_width_chars(GTK_ENTRY(entry2), 5);
    gtk_entry_set_width_chars(GTK_ENTRY(entry3), 5);
    gtk_entry_set_width_chars(GTK_ENTRY(entry4), 5);
+   gtk_entry_set_width_chars(GTK_ENTRY(entry5), 5);
    
    /* Attach widgets into layouts */
    gtk_box_pack_start(GTK_BOX(layout1), label1, true, false, 0);
@@ -287,7 +291,9 @@ static void activate(GtkApplication *app, gpointer user_data){
    gtk_box_pack_start(GTK_BOX(layout4), label6, true, false, 0);
    gtk_box_pack_start(GTK_BOX(layout4), entry4, true, false, 0);
    gtk_box_pack_start(GTK_BOX(layout5), button1, true, false, 0);
-   gtk_box_pack_start(GTK_BOX(layout6), button2, true, false, 0);
+   gtk_box_pack_start(GTK_BOX(layout6), label7, true, false, 0);
+   gtk_box_pack_start(GTK_BOX(layout6), entry5, true, false, 0);
+   gtk_box_pack_start(GTK_BOX(layout7), button2, true, false, 0);
 
    /* Attach layouts to tabView and window */
 	gtk_box_pack_start(GTK_BOX(verticalLayout1), layout1, false, false, 0);
@@ -296,6 +302,7 @@ static void activate(GtkApplication *app, gpointer user_data){
    gtk_box_pack_start(GTK_BOX(verticalLayout1), layout4, false, false, 0);
    gtk_box_pack_start(GTK_BOX(verticalLayout1), layout5, false, false, 0);
    gtk_box_pack_start(GTK_BOX(verticalLayout2), layout6, false, false, 0);
+   gtk_box_pack_start(GTK_BOX(verticalLayout2), layout7, false, false, 0);
    gtk_box_pack_start(GTK_BOX(tabLayout1), verticalLayout1, false, false, 0);
    gtk_box_pack_start(GTK_BOX(tabLayout2), verticalLayout2, false, false, 0);
    gtk_notebook_append_page(GTK_NOTEBOOK(tabContainer), tabLayout1, tabLabel1);

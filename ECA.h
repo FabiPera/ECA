@@ -17,8 +17,6 @@ class ECA{
 		int* tDam;
 		int* tFreq;
 		int* dFreq;
-		int* depFreqFR;
-		int* depFreqFL;
 		double* ps;
 		int nCells;
 		int steps;
@@ -195,13 +193,6 @@ class ECA{
 			}
 		}
 
-		void printDamageFreq(){
-			for (int i=0; i<this->nCells; i++){
-				cout << this->dFreq[i] << ends;
-			}
-			cout << "" << endl;
-		}
-
 		void getSpaceEntropy(int size){
 			int* str=new int[size];
 			int pSize=pow(2, size), n, i, j, k;
@@ -242,7 +233,7 @@ class ECA{
 			setDamage(m);
 		}
 		
-		void printGen(){
+		/*void printGen(){
 			for(int i=0; i<(this->nCells); i++){
 				if(this->t0[i]){
 					cout << "1" << ends;
@@ -252,7 +243,14 @@ class ECA{
 				}
 			}
 			cout << "" << endl;
-		}
+		}*/
+
+		/*void printDamageFreq(){
+			for (int i=0; i<this->nCells; i++){
+				cout << this->dFreq[i] << ends;
+			}
+			cout << "" << endl;
+		}*/
 };
 
 #endif
