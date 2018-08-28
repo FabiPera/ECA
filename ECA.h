@@ -3,6 +3,7 @@
 #include <string>
 #include <stdlib.h>
 #include <math.h>
+using namespace std;
 
 #ifndef __ECA__
 #define __ECA__
@@ -10,16 +11,22 @@
 class ECA{
 	
 	public:
-		std::bitset<8> rule;
+		bitset<8> rule;
 		int* initConfig;
 		int* t0;
 		int* tDam;
 		int* tFreq;
+		int* dFreq;
+		int* depFreqFR;
+		int* depFreqFL;
+		double* ps;
 		int nCells;
 		int steps;
 		int denPer;
 		int gFreq;
 		int damFreq;
+		double h;
+		double hm;
 
 		ECA(){
 			this->gFreq=0;
@@ -27,12 +34,10 @@ class ECA{
 
 		/* Setters */
 		void setRule(int rule){
-			std::bitset<8> ruleBS(rule);
+			bitset<8> ruleBS(rule);
 			for(int i=0; i<8; i++){
-				std::cout << ruleBS[i] << std::ends;
 				this->rule[i]=ruleBS[i];
 			}
-			std::cout << "" << std::endl;
 		}
 
 		void setCells(int cells){
@@ -48,25 +53,23 @@ class ECA{
 		}
 
 		void setTFreq(){
-			this->tFreq=(int*) malloc(this->steps*sizeof(int));
+			this->tFreq=new int[this->steps];
 		}
 
-		void setT0(std::string t0){
-			std::string str("1");
-			this->t0=(int*) malloc(this->nCells*sizeof(int));
-			this->initConfig=(int*) malloc(this->nCells*sizeof(int));
-			for(int i=0; i<(t0.size()); i++){
+		void setT0(string t0){
+			string str("1");
+			this->t0=new int[this->nCells];
+			this->initConfig=new int[this->nCells];
+			for(int i=0; i<nCells; i++){
 				if((str.compare(t0.substr(i, 1)))==0){
 					this->t0[i]=1;
-					this->initConfig[i]=1;
-					this->gFreq+=1;	
+					this->initConfig[i]=1;	
 				}
 				else{
 					this->t0[i]=0;
 					this->initConfig[i]=0;
 				}	
 			}
-			printGen();
 		}
 
 		int mod(int a){
@@ -78,9 +81,44 @@ class ECA{
 			}	
 		}
 
+		int* intToBin(int n, int size){
+			int* a=new int[size];
+			int* bin=new int[size];
+			int i=0, j=0;
+			while(n){
+				a[i]=n%2;
+				cout << a[i] << endl;
+				n/=2;
+				i++;
+			}
+			i--;
+
+			while(j<size){
+				if(i>=0){
+					bin[i]=a[i];
+					i--;
+				}
+				else{
+					bin[j]=0;
+				}
+				j++;
+			}
+			return bin;
+		}
+
+		int binToInt(int* bin, int size){
+			int n=0;
+			for(int i=0; i<size; ++i){
+				if(bin[i]){
+					n+=pow(2.0, i);
+				}
+			}
+			return n;
+		}
+
 		void getRandomConfiguration(){
-			this->t0=(int*) malloc(nCells*sizeof(int));
-			this->initConfig=(int*) malloc(nCells*sizeof(int));
+			this->t0=new int[nCells];
+			this->initConfig=new int[nCells];
 			int dens=((this->denPer)*(this->nCells))/100;
 			int n, x, d=0;
 			for(int i=0; i<(this->nCells); i++){
@@ -102,33 +140,21 @@ class ECA{
 					this->gFreq-=1;
 				}
 			}
-		}
 
-		void setDamage(int m){
-			this->tDam=(int*) malloc(this->nCells*sizeof(int));
-			for(int i=0; i<this->nCells; i++){
-				t0[i]=initConfig[i];
-				if(i==m){
-					this->tDam[i]=(!this->t0[i]);
-				}
-				else{
-					this->tDam[i]=this->t0[i];
-				}
-				std::cout << tDam[i] << std::ends;
+			while(this->gFreq<dens){
+				n=0+(rand()%static_cast<int>(((this->nCells)-0)+1));
+				if(!(t0[n])){
+					t0[n]=1;
+					initConfig[n]=1;
+					this->gFreq+=1;
+				}	
 			}
-			std::cout << "" << std::endl;
-		}
-
-		void phenotipicAnalysis(){
-			int m=this->nCells/2;
-			std::cout << m << std::endl;
-			setDamage(m);
 		}
 
 		int* evolve(int* t0){
-			int* t1=(int*) malloc(this->nCells*sizeof(int));
+			int* t1=new int[this->nCells];
 			int n;
-			std::bitset<3> neighb;
+			bitset<3> neighb;
 
 			for(int i=0; i<(this->nCells); i++){
 				neighb[0]=(t0[mod(i-1)]);
@@ -153,49 +179,77 @@ class ECA{
 			}
 			return t1;
 		}
-		
-		void getNextGen(){
-			int* t1=(int*) malloc(nCells*sizeof(int));
-			this->gFreq=0;
-			int n;
-			std::bitset<3> next;
 
-			for(int i=0; i<(this->nCells); i++){
-				next[0]=(this->t0[mod(i-1)]);
-				next[1]=(this->t0[i]);
-				next[2]=(this->t0[mod(i+1)]);
-				n=0;
-				if(next.test(0)){
-					n+=4;
-				}
-				if(next.test(1)){
-					n+=2;
-				}
-				if(next.test(2)){
-					n+=1;
-				}
-				if(this->rule.test(n)){
-					gFreq+=1;
-					t1[i]=1;
+		void setDamage(int m){
+			this->dFreq=new int[nCells];
+			this->tDam=new int[nCells];
+			for(int i=0; i<this->nCells; i++){
+				this->dFreq[i]=0;
+				t0[i]=initConfig[i];
+				if(i==m){
+					this->tDam[i]=(!this->t0[i]);
 				}
 				else{
-					t1[i]=0;
+					this->tDam[i]=this->t0[i];
 				}
 			}
-			this->t0=t1;
 		}
 
+		void printDamageFreq(){
+			for (int i=0; i<this->nCells; i++){
+				cout << this->dFreq[i] << ends;
+			}
+			cout << "" << endl;
+		}
+
+		void getSpaceEntropy(int size){
+			int* str=new int[size];
+			int pSize=pow(2, size), n, i;
+			this->ps=new double[pSize];
+			this->h=0.0;
+
+			for(i=0; i<this->nCells; i++){
+				str[0]=(this->t0[mod(i-1)]);
+				str[1]=(this->t0[i]);
+				str[2]=(this->t0[mod(i+1)]);
+				n=binToInt(str, size);
+				this->ps[n]+=1.0;
+			}
+
+			for(i=0; i<pSize; i++){
+				if(this->ps[i]){
+					this->h+=1.0;
+				}
+			}
+			this->h=(1.0/static_cast<double>(size))*log2(h);
+		}
+
+		void getSpaceEntropyMetric(int size){
+			int pSize=pow(2, size), n, i;
+			this->hm=0.0;
+			double p;
+			for(i=0; i<pSize; i++){
+				p=this->ps[i]/static_cast<double>(nCells);
+				this->hm+=(p)*(log2(p));
+			}
+			this->hm*=(1.0/static_cast<double>(size));
+		}
+
+		void phenotipicAnalysis(){
+			int m=this->nCells/2;
+			setDamage(m);
+		}
+		
 		void printGen(){
 			for(int i=0; i<(this->nCells); i++){
 				if(this->t0[i]){
-					std::cout << "1" << std::ends;
+					cout << "1" << ends;
 				}
 				else{
-					std::cout << "0" << std::ends;		
+					cout << "0" << ends;		
 				}
-				
 			}
-			std::cout << "" << std::endl;
+			cout << "" << endl;
 		}
 };
 
