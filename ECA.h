@@ -204,14 +204,16 @@ class ECA{
 
 		void getSpaceEntropy(int size){
 			int* str=new int[size];
-			int pSize=pow(2, size), n, i;
+			int pSize=pow(2, size), n, i, j, k;
 			this->ps=new double[pSize];
 			this->h=0.0;
 
-			for(i=0; i<this->nCells; i++){
-				str[0]=(this->t0[mod(i-1)]);
-				str[1]=(this->t0[i]);
-				str[2]=(this->t0[mod(i+1)]);
+			for(i=0; i<(this->nCells)-size; i++){
+				k=i;
+				for(j=0; j<size; j++){
+					str[j]=this->t0[k];
+					k++;
+				}
 				n=binToInt(str, size);
 				this->ps[n]+=1.0;
 			}
@@ -232,7 +234,7 @@ class ECA{
 				p=this->ps[i]/static_cast<double>(nCells);
 				this->hm+=(p)*(log2(p));
 			}
-			this->hm*=(1.0/static_cast<double>(size));
+			this->hm*=(1.0/static_cast<double>(size))*(-1.0);
 		}
 
 		void phenotipicAnalysis(){
