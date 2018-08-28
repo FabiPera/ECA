@@ -7,6 +7,7 @@
 #include <cairo-svg.h>
 #include <gtk/gtk.h>
 #include "ECA.h"
+using namespace std;
 
 /* Widgets */
 GtkApplication *app;
@@ -52,37 +53,19 @@ int randConfig;
 ECA eca;
 
 
-/* Switch activate/deactivate entries */
-static void activate_cb(GObject *switcher, GParamSpec *pspec, GtkWidget *user_data){
-	GtkWidget *window=user_data;
-	
-	if(gtk_switch_get_active(GTK_SWITCH(switcher))){
- 		gtk_widget_set_sensitive(entry1, FALSE);
- 		gtk_widget_set_sensitive(entry3, TRUE);
- 		gtk_widget_set_sensitive(entry4, TRUE);
- 		randConfig=1;
- 	}
-	else{
- 		gtk_widget_set_sensitive(entry1, TRUE);
- 		gtk_widget_set_sensitive(entry3, FALSE);
- 		gtk_widget_set_sensitive(entry4, FALSE);
- 		randConfig=0;
- 	}
-}
-
 static void drawDamSimulation(cairo_t *cr, ECA eca){
 	int x=0, y=0;
-	cairo_set_line_width(cr, 0);
-	for(int i=0; i<eca.steps; i++){		
-		for(int i=0; i<(eca.nCells); i++){
-			if(eca.t0[i]!=eca.tDam[i]){
+	for(int i=0; i<eca.steps; i++){	
+		for(int j=0; j<(eca.nCells); j++){
+			if(eca.t0[j]!=eca.tDam[j]){
+				eca.dFreq[j]+=1;
 				cairo_set_source_rgb(cr, 1, 0, 0);
 				cairo_rectangle(cr, x, y, 15, 15);
   				cairo_stroke_preserve(cr);
   				cairo_fill(cr);
 			}
 			else{
-				if(eca.t0[i]){
+				if(eca.t0[j]){
 					cairo_set_source_rgb(cr, 0, 0, 0);
 					cairo_rectangle(cr, x, y, 15, 15);
 	  				cairo_stroke_preserve(cr);
@@ -101,15 +84,25 @@ static void drawDamSimulation(cairo_t *cr, ECA eca){
 		x=0;
 		eca.t0=eca.evolve(eca.t0);
 		eca.tDam=eca.evolve(eca.tDam);
-	}	
+	}
+	return;
 }
 
 static void drawSimulation(cairo_t *cr, ECA eca){
   	int x=0, y=0;
+  	int* bin=eca.intToBin(10, 8);
+	int n=eca.binToInt(bin, 8);
+	cairo_set_line_width(cr, 0);
+	cout << "bin" << endl;
+	for(int a=0; a<8; a++){
+		cout << bin[a] << ends;
+	}
+	cout << "" << endl;
+	cout << "int=" << n << endl;
 	cairo_set_line_width(cr, 0);
 	for(int i=0; i<eca.steps; i++){		
-		for(int i=0; i<(eca.nCells); i++){
-			if(eca.t0[i]){
+		for(int j=0; j<(eca.nCells); j++){
+			if(eca.t0[j]){
 				cairo_set_source_rgb(cr, 0, 0, 0);
 				cairo_rectangle(cr, x, y, 15, 15);
   				cairo_stroke_preserve(cr);
@@ -128,27 +121,48 @@ static void drawSimulation(cairo_t *cr, ECA eca){
 		eca.tFreq[i]=eca.gFreq;
 		eca.t0=eca.evolve(eca.t0);
 	}
+	return;
 }
 
 static gboolean onDrawSimEvent(GtkWidget *widget, cairo_t *cr, gpointer user_data){      
   drawSimulation(cr, eca);
+  cairo_surface_write_to_png(cairo_get_target(cr), "Simulation.png");
   return FALSE;
 }
 
-static gboolean onDrawDamSimEvent(GtkWidget *widget, cairo_t *cr, gpointer user_data){      
+static gboolean onDrawDamSimEvent(GtkWidget* widget, cairo_t* cr, gpointer user_data){      
   drawDamSimulation(cr, eca);
+  cairo_surface_write_to_png(cairo_get_target(cr), "Simulation with damage.png");
   return FALSE;
+}
+
+/* Switch activate/deactivate entries */
+static void activate_cb(GObject* switcher, GParamSpec* pspec, GtkWidget* user_data){
+	GtkWidget *window=user_data;
+	
+	if(gtk_switch_get_active(GTK_SWITCH(switcher))){
+ 		gtk_widget_set_sensitive(entry1, FALSE);
+ 		gtk_widget_set_sensitive(entry3, TRUE);
+ 		gtk_widget_set_sensitive(entry4, TRUE);
+ 		randConfig=1;
+ 	}
+	else{
+ 		gtk_widget_set_sensitive(entry1, TRUE);
+ 		gtk_widget_set_sensitive(entry3, FALSE);
+ 		gtk_widget_set_sensitive(entry4, FALSE);
+ 		randConfig=0;
+ 	}
 }
 
 /* Starts the ECA simulation */
 static void startSimulation(GtkWidget *btn, gpointer user_data){
 	int rule=gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spinButton));
 	const gchar *str2=gtk_entry_get_text(GTK_ENTRY(entry2));
-	std::string gens(str2);
+	string gens(str2);
 	int steps=atoi(gens.c_str());
 	if(randConfig==0){
 		const gchar *str1=gtk_entry_get_text(GTK_ENTRY(entry1));
-		std::string config(str1);
+		string config(str1);
 		eca.setRule(rule);
 		eca.setCells(static_cast<int>(config.size()));
 		eca.setGens(steps);
@@ -157,10 +171,10 @@ static void startSimulation(GtkWidget *btn, gpointer user_data){
 	}
 	else{
 		const gchar *str3=gtk_entry_get_text(GTK_ENTRY(entry3));
-		std::string cellsN(str3);
+		string cellsN(str3);
 		int cells=atoi(cellsN.c_str());
 		const gchar *str4=gtk_entry_get_text(GTK_ENTRY(entry4));
-		std::string density(str4);
+		string density(str4);
 		int dens=atoi(density.c_str());
 		eca.setRule(rule);
 		eca.setCells(cells);
@@ -179,7 +193,7 @@ static void startSimulation(GtkWidget *btn, gpointer user_data){
  	gtk_container_add(GTK_CONTAINER(simWindow), dArea1);
 
  	g_signal_connect(G_OBJECT(dArea1), "draw", G_CALLBACK(onDrawSimEvent), NULL);
- 	gtk_widget_show_all(simWindow); 
+ 	gtk_widget_show_all(simWindow);
 }
 
 static void startAnalysis(GtkWidget *btn, gpointer user_data){
