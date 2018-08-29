@@ -64,27 +64,27 @@ static void drawDamSimulation(cairo_t *cr, ECA eca){
 			if(eca.t0[j]!=eca.tDam[j]){
 				eca.dFreq[j]+=1;
 				cairo_set_source_rgb(cr, 1, 0, 0);
-				cairo_rectangle(cr, x, y, 15, 15);
+				cairo_rectangle(cr, x, y, 5, 5);
   				cairo_stroke_preserve(cr);
   				cairo_fill(cr);
 			}
 			else{
 				if(eca.t0[j]){
 					cairo_set_source_rgb(cr, 0, 0, 0);
-					cairo_rectangle(cr, x, y, 15, 15);
+					cairo_rectangle(cr, x, y, 5, 5);
 	  				cairo_stroke_preserve(cr);
 	  				cairo_fill(cr);
 				}
 				else{
 					cairo_set_source_rgb(cr, 1, 1, 1);
-					cairo_rectangle(cr, x, y, 15, 15);
+					cairo_rectangle(cr, x, y, 5, 5);
 	  				cairo_stroke_preserve(cr); 
 	  				cairo_fill(cr);	
 				}
 			}
-			x+=15;
+			x+=5;
 		}
-		y+=15;
+		y+=5;
 		x=0;
 		eca.t0=eca.evolve(eca.t0);
 		eca.tDam=eca.evolve(eca.tDam);
@@ -99,19 +99,19 @@ static void drawSimulation(cairo_t *cr, ECA eca){
 		for(int j=0; j<(eca.nCells); j++){
 			if(eca.t0[j]){
 				cairo_set_source_rgb(cr, 0, 0, 0);
-				cairo_rectangle(cr, x, y, 15, 15);
+				cairo_rectangle(cr, x, y, 5, 5);
   				cairo_stroke_preserve(cr);
   				cairo_fill(cr);
 			}
 			else{
   				cairo_set_source_rgb(cr, 1, 1, 1);
-				cairo_rectangle(cr, x, y, 15, 15);
+				cairo_rectangle(cr, x, y, 5, 5);
   				cairo_stroke_preserve(cr);
   				cairo_fill(cr);	
 			}
-			x+=15;
+			x+=5;
 		}
-		y+=15;
+		y+=5;
 		x=0;
 		eca.tFreq[i]=eca.gFreq;
 		eca.t0=eca.evolve(eca.t0);
@@ -121,13 +121,11 @@ static void drawSimulation(cairo_t *cr, ECA eca){
 
 static gboolean onDrawSimEvent(GtkWidget *widget, cairo_t *cr, gpointer user_data){      
   drawSimulation(cr, eca);
-  cairo_surface_write_to_png(cairo_get_target(cr), "Simulation.png");
   return FALSE;
 }
 
 static gboolean onDrawDamSimEvent(GtkWidget* widget, cairo_t* cr, gpointer user_data){      
   drawDamSimulation(cr, eca);
-  cairo_surface_write_to_png(cairo_get_target(cr), "Simulation with damage.png");
   return FALSE;
 }
 
@@ -182,7 +180,7 @@ static void startSimulation(GtkWidget *btn, gpointer user_data){
 	simWindow=gtk_application_window_new(app);
 	gtk_window_set_title(GTK_WINDOW(simWindow), "Simulation");
 	//gtk_window_set_resizable(GTK_WINDOW(simWindow), false);
-	gtk_window_set_default_size(GTK_WINDOW(simWindow), (eca.nCells*15), (eca.steps*15));
+	gtk_window_set_default_size(GTK_WINDOW(simWindow), (eca.nCells*5), (eca.steps*5));
 
 	dArea1=gtk_drawing_area_new();
  	gtk_container_add(GTK_CONTAINER(simWindow), dArea1);
@@ -198,7 +196,7 @@ static void startAnalysis(GtkWidget *btn, gpointer user_data){
 	eca.phenotipicAnalysis();
 	anWindow=gtk_application_window_new(app);
 	gtk_window_set_title(GTK_WINDOW(anWindow), "Analysis");
-	gtk_window_set_default_size(GTK_WINDOW(anWindow), (eca.nCells*15), (eca.steps*15));
+	gtk_window_set_default_size(GTK_WINDOW(anWindow), (eca.nCells*5), (eca.steps*5));
 
 	dArea2=gtk_drawing_area_new();
  	gtk_container_add(GTK_CONTAINER(anWindow), dArea2);

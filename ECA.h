@@ -115,37 +115,19 @@ class ECA{
 		}
 
 		void getRandomConfiguration(){
-			this->t0=new int[nCells];
-			this->initConfig=new int[nCells];
-			int dens=((this->denPer)*(this->nCells))/100;
-			int n, x, d=0;
-			for(int i=0; i<(this->nCells); i++){
-				n=3214847 + (rand()%static_cast<int>(52178912397 - 3214847 + 1));
-				x=n%2;
-				if(x){
-					this->t0[i]=1;
-					this->initConfig[i]=1;
+			this->t0=new int[nCells]();
+			this->initConfig=new int[nCells]();
+			this->gFreq=0;
+			int dens=static_cast<int>((this->denPer)*(this->nCells))/100;
+			int n, x;
+			srand((unsigned) time(0));
+			while((this->gFreq)<dens){
+				n=0+(rand()%static_cast<int>(((this->nCells-1)-0)+1));
+				if(this->t0[n]!=1){
+					this->t0[n]=1;
+					this->initConfig[n]=1;
 					this->gFreq+=1;
-					d+=1;
 				}
-			}
-
-			while(this->gFreq>dens){
-				n=0+(rand()%static_cast<int>(((this->nCells)-0)+1));
-				if(t0[n]){
-					t0[n]=0;
-					initConfig[n]=0;
-					this->gFreq-=1;
-				}
-			}
-
-			while(this->gFreq<dens){
-				n=0+(rand()%static_cast<int>(((this->nCells)-0)+1));
-				if(!(t0[n])){
-					t0[n]=1;
-					initConfig[n]=1;
-					this->gFreq+=1;
-				}	
 			}
 		}
 
