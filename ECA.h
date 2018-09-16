@@ -1,4 +1,3 @@
-#include <bitset>
 #include <iostream>
 #include <string>
 #include <stdlib.h>
@@ -11,7 +10,7 @@ using namespace std;
 class ECA{
 	
 	public:
-		bitset<8> rule;
+		int* rule;
 		int* initConfig;
 		int* t0;
 		int* tDam;
@@ -32,10 +31,7 @@ class ECA{
 
 		/* Setters */
 		void setRule(int rule){
-			bitset<8> ruleBS(rule);
-			for(int i=0; i<8; i++){
-				this->rule[i]=ruleBS[i];
-			}
+			this->rule=intToBin(rule, 8);
 		}
 
 		void setCells(int cells){
@@ -134,23 +130,15 @@ class ECA{
 		int* evolve(int* t0){
 			int* t1=new int[this->nCells];
 			int n;
-			bitset<3> neighb;
+			int neighb[3];
 
 			for(int i=0; i<(this->nCells); i++){
-				neighb[0]=(t0[mod(i-1)]);
+				neighb[2]=(t0[mod(i-1)]);
 				neighb[1]=(t0[i]);
-				neighb[2]=(t0[mod(i+1)]);
+				neighb[0]=(t0[mod(i+1)]);
 				n=0;
-				if(neighb.test(0)){
-					n+=4;
-				}
-				if(neighb.test(1)){
-					n+=2;
-				}
-				if(neighb.test(2)){
-					n+=1;
-				}
-				if(this->rule.test(n)){
+				n=binToInt(neighb, 3);
+				if(this->rule[n]){
 					t1[i]=1;
 				}
 				else{
