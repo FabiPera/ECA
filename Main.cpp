@@ -60,8 +60,8 @@ static void drawDamSimulation(cairo_t *cr, ECA eca){
 	int x=0, y=0;
 	cairo_set_line_width(cr, 0);
 	for(int i=0; i<eca.steps; i++){	
-		for(int j=0; j<(eca.nCells); j++){
-			if(eca.t0[j]!=eca.tDam[j]){
+		for(int j=0; j<(eca.t0.length); j++){
+			if(eca.t0.config[j]!=eca.tDam.config[j]){
 				eca.dFreq[j]+=1;
 				cairo_set_source_rgb(cr, 1, 0, 0);
 				cairo_rectangle(cr, x, y, 5, 5);
@@ -69,7 +69,7 @@ static void drawDamSimulation(cairo_t *cr, ECA eca){
   				cairo_fill(cr);
 			}
 			else{
-				if(eca.t0[j]){
+				if(eca.t0.config[j]){
 					cairo_set_source_rgb(cr, 0, 0, 0);
 					cairo_rectangle(cr, x, y, 5, 5);
 	  				cairo_stroke_preserve(cr);
@@ -96,8 +96,8 @@ static void drawSimulation(cairo_t *cr, ECA eca){
   	int x=0, y=0;
 	cairo_set_line_width(cr, 0);
 	for(int i=0; i<eca.steps; i++){		
-		for(int j=0; j<(eca.nCells); j++){
-			if(eca.t0[j]){
+		for(int j=0; j<(eca.t0.length); j++){
+			if(eca.t0.config[j]){
 				cairo_set_source_rgb(cr, 0, 0, 0);
 				cairo_rectangle(cr, x, y, 5, 5);
   				cairo_stroke_preserve(cr);
@@ -157,7 +157,7 @@ static void startSimulation(GtkWidget *btn, gpointer user_data){
 		const gchar *str1=gtk_entry_get_text(GTK_ENTRY(entry1));
 		string config(str1);
 		eca.setRule(rule);
-		eca.setCells(static_cast<int>(config.size()));
+		//eca.setCells(static_cast<int>(config.size()));
 		eca.setGens(steps);
 		eca.setTFreq();
 		eca.setT0(config);
@@ -170,17 +170,16 @@ static void startSimulation(GtkWidget *btn, gpointer user_data){
 		string density(str4);
 		int dens=atoi(density.c_str());
 		eca.setRule(rule);
-		eca.setCells(cells);
 		eca.setGens(steps);
 		eca.setDen(dens);
 		eca.setTFreq();
-		eca.getRandomConfiguration();
+		eca.setRandomT0(cells);
 	}
 
 	simWindow=gtk_application_window_new(app);
 	gtk_window_set_title(GTK_WINDOW(simWindow), "Simulation");
 	//gtk_window_set_resizable(GTK_WINDOW(simWindow), false);
-	gtk_window_set_default_size(GTK_WINDOW(simWindow), (eca.nCells*5), (eca.steps*5));
+	gtk_window_set_default_size(GTK_WINDOW(simWindow), (eca.t0.length*5), (eca.steps*5));
 
 	dArea1=gtk_drawing_area_new();
  	gtk_container_add(GTK_CONTAINER(simWindow), dArea1);
@@ -192,11 +191,11 @@ static void startSimulation(GtkWidget *btn, gpointer user_data){
 static void startAnalysis(GtkWidget *btn, gpointer user_data){
 	const gchar *str1=gtk_entry_get_text(GTK_ENTRY(entry5));
 	string l(str1);
-	int lenght=atoi(l.c_str());
+	int length=atoi(l.c_str());
 	eca.phenotipicAnalysis();
 	anWindow=gtk_application_window_new(app);
 	gtk_window_set_title(GTK_WINDOW(anWindow), "Analysis");
-	gtk_window_set_default_size(GTK_WINDOW(anWindow), (eca.nCells*5), (eca.steps*5));
+	gtk_window_set_default_size(GTK_WINDOW(anWindow), (eca.t0.length*5), (eca.steps*5));
 
 	dArea2=gtk_drawing_area_new();
  	gtk_container_add(GTK_CONTAINER(anWindow), dArea2);
@@ -212,14 +211,14 @@ static void activate(GtkApplication *app, gpointer user_data){
 	/* Create main window */
 	window=gtk_application_window_new(app);
 	gtk_window_set_title(GTK_WINDOW(window), "ECA");
-	gtk_window_set_default_size(GTK_WINDOW(window), 400, 300);
+	gtk_window_set_default_size(GTK_WINDOW(window), 500, 300);
    gtk_window_set_resizable(GTK_WINDOW(window), false);
    gtk_container_set_border_width(GTK_CONTAINER(window), 20);
 	
 	/* Create tabView */
 	tabContainer=gtk_notebook_new();
 	tabLabel1=gtk_label_new("Simulation");
-	tabLabel2=gtk_label_new("uwu");
+	tabLabel2=gtk_label_new("Lyapunov exponents");
 
 	/* Create layouts */
 	mainLayout=gtk_box_new(GTK_ORIENTATION_VERTICAL, 30);
@@ -243,7 +242,7 @@ static void activate(GtkApplication *app, gpointer user_data){
 	label4=gtk_label_new("Steps: ");
 	label5=gtk_label_new("Cells: ");
 	label6=gtk_label_new("Density (%): ");
-	label7=gtk_label_new("String lenght: ");
+	label7=gtk_label_new("String length: ");
 
 	/* Create widgets */
    entry1=gtk_entry_new();
@@ -269,7 +268,7 @@ static void activate(GtkApplication *app, gpointer user_data){
 	gtk_switch_set_active(GTK_SWITCH(switcher), FALSE);
    gtk_widget_set_sensitive(entry3, FALSE);
    gtk_widget_set_sensitive(entry4, FALSE);
-   gtk_entry_set_width_chars(GTK_ENTRY(entry1), 30);
+   gtk_entry_set_width_chars(GTK_ENTRY(entry1), 45);
    gtk_entry_set_width_chars(GTK_ENTRY(entry2), 5);
    gtk_entry_set_width_chars(GTK_ENTRY(entry3), 5);
    gtk_entry_set_width_chars(GTK_ENTRY(entry4), 5);
@@ -278,8 +277,8 @@ static void activate(GtkApplication *app, gpointer user_data){
    /* Attach widgets into layouts */
    gtk_box_pack_start(GTK_BOX(layout1), label1, true, false, 0);
    gtk_box_pack_start(GTK_BOX(layout1), spinButton, true, false, 0);
-   gtk_box_pack_start(GTK_BOX(layout2), label2, true, false, 0);
-   gtk_box_pack_start(GTK_BOX(layout2), switcher, true, false, 0);
+   gtk_box_pack_start(GTK_BOX(layout1), label2, true, false, 0);
+   gtk_box_pack_start(GTK_BOX(layout1), switcher, true, false, 0);
    gtk_box_pack_start(GTK_BOX(layout3), label3, true, false, 0);
    gtk_box_pack_start(GTK_BOX(layout3), entry1, true, false, 0);
    gtk_box_pack_start(GTK_BOX(layout4), label4, true, false, 0);
@@ -315,8 +314,6 @@ static void activate(GtkApplication *app, gpointer user_data){
 
   	gtk_widget_show_all(window);
 }
-
-
 
 int main(int argc, char **argv){
 	
