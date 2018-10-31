@@ -59,9 +59,9 @@ ECA eca;
 static void drawDamSimulation(cairo_t *cr, ECA eca){
 	int x=0, y=0;
 	cairo_set_line_width(cr, 0);
-	for(int i=0; i<eca.steps; i++){	
-		for(int j=0; j<(eca.t0.length); j++){
-			if(eca.t0.config[j]!=eca.tDam.config[j]){
+	for(int i=0; i < eca.steps; i++){	
+		for(int j=0; j < (eca.t0.length); j++){
+			if(eca.t0.bits[j] != eca.tDam.bits[j]){
 				eca.dFreq[j]+=1;
 				cairo_set_source_rgb(cr, 1, 0, 0);
 				cairo_rectangle(cr, x, y, 5, 5);
@@ -69,7 +69,7 @@ static void drawDamSimulation(cairo_t *cr, ECA eca){
   				cairo_fill(cr);
 			}
 			else{
-				if(eca.t0.config[j]){
+				if(eca.t0.bits[j]){
 					cairo_set_source_rgb(cr, 0, 0, 0);
 					cairo_rectangle(cr, x, y, 5, 5);
 	  				cairo_stroke_preserve(cr);
@@ -95,9 +95,9 @@ static void drawDamSimulation(cairo_t *cr, ECA eca){
 static void drawSimulation(cairo_t *cr, ECA eca){
   	int x=0, y=0;
 	cairo_set_line_width(cr, 0);
-	for(int i=0; i<eca.steps; i++){		
-		for(int j=0; j<(eca.t0.length); j++){
-			if(eca.t0.config[j]){
+	for(int i=0; i < eca.steps; i++){		
+		for(int j=0; j < (eca.t0.length); j++){
+			if(eca.t0.bits[j]){
 				cairo_set_source_rgb(cr, 0, 0, 0);
 				cairo_rectangle(cr, x, y, 5, 5);
   				cairo_stroke_preserve(cr);
