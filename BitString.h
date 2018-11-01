@@ -29,7 +29,7 @@ class BitString{
 			bits=intToBin(n, length);
 		}
 
-		BitString(BitString& b){
+		void operator=(const BitString& b){
 			bits=new int[b.length]();
 			length=b.length;
 			memcpy(bits, b.bits, sizeof(int) * b.length);

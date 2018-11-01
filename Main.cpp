@@ -60,26 +60,26 @@ static void drawDamSimulation(cairo_t *cr, ECA eca){
 	int x=0, y=0;
 	cairo_set_line_width(cr, 0);
 	for(int i=0; i < eca.steps; i++){	
-		for(int j=0; j < (eca.t0.length); j++){
+		for(int j=0; j < eca.t0.length; j++){
 			if(eca.t0.bits[j] != eca.tDam.bits[j]){
 				eca.dFreq[j]+=1;
 				cairo_set_source_rgb(cr, 1, 0, 0);
 				cairo_rectangle(cr, x, y, 5, 5);
-  				cairo_stroke_preserve(cr);
-  				cairo_fill(cr);
+				cairo_stroke_preserve(cr);
+				cairo_fill(cr);
 			}
 			else{
 				if(eca.t0.bits[j]){
 					cairo_set_source_rgb(cr, 0, 0, 0);
 					cairo_rectangle(cr, x, y, 5, 5);
-	  				cairo_stroke_preserve(cr);
-	  				cairo_fill(cr);
+					cairo_stroke_preserve(cr);
+					cairo_fill(cr);
 				}
 				else{
 					cairo_set_source_rgb(cr, 1, 1, 1);
 					cairo_rectangle(cr, x, y, 5, 5);
-	  				cairo_stroke_preserve(cr); 
-	  				cairo_fill(cr);	
+					cairo_stroke_preserve(cr); 
+					cairo_fill(cr);	
 				}
 			}
 			x+=5;
@@ -93,7 +93,7 @@ static void drawDamSimulation(cairo_t *cr, ECA eca){
 }
 
 static void drawSimulation(cairo_t *cr, ECA eca){
-  	int x=0, y=0;
+	int x=0, y=0;
 	cairo_set_line_width(cr, 0);
 	for(int i=0; i < eca.steps; i++){		
 		for(int j=0; j < (eca.t0.length); j++){
@@ -120,13 +120,13 @@ static void drawSimulation(cairo_t *cr, ECA eca){
 }
 
 static gboolean onDrawSimEvent(GtkWidget *widget, cairo_t *cr, gpointer user_data){      
-  drawSimulation(cr, eca);
-  return FALSE;
+	drawSimulation(cr, eca);
+	return FALSE;
 }
 
 static gboolean onDrawDamSimEvent(GtkWidget* widget, cairo_t* cr, gpointer user_data){      
-  drawDamSimulation(cr, eca);
-  return FALSE;
+	drawDamSimulation(cr, eca);
+	return FALSE;
 }
 
 /* Switch activate/deactivate entries */
@@ -134,16 +134,16 @@ static void activate_cb(GObject* switcher, GParamSpec* pspec, GtkWidget* user_da
 	GtkWidget *window=user_data;
 	
 	if(gtk_switch_get_active(GTK_SWITCH(switcher))){
- 		gtk_widget_set_sensitive(entry1, FALSE);
- 		gtk_widget_set_sensitive(entry3, TRUE);
- 		gtk_widget_set_sensitive(entry4, TRUE);
- 		randConfig=1;
- 	}
+		gtk_widget_set_sensitive(entry1, FALSE);
+		gtk_widget_set_sensitive(entry3, TRUE);
+		gtk_widget_set_sensitive(entry4, TRUE);
+		randConfig=1;
+	}
 	else{
- 		gtk_widget_set_sensitive(entry1, TRUE);
- 		gtk_widget_set_sensitive(entry3, FALSE);
- 		gtk_widget_set_sensitive(entry4, FALSE);
- 		randConfig=0;
+		gtk_widget_set_sensitive(entry1, TRUE);
+		gtk_widget_set_sensitive(entry3, FALSE);
+		gtk_widget_set_sensitive(entry4, FALSE);
+		randConfig=0;
  	}
 }
 
@@ -198,10 +198,10 @@ static void startAnalysis(GtkWidget *btn, gpointer user_data){
 	gtk_window_set_default_size(GTK_WINDOW(anWindow), (eca.t0.length*5), (eca.steps*5));
 
 	dArea2=gtk_drawing_area_new();
- 	gtk_container_add(GTK_CONTAINER(anWindow), dArea2);
+	gtk_container_add(GTK_CONTAINER(anWindow), dArea2);
 
- 	g_signal_connect(G_OBJECT(dArea2), "draw", G_CALLBACK(onDrawDamSimEvent), NULL);
- 	gtk_widget_show_all(anWindow);
+	g_signal_connect(G_OBJECT(dArea2), "draw", G_CALLBACK(onDrawDamSimEvent), NULL);
+	gtk_widget_show_all(anWindow);
 }
 
 

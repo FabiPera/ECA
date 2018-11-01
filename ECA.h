@@ -51,10 +51,6 @@ class ECA{
 			t0=BitString(str0.length());
 			t0.setStringBits(str0);
 			seedConfig=t0;
-			/*this->t0=Configuration(t0.length());
-			this->t0.setConfiguration(t0);
-			this->initConfig=Configuration(t0.length());
-			this->initConfig.setConfiguration(t0);*/
 		}
 
 		void setRandomT0(int l){
@@ -90,17 +86,8 @@ class ECA{
 			tDam=BitString(t0.length);
 			t0=seedConfig;
 			tDam=seedConfig;
-			tDam.bits[m]=!(t0.bits[m]);
-			/*for(int i=0; i < t0.length; i++){
-				dFreq[i]=0;
-				t0.config[i]=initConfig.config[i];
-				if(i==m){
-					this->tDam.config[i]=(!this->t0.config[i]);
-				}
-				else{
-					this->tDam.config[i]=this->t0.config[i];
-				}
-			}*/
+			int aux=t0.bits[m];
+			tDam.bits[m]=(!aux);
 		}
 
 		void getSpaceEntropy(int size){
@@ -139,7 +126,7 @@ class ECA{
 		}
 
 		void phenotipicAnalysis(){
-			int m=t0.length / 2;
+			int m=static_cast<int>(t0.length / 2);
 			setDamage(m);
 		}
 		
