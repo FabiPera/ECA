@@ -7,7 +7,6 @@ using namespace std;
 #ifndef __BitString__
 #define __BitString__
 
-
 class BitString{
 	
 	public:
@@ -53,16 +52,16 @@ class BitString{
 		}
 
 		void setRandomBits(int dens){
-			int n, gFreq=0;
+			int n, t0Freq=0;
 			srand((unsigned) time(0));
 			random_device rd;
 			mt19937 engine(rd());
 			uniform_int_distribution<> dist(0, length - 1);
-			while(gFreq < dens){
+			while(t0Freq < dens){
 				n=dist(engine);
 				if(bits[n] != 1){
 					bits[n]=1;
-					gFreq+=1;
+					t0Freq+=1;
 				}
 			}
 		}
@@ -73,7 +72,6 @@ class BitString{
 			int i=0, j=0;
 			while(n){
 				a[i]=n % 2;
-				//cout << a[i] << endl;
 				n/=2;
 				i++;
 			}

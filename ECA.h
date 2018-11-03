@@ -15,18 +15,33 @@ class ECA{
 		BitString seedConfig;
 		BitString t0;
 		BitString tDam;
-		int* tFreq;
-		int* dFreq;
-		double* ps;
+		int* frequencies;
+		int* damageFreq;
 		int steps;
 		int denPer;
-		int gFreq;
+		int t0Freq;
 		int damFreq;
-		double h;
-		double hm;
+		//double* ps;
+		//double h;
+		//double hm;
 
 		ECA(){
-			gFreq=0;
+			t0Freq=0;
+		}
+
+		ECA(int r, int s, string str){
+			setRule(r);
+			setGens(s);
+			setT0(str);
+			frequencies=new int[steps];
+		}
+
+		ECA(int r, int s, int d, int l){
+			setRule(r);
+			setGens(s);
+			setDen(d);
+			setRandomT0(l);
+			frequencies=new int[steps];
 		}
 
 		/* Setters */
@@ -42,12 +57,7 @@ class ECA{
 			denPer=den;
 		}
 
-		void setTFreq(){
-			tFreq=new int[steps];
-		}
-
 		void setT0(string str0){
-			string str("1");
 			t0=BitString(str0.length());
 			t0.setStringBits(str0);
 			seedConfig=t0;
@@ -56,7 +66,7 @@ class ECA{
 		void setRandomT0(int l){
 			t0=BitString(l);
 			seedConfig=BitString(l);
-			gFreq=0;
+			t0Freq=0;
 			int dens=static_cast<int>((denPer) * (t0.length) / 100);
 			t0.setRandomBits(dens);
 			seedConfig=t0;
@@ -82,15 +92,20 @@ class ECA{
 		}
 
 		void setDamage(int m){
-			dFreq=new int[t0.length]();
+			damageFreq=new int[t0.length]();
 			tDam=BitString(t0.length);
 			t0=seedConfig;
 			tDam=seedConfig;
 			int aux=t0.bits[m];
 			tDam.bits[m]=(!aux);
 		}
+		
+		void phenotipicAnalysis(){
+			int m=static_cast<int>(t0.length / 2);
+			setDamage(m);
+		}
 
-		void getSpaceEntropy(int size){
+		/*void getSpaceEntropy(int size){
 			BitString str(size);
 			int pSize=pow(2, size), n, i, j, k;
 			ps=new double[pSize];
@@ -112,9 +127,9 @@ class ECA{
 				}
 			}
 			h=(1.0 / static_cast<double>(size)) * log2(h);
-		}
+		}*/
 
-		void getSpaceEntropyMetric(int size){
+		/*void getSpaceEntropyMetric(int size){
 			int pSize=pow(2, size), n, i;
 			hm=0.0;
 			double p;
@@ -123,12 +138,7 @@ class ECA{
 				hm+=(p) * (log2(p));
 			}
 			hm*=(1.0 / static_cast<double>(size)) * (-1.0);
-		}
-
-		void phenotipicAnalysis(){
-			int m=static_cast<int>(t0.length / 2);
-			setDamage(m);
-		}
+		}*/
 		
 		/*void printGen(){
 			for(int i=0; i<(this->t0.length); i++){
