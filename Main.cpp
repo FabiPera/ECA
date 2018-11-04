@@ -89,7 +89,7 @@ static void drawCell(cairo_t* cr, int x, int y){
 }
 
 static void drawDamSimulation(cairo_t* cr, ECA eca){
-	int x=0, y=0;
+	int x=0, y=0, lyapN=0;
 	cairo_set_line_width(cr, 0);
 	for(int i=0; i < eca.steps; i++){	
 		for(int j=0; j < eca.t0.length; j++){
@@ -109,6 +109,11 @@ static void drawDamSimulation(cairo_t* cr, ECA eca){
 				}
 			}
 			x+=5;
+		}
+		if(i > 1){
+			lyapN=eca.countDefects();
+			lyapExp=eca.getLyapunovExp(1, lyapN);
+			cout << lyapExp << endl;
 		}
 		y+=5;
 		x=0;
@@ -195,10 +200,8 @@ static void startSimulation(GtkWidget *btn, gpointer user_data){
 }
 
 static void startAnalysis(GtkWidget *btn, gpointer user_data){
-	const gchar *str1=gtk_entry_get_text(GTK_ENTRY(entry5));
-	string l(str1);
-	int length=atoi(l.c_str());
-	eca.phenotipicAnalysis();
+	int dmgPos=getIntValue(entry5);
+	eca.setDamage(dmgPos);
 	anWindow=gtk_application_window_new(app);
 	gtk_window_set_title(GTK_WINDOW(anWindow), "Analysis");
 	gtk_window_set_default_size(GTK_WINDOW(anWindow), (eca.t0.length*5), (eca.steps*5));

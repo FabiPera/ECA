@@ -99,10 +99,20 @@ class ECA{
 			int aux=t0.bits[m];
 			tDam.bits[m]=(!aux);
 		}
+
+		int countDefects(){
+			int defects=0;
+			for(int i=0; i < t0.length; i++){
+				defects+=damageFreq[i];
+			}
+			return defects;
+		}
 		
-		void phenotipicAnalysis(){
-			int m=static_cast<int>(t0.length / 2);
-			setDamage(m);
+		double getLyapunovExp(int a1, int a2){
+			double a=static_cast<double>(a1);
+			double b=static_cast<double>(a2);
+			double lyapExp=(1.0 / static_cast<double>(steps)) * log(b / a);
+			return lyapExp;
 		}
 
 		/*void getSpaceEntropy(int size){
