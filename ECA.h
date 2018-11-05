@@ -19,6 +19,7 @@ class ECA{
 		int* damageFreq;
 		int steps;
 		int denPer;
+		int dmgPos;
 		int t0Freq;
 		int damFreq;
 		//double* ps;
@@ -91,13 +92,13 @@ class ECA{
 			return t1;
 		}
 
-		void setDamage(int m){
+		void setDamage(){
 			damageFreq=new int[t0.length]();
 			tDam=BitString(t0.length);
 			t0=seedConfig;
 			tDam=seedConfig;
-			int aux=t0.bits[m];
-			tDam.bits[m]=(!aux);
+			int aux=t0.bits[dmgPos];
+			tDam.bits[dmgPos]=(!aux);
 		}
 
 		int countDefects(){

@@ -1,5 +1,5 @@
-#include <bitset>
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <stdlib.h>
 #include <math.h>
@@ -60,6 +60,7 @@ GtkWidget* dArea1;
 GtkWidget* dArea2;
 int randConfig;
 ECA eca;
+ofstream lyapExpFile;
 
 static int getIntValue(GtkWidget* entry){
 	const gchar* str=gtk_entry_get_text(GTK_ENTRY(entry));
@@ -90,6 +91,10 @@ static void drawCell(cairo_t* cr, int x, int y){
 
 static void drawDamSimulation(cairo_t* cr, ECA eca){
 	int x=0, y=0, lyapN=0;
+	eca.setDamage();
+	/*eca.t0=eca.seedConfig;
+	eca.tDam=eca.seedConfig;*/
+	double lyapExp;
 	cairo_set_line_width(cr, 0);
 	for(int i=0; i < eca.steps; i++){	
 		for(int j=0; j < eca.t0.length; j++){
@@ -110,21 +115,23 @@ static void drawDamSimulation(cairo_t* cr, ECA eca){
 			}
 			x+=5;
 		}
-		if(i > 1){
+		if(i > 0){
 			lyapN=eca.countDefects();
 			lyapExp=eca.getLyapunovExp(1, lyapN);
-			cout << lyapExp << endl;
+			lyapExpFile << i << " ";
+			lyapExpFile << lyapExp << "\n";
 		}
 		y+=5;
 		x=0;
 		eca.t0=eca.evolve(eca.t0);
 		eca.tDam=eca.evolve(eca.tDam);
 	}
-	return;
+	lyapExpFile.close();
 }
 
 static void drawSimulation(cairo_t *cr, ECA eca){
 	int x=0, y=0;
+	eca.t0=eca.seedConfig;
 	cairo_set_line_width(cr, 0);
 	for(int i=0; i < eca.steps; i++){		
 		for(int j=0; j < (eca.t0.length); j++){
@@ -148,12 +155,13 @@ static void drawSimulation(cairo_t *cr, ECA eca){
 
 static gboolean onDrawSimEvent(GtkWidget* widget, cairo_t *cr, gpointer user_data){      
 	drawSimulation(cr, eca);
-	return FALSE;
+	return TRUE;
 }
 
-static gboolean onDrawDamSimEvent(GtkWidget* widget, cairo_t* cr, gpointer user_data){      
+static gboolean onDrawDamSimEvent(GtkWidget* widget, cairo_t* cr, gpointer user_data){ 
+	lyapExpFile.open("lyapExp.txt");     
 	drawDamSimulation(cr, eca);
-	return FALSE;
+	return TRUE;
 }
 
 /* Switch activate/deactivate entries */
@@ -201,7 +209,8 @@ static void startSimulation(GtkWidget *btn, gpointer user_data){
 
 static void startAnalysis(GtkWidget *btn, gpointer user_data){
 	int dmgPos=getIntValue(entry5);
-	eca.setDamage(dmgPos);
+	eca.dmgPos=dmgPos;
+	eca.setDamage();
 	anWindow=gtk_application_window_new(app);
 	gtk_window_set_title(GTK_WINDOW(anWindow), "Analysis");
 	gtk_window_set_default_size(GTK_WINDOW(anWindow), (eca.t0.length*5), (eca.steps*5));
