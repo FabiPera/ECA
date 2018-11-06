@@ -10,10 +10,13 @@ using namespace std;
 int main(int argc, char **argv){
 	int lyap0=0, lyapN=0;
 	ofstream lyapExpFile;
+	ofstream hXValuesFile;
 	lyapExpFile.open("lyapExp.txt");
+	hXValuesFile.open("hXValuestxt");
 	double lyapExp;
 	string str("0101101110010010001");
-	ECA eca(50, 30, str);
+	ECA eca(30, 30, str);
+	cout << eca.seedConfig.bitsToString() << endl;
 	eca.dmgPos=9;
 	eca.setDamage();
 	for(int i=0; i < eca.steps; i++){
@@ -29,15 +32,13 @@ int main(int argc, char **argv){
 			lyapExpFile << i << " ";
 			lyapExpFile << lyapExp << "\n";
 		}
+		eca.getTopEntropy(3);
+		hXValuesFile << i << " ";
+		hXValuesFile << eca.hX << "\n";
 		eca.t0=eca.evolve(eca.t0);
 		eca.tDam=eca.evolve(eca.tDam);
 	}
 	lyapExpFile.close();
-	//cout << lyap0 << endl;
-	//lyapN=eca.countDefects();
-	//cout << lyapN << endl;
-	//double lyapExp=eca.getLyapunovExp(1, lyapN);
-	
-
+	hXValuesFile.close();
 	return 0;
 }
