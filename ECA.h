@@ -20,11 +20,12 @@ class ECA{
 		int steps;
 		int denPer;
 		int dmgPos;
+		int entStrLength;
 		int t0Freq;
 		int damFreq;
-		//double* ps;
-		//double h;
-		//double hm;
+		double* strProb;
+		double hX;
+		double hXMetric;
 
 		ECA(){
 			t0Freq=0;
@@ -116,12 +117,12 @@ class ECA{
 			return lyapExp;
 		}
 
-		/*void getSpaceEntropy(int size){
+		void getTopEntropy(int size){
 			BitString str(size);
 			int pSize=pow(2, size), n, i, j, k;
-			ps=new double[pSize];
-			h=0.0;
-
+			strProb=new double[pSize]();
+			hX=0.0;
+			double theta=0.0;
 			for(i=0; i < (t0.length - size); i++){
 				k=i;
 				for(j=0; j < size; j++){
@@ -129,16 +130,16 @@ class ECA{
 					k++;
 				}
 				n=str.binToInt();
-				ps[n]+=1.0;
+				strProb[n]+=1.0;
 			}
 
 			for(i=0; i < pSize; i++){
-				if(ps[i]){
-					h+=1.0;
+				if(strProb[i]){
+					theta+=1.0;
 				}
 			}
-			h=(1.0 / static_cast<double>(size)) * log2(h);
-		}*/
+			hX=(1.0 / static_cast<double>(size)) * log2(theta);
+		}
 
 		/*void getSpaceEntropyMetric(int size){
 			int pSize=pow(2, size), n, i;
