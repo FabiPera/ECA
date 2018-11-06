@@ -44,8 +44,12 @@ GtkWidget* label8;
 GtkWidget* toolbar;
 GtkWidget* imgLoad;
 GtkWidget* imgSave;
+GtkWidget* imgRun;
+GtkWidget* imgAnalysis;
 GtkToolItem* load;
 GtkToolItem* save;
+GtkToolItem* run;
+GtkToolItem* analysis;
 GtkAdjustment* adj;
 GtkWidget* spinButton;
 GtkWidget* entry1;
@@ -53,6 +57,7 @@ GtkWidget* entry2;
 GtkWidget* entry3;
 GtkWidget* entry4;
 GtkWidget* entry5;
+GtkWidget* entry6;
 GtkWidget* switcher;
 GtkWidget* button1;
 GtkWidget* button2;
@@ -61,6 +66,7 @@ GtkWidget* dArea2;
 int randConfig;
 ECA eca;
 ofstream lyapExpFile;
+ofstream hXValuesFile;
 
 static int getIntValue(GtkWidget* entry){
 	const gchar* str=gtk_entry_get_text(GTK_ENTRY(entry));
@@ -75,11 +81,32 @@ static string getStringValue(GtkWidget* entry){
 	return strValue;
 }
 
-static void loadSettings(GtkWidget* widget){
+static void loadSettings(GtkWidget *btn, gpointer user_data){
 	cout << "Load settings" << endl;
 }
 
-static void saveSettings(GtkWidget* widget){
+static void saveToFile(char* fileName){
+	ofstream file;
+	file.open(fileName);
+	file << "Rule:" << eca.rule.binToInt() << "\n";
+	file << "Configuration:" << eca.seedConfig.bitsToString() << "\n";
+	file << "Steps:" << eca.steps;
+	file.close();
+}
+
+static void saveSettings(GtkWidget *btn, gpointer user_data){
+	GtkWidget* dialog;
+	dialog=gtk_file_chooser_dialog_new("Save settings", GTK_WINDOW(window), GTK_FILE_CHOOSER_ACTION_SAVE, ("Cancel"), GTK_RESPONSE_CANCEL, ("Save"), GTK_RESPONSE_ACCEPT, NULL);
+	gtk_widget_show_all(dialog);
+	gint resp=gtk_dialog_run(GTK_DIALOG(dialog));
+	//gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), ("Untitled document"));
+	if(resp == GTK_RESPONSE_ACCEPT){
+		char* fileName;
+		fileName=gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+		saveToFile(fileName);
+		g_free(fileName);
+	}
+	gtk_widget_destroy(dialog);
 	cout << "Save settings" << endl;
 }
 
@@ -91,9 +118,8 @@ static void drawCell(cairo_t* cr, int x, int y){
 
 static void drawDamSimulation(cairo_t* cr, ECA eca){
 	int x=0, y=0, lyapN=0;
+	lyapExpFile.open("lyapExp.txt");  
 	eca.setDamage();
-	/*eca.t0=eca.seedConfig;
-	eca.tDam=eca.seedConfig;*/
 	double lyapExp;
 	cairo_set_line_width(cr, 0);
 	for(int i=0; i < eca.steps; i++){	
@@ -131,6 +157,7 @@ static void drawDamSimulation(cairo_t* cr, ECA eca){
 
 static void drawSimulation(cairo_t *cr, ECA eca){
 	int x=0, y=0;
+	hXValuesFile.open("hXValuestxt");
 	eca.t0=eca.seedConfig;
 	cairo_set_line_width(cr, 0);
 	for(int i=0; i < eca.steps; i++){		
@@ -147,9 +174,13 @@ static void drawSimulation(cairo_t *cr, ECA eca){
 		}
 		y+=5;
 		x=0;
+		eca.getTopEntropy(3);
+		hXValuesFile << i << " ";
+		hXValuesFile << eca.hX << "\n";
 		eca.frequencies[i]=eca.t0Freq;
 		eca.t0=eca.evolve(eca.t0);
 	}
+	hXValuesFile.close();
 	return;
 }
 
@@ -158,16 +189,14 @@ static gboolean onDrawSimEvent(GtkWidget* widget, cairo_t *cr, gpointer user_dat
 	return TRUE;
 }
 
-static gboolean onDrawDamSimEvent(GtkWidget* widget, cairo_t* cr, gpointer user_data){ 
-	lyapExpFile.open("lyapExp.txt");     
+static gboolean onDrawDamSimEvent(GtkWidget* widget, cairo_t* cr, gpointer user_data){    
 	drawDamSimulation(cr, eca);
 	return TRUE;
 }
 
 /* Switch activate/deactivate entries */
 static void activate_cb(GObject* switcher, GParamSpec* pspec, GtkWidget* user_data){
-	GtkWidget *window=user_data;
-	
+	GtkWidget* window=user_data;
 	if(gtk_switch_get_active(GTK_SWITCH(switcher))){
 		gtk_widget_set_sensitive(entry1, FALSE);
 		gtk_widget_set_sensitive(entry3, TRUE);
@@ -186,7 +215,7 @@ static void activate_cb(GObject* switcher, GParamSpec* pspec, GtkWidget* user_da
 static void startSimulation(GtkWidget *btn, gpointer user_data){
 	int rule=gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spinButton));
 	int steps=getIntValue(entry2);
-	if(randConfig==0){
+	if(randConfig == 0){
 		string config=getStringValue(entry1);
 		eca=ECA(rule, steps, config);
 	}
@@ -235,11 +264,17 @@ static void activate(GtkApplication *app, gpointer user_data){
 	/*Create toolbar and icons*/
 	toolbar=gtk_toolbar_new();
 	imgLoad=gtk_image_new_from_icon_name("document-open", GTK_ICON_SIZE_MENU);
-	imgSave=gtk_image_new_from_icon_name("document-save", GTK_ICON_SIZE_MENU);
+	imgSave=gtk_image_new_from_icon_name("document-save-as", GTK_ICON_SIZE_MENU);
+	imgRun=gtk_image_new_from_icon_name("media-playback-start", GTK_ICON_SIZE_MENU);
+	imgAnalysis=gtk_image_new_from_icon_name("edit-find", GTK_ICON_SIZE_MENU);
 	load=gtk_tool_button_new(imgLoad, "Load settings");
 	save=gtk_tool_button_new(imgSave, "Save settings");
+	run=gtk_tool_button_new(imgRun, "Run simulation");
+	analysis=gtk_tool_button_new(imgAnalysis, "Run analysis");
 	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), load, -1);
 	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), save, -1);
+	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), run, -1);
+	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), analysis, -1);
 	
 	/* Create tabView */
 	tabContainer=gtk_notebook_new();
@@ -270,6 +305,7 @@ static void activate(GtkApplication *app, gpointer user_data){
 	label5=gtk_label_new("Cells: ");
 	label6=gtk_label_new("Density (%): ");
 	label7=gtk_label_new("Defect position: ");
+	label8=gtk_label_new("String length: ");
 
 	/* Create widgets */
    entry1=gtk_entry_new();
@@ -277,6 +313,7 @@ static void activate(GtkApplication *app, gpointer user_data){
    entry3=gtk_entry_new();
    entry4=gtk_entry_new();
    entry5=gtk_entry_new();
+	entry6=gtk_entry_new();
    adj=gtk_adjustment_new(0, 0, 256, 1, 1, 1);
    spinButton=gtk_spin_button_new(adj, 1, 0);
    switcher=gtk_switch_new();
@@ -292,6 +329,8 @@ static void activate(GtkApplication *app, gpointer user_data){
 	gtk_widget_set_halign(layout4, GTK_ALIGN_FILL);
 	gtk_widget_set_halign(layout5, GTK_ALIGN_FILL);
 	gtk_widget_set_halign(layout6, GTK_ALIGN_FILL);
+	gtk_widget_set_halign(layout7, GTK_ALIGN_FILL);
+	gtk_widget_set_halign(layout8, GTK_ALIGN_FILL);
 	gtk_switch_set_active(GTK_SWITCH(switcher), FALSE);
    gtk_widget_set_sensitive(entry3, FALSE);
    gtk_widget_set_sensitive(entry4, FALSE);
@@ -300,6 +339,7 @@ static void activate(GtkApplication *app, gpointer user_data){
    gtk_entry_set_width_chars(GTK_ENTRY(entry3), 5);
    gtk_entry_set_width_chars(GTK_ENTRY(entry4), 5);
    gtk_entry_set_width_chars(GTK_ENTRY(entry5), 5);
+	gtk_entry_set_width_chars(GTK_ENTRY(entry6), 5);
    
    /* Attach widgets into layouts */
    gtk_box_pack_start(GTK_BOX(layout1), label1, true, false, 0);
@@ -317,7 +357,9 @@ static void activate(GtkApplication *app, gpointer user_data){
    gtk_box_pack_start(GTK_BOX(layout5), button1, true, false, 0);
    gtk_box_pack_start(GTK_BOX(layout6), label7, true, false, 0);
    gtk_box_pack_start(GTK_BOX(layout6), entry5, true, false, 0);
-   gtk_box_pack_start(GTK_BOX(layout7), button2, true, false, 0);
+	gtk_box_pack_start(GTK_BOX(layout7), label8, true, false, 0);
+	gtk_box_pack_start(GTK_BOX(layout7), entry6, true, false, 0);
+   gtk_box_pack_start(GTK_BOX(layout8), button2, true, false, 0);
 
    /* Attach layouts to tabView and window */
 	gtk_box_pack_start(GTK_BOX(verticalLayout1), layout1, false, false, 0);
@@ -327,6 +369,7 @@ static void activate(GtkApplication *app, gpointer user_data){
    gtk_box_pack_start(GTK_BOX(verticalLayout1), layout5, false, false, 0);
    gtk_box_pack_start(GTK_BOX(verticalLayout2), layout6, false, false, 0);
    gtk_box_pack_start(GTK_BOX(verticalLayout2), layout7, false, false, 0);
+	gtk_box_pack_start(GTK_BOX(verticalLayout2), layout8, false, false, 0);
    gtk_box_pack_start(GTK_BOX(tabLayout1), verticalLayout1, false, false, 0);
    gtk_box_pack_start(GTK_BOX(tabLayout2), verticalLayout2, false, false, 0);
    gtk_notebook_append_page(GTK_NOTEBOOK(tabContainer), tabLayout1, tabLabel1);
@@ -339,6 +382,8 @@ static void activate(GtkApplication *app, gpointer user_data){
    /* Set signals */
 	g_signal_connect(G_OBJECT(load), "clicked", G_CALLBACK(loadSettings), NULL);
 	g_signal_connect(G_OBJECT(save), "clicked", G_CALLBACK(saveSettings), NULL);
+	g_signal_connect(G_OBJECT(run), "clicked", G_CALLBACK(startSimulation), NULL);
+	g_signal_connect(G_OBJECT(analysis), "clicked", G_CALLBACK(startAnalysis), NULL);
    g_signal_connect(GTK_SWITCH(switcher), "notify::active", G_CALLBACK(activate_cb), window);
 	g_signal_connect(GTK_BUTTON(button1), "clicked", G_CALLBACK(startSimulation), NULL);
 	g_signal_connect(GTK_BUTTON(button2), "clicked", G_CALLBACK(startAnalysis), NULL);
