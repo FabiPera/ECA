@@ -100,6 +100,14 @@ class BitString{
 			return n;
 		}
 
+		string bitsToString(){
+			string str="";
+			for(int i=0; i < length; i++){
+				str.append(to_string(bits[i]));
+			}
+			return str;
+		}
+
 		int mod(int a){
 			if(a < 0){
 				return (length) + a;
