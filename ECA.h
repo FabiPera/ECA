@@ -19,11 +19,13 @@ class ECA{
 		int* damageFreq;
 		int steps;
 		int denPer;
+		int dmgPos;
+		int entStrLength;
 		int t0Freq;
 		int damFreq;
-		//double* ps;
-		//double h;
-		//double hm;
+		double* strProb;
+		double hX;
+		double hXMetric;
 
 		ECA(){
 			t0Freq=0;
@@ -91,26 +93,36 @@ class ECA{
 			return t1;
 		}
 
-		void setDamage(int m){
+		void setDamage(){
 			damageFreq=new int[t0.length]();
 			tDam=BitString(t0.length);
 			t0=seedConfig;
 			tDam=seedConfig;
-			int aux=t0.bits[m];
-			tDam.bits[m]=(!aux);
+			int aux=t0.bits[dmgPos];
+			tDam.bits[dmgPos]=(!aux);
+		}
+
+		int countDefects(){
+			int defects=0;
+			for(int i=0; i < t0.length; i++){
+				defects+=damageFreq[i];
+			}
+			return defects;
 		}
 		
-		void phenotipicAnalysis(){
-			int m=static_cast<int>(t0.length / 2);
-			setDamage(m);
+		double getLyapunovExp(int a1, int a2){
+			double a=static_cast<double>(a1);
+			double b=static_cast<double>(a2);
+			double lyapExp=(1.0 / static_cast<double>(steps)) * log(b / a);
+			return lyapExp;
 		}
 
-		/*void getSpaceEntropy(int size){
+		void getTopEntropy(int size){
 			BitString str(size);
 			int pSize=pow(2, size), n, i, j, k;
-			ps=new double[pSize];
-			h=0.0;
-
+			strProb=new double[pSize]();
+			hX=0.0;
+			double theta=0.0;
 			for(i=0; i < (t0.length - size); i++){
 				k=i;
 				for(j=0; j < size; j++){
@@ -118,16 +130,16 @@ class ECA{
 					k++;
 				}
 				n=str.binToInt();
-				ps[n]+=1.0;
+				strProb[n]+=1.0;
 			}
 
 			for(i=0; i < pSize; i++){
-				if(ps[i]){
-					h+=1.0;
+				if(strProb[i]){
+					theta+=1.0;
 				}
 			}
-			h=(1.0 / static_cast<double>(size)) * log2(h);
-		}*/
+			hX=(1.0 / static_cast<double>(size)) * log2(theta);
+		}
 
 		/*void getSpaceEntropyMetric(int size){
 			int pSize=pow(2, size), n, i;
