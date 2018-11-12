@@ -77,6 +77,7 @@ class BitString:
 
 		return bits
 
+'''
 print("Create BitString")
 bitS=BitString(8)
 print(bitS)
@@ -93,3 +94,4 @@ print(config)
 configStr=BitString(10)
 configStr.setStringBits("0111101010")
 print(configStr)
+'''
