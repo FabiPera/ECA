@@ -19,10 +19,6 @@ class BitString:
 		
 		return string
 
-	def copyBitString(self, bs):
-		b=copy.deepcopy(bs)
-		return b
-
 	def getValue(self, i):
 		n=self.mod(i)
 		return self.bits[n]

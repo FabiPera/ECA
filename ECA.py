@@ -1,5 +1,7 @@
+import numpy as np, copy, math, sys, pygame
+from pygame.locals import *
 from BitString import BitString
-import numpy as np, copy, math
+
 
 class ECA:
 	
@@ -18,9 +20,13 @@ class ECA:
 	strProb=np.zeros(2 ** entStringLen, dtype=float)
 	hX=0.0
 	hXMetric=0.0
+	#Pygame variables
+	cellColor=(0, 0, 0)
+	bckgColor=(255, 255, 255)
+	defectColor=(255, 0, 0)
+	screen=pygame.display.set_mode((200, 200))
 
 	def __init__(self, r, s, l):
-		#self.rule=BitString(8)
 		self.rule.bsFromInt(r)
 		self.steps=s
 		self.seedConfig=BitString(l)
@@ -53,6 +59,34 @@ class ECA:
 				t1.bits[i]=0
 
 		return t1
+	
+	def createSimScreen(self, hStr, width, height):
+		pygame.init()
+		self.screen=pygame.display.set_mode((width, height))
+		pygame.display.set_caption(hStr)
+		self.screen.fill(self.bckgColor)
+
+	def updateScreen(self, y, bitStr=None, dmgBitstr=None):
+		y *= 2
+		x=0
+		for i in range(bitStr.length):
+			if (dmgBitstr == None):
+				if bitStr.bits[i]:
+					self.screen.fill(self.cellColor, (x, y, 2, 2))
+				else:
+					self.screen.fill(self.bckgColor, (x, y, 2, 2))
+			else:
+				if (bitStr.bits[i] ^ dmgBitstr.bits[i]):
+					self.screen.fill(self.defectColor, (x, y, 2, 2))
+				else:
+					if bitStr.bits[i]:
+						self.screen.fill(self.cellColor, (x, y, 2, 2))
+					else:
+						self.screen.fill(self.bckgColor, (x, y, 2, 2))
+			x += 2
+
+	def saveToPNG(self, file):
+		pygame.image.save(self.screen, file)
 	
 	def setDamage(self):
 		self.damageFreq=np.zeros(self.t0.length)
@@ -93,12 +127,13 @@ class ECA:
 			
 
 print("Create ECA")
-eca=ECA(30, 50, 21)
+eca=ECA(30, 10, 21)
 eca.setT0("0101101110010010001")
 print(eca.seedConfig)
 eca.dmgPos=9
 eca.setDamage()
 print(eca.rule)
+eca.createSimScreen("Simulation", eca.seedConfig.length*2, eca.steps*2)
 for i in range(eca.steps):
 	for j in range(eca.t0.length):
 		if (eca.t0.bits[j] ^ eca.tDam.bits[j]):
@@ -109,8 +144,12 @@ for i in range(eca.steps):
 		lyapExp=eca.getLyapunovExp(1, lyapN)
 		#print(lyapExp)
 
+	eca.updateScreen(y=i, bitStr=eca.t0, dmgBitstr=eca.tDam)
 	eca.getTopEntropy(3)
-	eca.t0.copyBitString(eca.evolve(eca.t0))
-	eca.tDam.copyBitString(eca.evolve(eca.tDam))
-	print(eca.hX)
+	print(eca.t0)
+	eca.t0=copy.deepcopy(eca.evolve(eca.t0))
+	eca.tDam=copy.deepcopy(eca.evolve(eca.tDam))
+	#print(eca.hX)
+
+eca.saveToPNG("Simulation.png")
 		
