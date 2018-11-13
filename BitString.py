@@ -24,11 +24,13 @@ class BitString:
 		return self.bits[n]
 
 	def setStringBits(self, str):
+		x=self.length - len(str)
+		x=x // 2
 		for i in range(len(str)):
 			if (str[i] == '1'):
-				self.bits[i]=1
+				self.bits[x + i]=1
 			else:
-				self.bits[i]=0
+				self.bits[x + i]=0
 
 	def setRandomBits(self, dens):
 		freq=0
@@ -90,4 +92,6 @@ print(config)
 configStr=BitString(10)
 configStr.setStringBits("0111101010")
 print(configStr)
+00000000000000000000000
+000000000000000000000000
 '''

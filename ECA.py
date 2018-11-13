@@ -2,7 +2,6 @@ import numpy as np, copy, math, sys, pygame
 from pygame.locals import *
 from BitString import BitString
 
-
 class ECA:
 	
 	rule=BitString(8)
@@ -35,7 +34,10 @@ class ECA:
 		self.frequencies=np.zeros(self.steps)
 		self.damaFreq=np.zeros(l)
 
-	def setT0(self, str0):
+	def setT0(self, str0, oz):
+		if (oz):
+			self.seedConfig.bits=np.ones(self.seedConfig.length, dtype=int)
+
 		self.seedConfig.setStringBits(str0)
 		self.t0=copy.deepcopy(self.seedConfig)
 
@@ -127,8 +129,8 @@ class ECA:
 			
 
 print("Create ECA")
-eca=ECA(30, 10, 21)
-eca.setT0("0101101110010010001")
+eca=ECA(30, 50, 50)
+eca.setT0("000", 1)
 print(eca.seedConfig)
 eca.dmgPos=9
 eca.setDamage()
@@ -144,12 +146,12 @@ for i in range(eca.steps):
 		lyapExp=eca.getLyapunovExp(1, lyapN)
 		#print(lyapExp)
 
-	eca.updateScreen(y=i, bitStr=eca.t0, dmgBitstr=eca.tDam)
+	eca.updateScreen(y=i, bitStr=eca.t0, dmgBitstr=None)
 	eca.getTopEntropy(3)
 	print(eca.t0)
 	eca.t0=copy.deepcopy(eca.evolve(eca.t0))
 	eca.tDam=copy.deepcopy(eca.evolve(eca.tDam))
 	#print(eca.hX)
 
-eca.saveToPNG("Simulation.png")
+eca.saveToPNG(".Simulation.png")
 		
