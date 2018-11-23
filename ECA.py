@@ -95,7 +95,7 @@ class ECA:
 		self.tDam=BitString(self.t0.length)
 		self.t0=copy.deepcopy(self.seedConfig)
 		self.tDam=copy.deepcopy(self.seedConfig)
-		self.tDam.bits[self.dmgPos]=~(self.tDam.bits[self.dmgPos])
+		self.tDam.bits[self.dmgPos]=not(self.tDam.bits[self.dmgPos])
 
 	def countDefects(self):
 		defects=0
@@ -129,10 +129,14 @@ class ECA:
 			
 
 print("Create ECA")
-eca=ECA(30, 50, 50)
-eca.setT0("000", 1)
+eca=ECA(94, 512, 1024)
+eca.setT0("11111", 0)
 print(eca.seedConfig)
-eca.dmgPos=9
+eca.dmgPos=513
+#eca.dmgPos=510
+#eca.dmgPos=511
+#eca.dmgPos=512
+#eca.dmgPos=513
 eca.setDamage()
 print(eca.rule)
 eca.createSimScreen("Simulation", eca.seedConfig.length*2, eca.steps*2)
@@ -146,12 +150,11 @@ for i in range(eca.steps):
 		lyapExp=eca.getLyapunovExp(1, lyapN)
 		#print(lyapExp)
 
-	eca.updateScreen(y=i, bitStr=eca.t0, dmgBitstr=None)
+	eca.updateScreen(y=i, bitStr=eca.t0, dmgBitstr=eca.tDam)
 	eca.getTopEntropy(3)
-	print(eca.t0)
+	#print(eca.tDam)
 	eca.t0=copy.deepcopy(eca.evolve(eca.t0))
 	eca.tDam=copy.deepcopy(eca.evolve(eca.tDam))
 	#print(eca.hX)
 
-eca.saveToPNG(".Simulation.png")
-		
+eca.saveToPNG("Simulation18Dam5.png")

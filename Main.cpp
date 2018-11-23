@@ -67,6 +67,8 @@ int randConfig;
 ECA eca;
 ofstream lyapExpFile;
 ofstream hXValuesFile;
+gulong drawsignal;
+gulong drawdsignal;
 
 static int getIntValue(GtkWidget* entry){
 	const gchar* str=gtk_entry_get_text(GTK_ENTRY(entry));
@@ -181,7 +183,6 @@ static void drawSimulation(cairo_t *cr, ECA eca){
 		eca.t0=eca.evolve(eca.t0);
 	}
 	hXValuesFile.close();
-	return;
 }
 
 static gboolean onDrawSimEvent(GtkWidget* widget, cairo_t *cr, gpointer user_data){      
@@ -232,8 +233,9 @@ static void startSimulation(GtkWidget *btn, gpointer user_data){
 	dArea1=gtk_drawing_area_new();
 	gtk_container_add(GTK_CONTAINER(simWindow), dArea1);
 
-	g_signal_connect(G_OBJECT(dArea1), "draw", G_CALLBACK(onDrawSimEvent), NULL);
+	drawsignal=g_signal_connect(G_OBJECT(dArea1), "draw", G_CALLBACK(onDrawSimEvent), NULL);
 	gtk_widget_show_all(simWindow);
+	//g_signal_handler_disconnect(G_OBJECT(dArea1), drawsignal);
 }
 
 static void startAnalysis(GtkWidget *btn, gpointer user_data){
@@ -247,7 +249,7 @@ static void startAnalysis(GtkWidget *btn, gpointer user_data){
 	dArea2=gtk_drawing_area_new();
 	gtk_container_add(GTK_CONTAINER(anWindow), dArea2);
 
-	g_signal_connect(G_OBJECT(dArea2), "draw", G_CALLBACK(onDrawDamSimEvent), NULL);
+	drawdsignal=g_signal_connect(G_OBJECT(dArea2), "draw", G_CALLBACK(onDrawDamSimEvent), NULL);
 	gtk_widget_show_all(anWindow);
 }
 
