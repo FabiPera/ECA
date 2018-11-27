@@ -147,7 +147,7 @@ class Widgets():
 			self.switchRandValue=1
 		else:
 			self.entrySeed.set_sensitive(True)
-			self.switchStr(True)
+			self.switchStr.set_sensitive(True)
 			self.entryPer.set_sensitive(False)
 			self.switchRandValue=0
 		
@@ -161,14 +161,16 @@ class Widgets():
 		rule=self.entryRule.get_value_as_int()
 		steps=self.getIntValue(self.entrySteps)
 		cells=self.getIntValue(self.entryCells)
+		self.eca=ECA(rule, steps, cells)
+		print(rule)
+		print(steps)
+		print(cells)
 		if self.switchRandValue:
 			dens=self.getIntValue(self.entryPer)
-			self.eca=ECA(rule, steps, cells)
 			self.eca.denPer=dens
 			self.eca.setRandomT0()
 		else:
 			seedConfig=self.getStringValue(self.entrySeed)
-			self.eca=ECA(rule, steps, cells)
 			self.eca.setT0(seedConfig, self.switchConfValue)
 	
 	def setAnalysisSettings(self):
@@ -191,6 +193,7 @@ class Widgets():
 		self.setSimulationSettings()
 		self.setAnalysisSettings()
 		self.eca.createSimScreen("Damage simulation", self.eca.seedConfig.length*2, self.eca.steps*2)
+		avrl=0.0
 		for i in range(self.eca.steps):
 			for j in range(self.eca.t0.length):
 				if (self.eca.t0.bits[j] ^ self.eca.tDam.bits[j]):
@@ -198,14 +201,13 @@ class Widgets():
 			
 			if (i > 0):
 				lyapN=self.eca.countDefects()
-				lyapExp=self.eca.getLyapunovExp(1, lyapN)
-				#print(lyapExp)
+				lyapExp=self.eca.getLyapunovExp(lyapN, i)
+				print(lyapExp)
 
 			self.eca.updateScreen(y=i, bitStr=self.eca.t0, dmgBitstr=self.eca.tDam)
 			self.eca.getTopEntropy(3)
-			#print(self.eca.tDam)
 			self.eca.t0=copy.deepcopy(self.eca.evolve(self.eca.t0))
 			self.eca.tDam=copy.deepcopy(self.eca.evolve(self.eca.tDam))
 			#print(self.eca.hX)
-
+		print(avrl)
 		self.eca.saveToPNG("DamageSimulation.png")

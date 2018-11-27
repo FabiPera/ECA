@@ -23,7 +23,6 @@ class ECA:
 	cellColor=(0, 0, 0)
 	bckgColor=(255, 255, 255)
 	defectColor=(255, 0, 0)
-	#screen=pygame.display.init()
 	screen=pygame.Surface((0, 0))
 
 	def __init__(self, r=94, s=512, l=1024):
@@ -64,9 +63,6 @@ class ECA:
 		return t1
 	
 	def createSimScreen(self, hStr, width, height):
-		#self.screen=pygame.display.init()
-		#self.screen=pygame.display.set_mode((width, height))
-		#pygame.display.set_caption(hStr)
 		self.screen=pygame.Surface((width, height))
 		self.screen.fill(self.bckgColor)
 
@@ -92,7 +88,6 @@ class ECA:
 	def saveToPNG(self, file):
 		pygame.image.save(self.screen, file)
 		print("Simulation saved")
-		#self.screen=pygame.display.quit()
 	
 	def setDamage(self):
 		self.damageFreq=np.zeros(self.t0.length)
@@ -106,10 +101,12 @@ class ECA:
 		for i in range(self.t0.length):
 			defects += self.damageFreq[i]
 
-		return defects
+		return defects - 1
 
 	def getLyapunovExp(self, a, b):
-		lyapExp=((1.0 / self.steps) * math.log(b / a))
+		avr=a/b
+		lyapExp=((1.0 / b) * math.log(a))
+		#lyapExp=((1.0 / self.steps) * math.log(b / a))
 		return lyapExp
 
 	def getTopEntropy(self, size):
