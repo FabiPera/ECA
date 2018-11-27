@@ -23,9 +23,10 @@ class ECA:
 	cellColor=(0, 0, 0)
 	bckgColor=(255, 255, 255)
 	defectColor=(255, 0, 0)
-	screen=pygame.display.set_mode((200, 200))
+	#screen=pygame.display.init()
+	screen=pygame.Surface((0, 0))
 
-	def __init__(self, r, s, l):
+	def __init__(self, r=94, s=512, l=1024):
 		self.rule.bsFromInt(r)
 		self.steps=s
 		self.seedConfig=BitString(l)
@@ -51,9 +52,9 @@ class ECA:
 		n=0
 		neighb=BitString(3)
 		for i in range(t0.length):
-			neighb.bits[2]=t0.getValue(i-1)
+			neighb.bits[2]=t0.getValue(i - 1)
 			neighb.bits[1]=t0.getValue(i)
-			neighb.bits[0]=t0.getValue(i+1)
+			neighb.bits[0]=t0.getValue(i + 1)
 			n=neighb.binToInt()
 			if (self.rule.bits[n]):
 				t1.bits[i]=1
@@ -63,9 +64,10 @@ class ECA:
 		return t1
 	
 	def createSimScreen(self, hStr, width, height):
-		pygame.init()
-		self.screen=pygame.display.set_mode((width, height))
-		pygame.display.set_caption(hStr)
+		#self.screen=pygame.display.init()
+		#self.screen=pygame.display.set_mode((width, height))
+		#pygame.display.set_caption(hStr)
+		self.screen=pygame.Surface((width, height))
 		self.screen.fill(self.bckgColor)
 
 	def updateScreen(self, y, bitStr=None, dmgBitstr=None):
@@ -89,6 +91,8 @@ class ECA:
 
 	def saveToPNG(self, file):
 		pygame.image.save(self.screen, file)
+		print("Simulation saved")
+		#self.screen=pygame.display.quit()
 	
 	def setDamage(self):
 		self.damageFreq=np.zeros(self.t0.length)
@@ -127,7 +131,7 @@ class ECA:
 			
 		self.hX=((1.0 / size) * math.log(theta, 2))
 			
-
+'''
 print("Create ECA")
 eca=ECA(94, 512, 1024)
 eca.setT0("11111", 0)
@@ -158,3 +162,4 @@ for i in range(eca.steps):
 	#print(eca.hX)
 
 eca.saveToPNG("Simulation18Dam5.png")
+'''

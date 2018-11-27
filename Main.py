@@ -8,17 +8,19 @@ class Window(Gtk.ApplicationWindow):
 	def __init__(self, app):
 		super(Window, self).__init__(title="ECA", application=app)
 		widgets=Widgets()
-		self.set_default_size(500, 300)
+		self.set_default_size(500, 250)
 		self.set_resizable(False)
-		#toolbar=widgets.toolbar
-		grid = Gtk.Grid()
+		
 		'''
+		toolbar=widgets.toolbar
+		grid = Gtk.Grid()
 		fmi = Gtk.MenuItem.new_with_label("File")
 		
 		emi = Gtk.MenuItem.new_with_label("Exit") 
 		emi.connect("activate", self.quitApp)
 		'''
-		
+		exitApp=widgets.toolbar.get_nth_item(0)
+		exitApp.connect("clicked", self.quitApp)
 		self.add(widgets.mainLayout)
 		
 	def quitApp(self, par):

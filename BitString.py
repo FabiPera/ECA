@@ -35,7 +35,7 @@ class BitString:
 	def setRandomBits(self, dens):
 		freq=0
 		while(freq < dens):
-			n=random.randint(0, self.length)
+			n=random.randint(0, self.length - 1)
 			if (self.bits[n] != 1):
 				self.bits[n]=1
 				freq += 1
@@ -65,7 +65,7 @@ class BitString:
 			n=(n // 2)
 			i += 1
 		i -= 1
-		print(b)
+		#print(b)
 		
 		while(j < size):
 			if(i >= 0):
