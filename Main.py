@@ -10,9 +10,9 @@ class Window(Gtk.ApplicationWindow):
 		widgets=Widgets()
 		self.set_default_size(500, 250)
 		self.set_resizable(False)
+		self.add(widgets.mainLayout)
 		exitApp=widgets.toolbar.get_nth_item(0)
 		exitApp.connect("clicked", self.quitApp)
-		self.add(widgets.mainLayout)
 		
 	def quitApp(self, par):
 		app.quit()

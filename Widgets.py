@@ -1,4 +1,7 @@
 import gi, sys, copy
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+import numpy as np
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from gi.repository import Gio
@@ -30,6 +33,9 @@ class Widgets():
 	entryStrLength = Gtk.Entry.new()
 	switchRandValue = 0
 	switchConfValue = 0
+	simulationWindow = Gtk.Window.new(0)
+	spinnerLayout = Gtk.Box(orientation=0)
+	spinner = Gtk.Spinner()
 	eca=ECA()
 	
 	def __init__(self):
@@ -97,9 +103,11 @@ class Widgets():
 		self.layout13.pack_start(self.entryCells, 1, 0, 10)
 		self.layout13.pack_start(labelDens, 1, 0, 10)
 		self.layout13.pack_start(self.entryPer, 1, 0, 10)
+		self.spinnerLayout.pack_start(self.spinner, 1, 0, 0)
 		self.tab1Layout.pack_start(self.layout11, 1, 0, 0)
 		self.tab1Layout.pack_start(self.layout12, 1, 0, 0)
 		self.tab1Layout.pack_start(self.layout13, 1, 0, 0)
+		self.tab1Layout.pack_start(self.spinnerLayout, 1, 0, 0)
 
 		self.switchRandConf.connect("notify::active", self.switchRandActivate)
 		self.switchStr.connect("notify::active", self.switchConfActivate)
@@ -181,6 +189,7 @@ class Widgets():
 		self.eca.setDamage()
 
 	def runSimulation(self, button):
+		self.spinner.start()
 		self.setSimulationSettings()
 		self.eca.createSimScreen("Simulation", self.eca.seedConfig.length*2, self.eca.steps*2)
 		for i in range(self.eca.steps):
@@ -188,12 +197,22 @@ class Widgets():
 			self.eca.t0=copy.deepcopy(self.eca.evolve(self.eca.t0))
 
 		self.eca.saveToPNG("Simulation.png")
+		
+		plt.title("Simulation")
+		imgSim=mpimg.imread("Simulation.png")
+		plt.imshow(imgSim)
+		plt.show()
+		self.spinner.stop()
+		
 
 	def runAnalysis(self, button):
 		self.setSimulationSettings()
 		self.setAnalysisSettings()
 		self.eca.createSimScreen("Damage simulation", self.eca.seedConfig.length*2, self.eca.steps*2)
-		avrl=0.0
+		hx=np.zeros(self.eca.steps, dtype=float)
+		le=np.zeros(self.eca.steps, dtype=float)
+		entFile=open("entFile.txt", "w")
+		lyapExpFile=open("lyapExp.txt", "w")
 		for i in range(self.eca.steps):
 			for j in range(self.eca.t0.length):
 				if (self.eca.t0.bits[j] ^ self.eca.tDam.bits[j]):
@@ -202,12 +221,26 @@ class Widgets():
 			if (i > 0):
 				lyapN=self.eca.countDefects()
 				lyapExp=self.eca.getLyapunovExp(lyapN, i)
-				print(lyapExp)
+				lyapExpFile.write(str(lyapExp) + "\n")
+				le[i]=lyapExp
 
 			self.eca.updateScreen(y=i, bitStr=self.eca.t0, dmgBitstr=self.eca.tDam)
-			self.eca.getTopEntropy(3)
+			self.eca.getTopEntropy()
+			entFile.write(str(self.eca.hX) + "\n")
+			hx[i]=self.eca.hX
 			self.eca.t0=copy.deepcopy(self.eca.evolve(self.eca.t0))
 			self.eca.tDam=copy.deepcopy(self.eca.evolve(self.eca.tDam))
 			#print(self.eca.hX)
-		print(avrl)
+
+		entFile.close()
+		lyapExpFile.close()
 		self.eca.saveToPNG("DamageSimulation.png")
+		
+		plt.title("Simulations")
+		plt.subplot(2, 1, 1)
+		imgSim=mpimg.imread("Simulation.png")
+		plt.imshow(imgSim)
+		plt.subplot(2, 1, 2)
+		imgDamSim=mpimg.imread("DamageSimulation.png")
+		plt.imshow(imgDamSim)
+		plt.show()
