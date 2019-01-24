@@ -1,4 +1,4 @@
-import gi, sys, copy
+import gi, sys, copy, subprocess, os
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
@@ -189,6 +189,7 @@ class Widgets():
 		self.eca.setDamage()
 
 	def runSimulation(self, button):
+		print("Simulation")
 		self.spinner.start()
 		self.setSimulationSettings()
 		self.eca.createSimScreen("Simulation", self.eca.seedConfig.length*2, self.eca.steps*2)
@@ -197,15 +198,12 @@ class Widgets():
 			self.eca.t0=copy.deepcopy(self.eca.evolve(self.eca.t0))
 
 		self.eca.saveToPNG("Simulation.png")
-		
-		plt.title("Simulation")
-		imgSim=mpimg.imread("Simulation.png")
-		plt.imshow(imgSim)
-		plt.show()
+		self.openImage("Simulation.png")
 		self.spinner.stop()
 		
-
 	def runAnalysis(self, button):
+		print("Analysis")
+		self.spinner.start()
 		self.setSimulationSettings()
 		self.setAnalysisSettings()
 		self.eca.createSimScreen("Damage simulation", self.eca.seedConfig.length*2, self.eca.steps*2)
@@ -213,16 +211,27 @@ class Widgets():
 		le=np.zeros(self.eca.steps, dtype=float)
 		entFile=open("entFile.txt", "w")
 		lyapExpFile=open("lyapExp.txt", "w")
+		lyapN0=1
 		for i in range(self.eca.steps):
+			#self.eca.damageFreq=np.zeros(self.eca.t0.length)
 			for j in range(self.eca.t0.length):
 				if (self.eca.t0.bits[j] ^ self.eca.tDam.bits[j]):
 					self.eca.damageFreq[j] += 1
 			
-			if (i > 0):
+			"""
+			if (i == 1):
 				lyapN=self.eca.countDefects()
-				lyapExp=self.eca.getLyapunovExp(lyapN, i)
+				dif0=abs(lyapN0 - lyapN)
+				lyapN0=lyapN
+
+			elif (i > 1):
+				lyapN=self.eca.countDefects()
+				difn=abs(lyapN0 - lyapN)
+				lyapExp=self.eca.getLyapunovExp(difn, dif0, i)
 				lyapExpFile.write(str(lyapExp) + "\n")
 				le[i]=lyapExp
+				lyapN0=lyapN
+			"""
 
 			self.eca.updateScreen(y=i, bitStr=self.eca.t0, dmgBitstr=self.eca.tDam)
 			self.eca.getTopEntropy()
@@ -230,17 +239,21 @@ class Widgets():
 			hx[i]=self.eca.hX
 			self.eca.t0=copy.deepcopy(self.eca.evolve(self.eca.t0))
 			self.eca.tDam=copy.deepcopy(self.eca.evolve(self.eca.tDam))
-			#print(self.eca.hX)
 
 		entFile.close()
 		lyapExpFile.close()
 		self.eca.saveToPNG("DamageSimulation.png")
-		
-		plt.title("Simulations")
-		plt.subplot(2, 1, 1)
-		imgSim=mpimg.imread("Simulation.png")
-		plt.imshow(imgSim)
-		plt.subplot(2, 1, 2)
-		imgDamSim=mpimg.imread("DamageSimulation.png")
-		plt.imshow(imgDamSim)
+		self.openImage("DamageSimulation.png")
+		self.spinner.stop()
+		plt.title("Entropy")
+		a=np.arange(self.eca.steps)
+		plt.scatter(a, y=hx, marker="s")
 		plt.show()
+
+	def openImage(self, filePath):
+		if sys.platform.startswith("darwin"):
+			subprocess.call(("open", filePath))
+		elif os.name == "nt":
+			os.startfile(filePath)
+		elif os.name == "posix":
+			subprocess.call(("xdg-open", filePath))

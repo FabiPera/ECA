@@ -102,8 +102,8 @@ class ECA:
 
 		return defects
 
-	def getLyapunovExp(self, a, b):
-		lyapExp=((1.0 / b) * math.log(a / b))
+	def getLyapunovExp(self, a, b, i):
+		lyapExp=((1.0 / i) * math.log(a / b))
 		#lyapExp=((1.0 / self.steps) * math.log(b / a))
 		return lyapExp
 
