@@ -17,6 +17,7 @@ class ECA:
 	t0Freq=0
 	damFreq=0
 	strProb=np.zeros(2 ** entStringLen, dtype=float)
+	lyapExp=np.zeros(21, dtype=float)
 	hX=0.0
 	#Pygame variables
 	cellColor=(0, 0, 0)
@@ -90,6 +91,7 @@ class ECA:
 	
 	def setDamage(self):
 		self.damageFreq=np.zeros(self.t0.length)
+		self.lyapExp=np.zeros(self.t0.length, dtype=float)
 		self.tDam=BitString(self.t0.length)
 		self.t0=copy.deepcopy(self.seedConfig)
 		self.tDam=copy.deepcopy(self.seedConfig)
@@ -100,12 +102,10 @@ class ECA:
 		for i in range(self.t0.length):
 			defects += self.damageFreq[i]
 
-		return defects
-
-	def getLyapunovExp(self, a, b, i):
-		lyapExp=((1.0 / i) * math.log(a / b))
-		#lyapExp=((1.0 / self.steps) * math.log(b / a))
-		return lyapExp
+	def getLyapunovExp(self, t):
+		for i in range(len(self.lyapExp)):
+			if(self.damageFreq[i] > 0):
+				self.lyapExp[i]=(1 / t) * (math.log(self.damageFreq[i]))
 
 	def getTopEntropy(self):
 		str=BitString(self.entStringLen)
@@ -126,6 +126,9 @@ class ECA:
 				theta += 1
 			
 		self.hX=((1.0 / self.entStringLen) * math.log(theta, 2))
+	
+	def getTempEntropy(self):
+		pass
 			
 '''
 print("Create ECA")

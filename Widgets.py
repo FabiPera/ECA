@@ -203,35 +203,20 @@ class Widgets():
 		
 	def runAnalysis(self, button):
 		print("Analysis")
+		entFile=open("entFile.txt", "w")
+		lyapExpFile=open("lyapExp.txt", "w")
 		self.spinner.start()
 		self.setSimulationSettings()
 		self.setAnalysisSettings()
 		self.eca.createSimScreen("Damage simulation", self.eca.seedConfig.length*2, self.eca.steps*2)
 		hx=np.zeros(self.eca.steps, dtype=float)
-		le=np.zeros(self.eca.steps, dtype=float)
-		entFile=open("entFile.txt", "w")
-		lyapExpFile=open("lyapExp.txt", "w")
-		lyapN0=1
 		for i in range(self.eca.steps):
-			#self.eca.damageFreq=np.zeros(self.eca.t0.length)
 			for j in range(self.eca.t0.length):
 				if (self.eca.t0.bits[j] ^ self.eca.tDam.bits[j]):
 					self.eca.damageFreq[j] += 1
 			
-			"""
-			if (i == 1):
-				lyapN=self.eca.countDefects()
-				dif0=abs(lyapN0 - lyapN)
-				lyapN0=lyapN
-
-			elif (i > 1):
-				lyapN=self.eca.countDefects()
-				difn=abs(lyapN0 - lyapN)
-				lyapExp=self.eca.getLyapunovExp(difn, dif0, i)
-				lyapExpFile.write(str(lyapExp) + "\n")
-				le[i]=lyapExp
-				lyapN0=lyapN
-			"""
+			if (i > 0):
+				self.eca.getLyapunovExp(i)
 
 			self.eca.updateScreen(y=i, bitStr=self.eca.t0, dmgBitstr=self.eca.tDam)
 			self.eca.getTopEntropy()
@@ -245,10 +230,28 @@ class Widgets():
 		self.eca.saveToPNG("DamageSimulation.png")
 		self.openImage("DamageSimulation.png")
 		self.spinner.stop()
+		fig=plt.figure() 
+		fig.canvas.set_window_title("Analysis") 
+		plt.subplot(2, 1, 1)
 		plt.title("Entropy")
 		a=np.arange(self.eca.steps)
-		plt.scatter(a, y=hx, marker="s")
+		plt.scatter(a, y=hx, marker=".")
+		plt.subplot(2, 1, 2)
+		plt.title("Lyapunov exponents")
+		b=np.arange(self.eca.t0.length)
+		plt.scatter(b, y=self.eca.lyapExp, marker=".")
 		plt.show()
+		"""
+		plt.title("Entropy")
+		a=np.arange(self.eca.steps)
+		plt.scatter(a, y=hx, marker=".")
+		plt.show()
+		
+		plt.title("Lyapunov exponents")
+		a=np.arange(self.eca.t0.length)
+		plt.scatter(a, y=self.eca.lyapExp, marker=".")
+		plt.show()
+		"""
 
 	def openImage(self, filePath):
 		if sys.platform.startswith("darwin"):
