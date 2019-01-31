@@ -1,9 +1,14 @@
-import subprocess, os, sys
+import matplotlib.pyplot as plt
+import numpy as np
 
-filepath="Simulation.png"
-if sys.platform.startswith("darwin"):
-	subprocess.call(("open", filepath))
-elif os.name == "nt": # For Windows
-	os.startfile(filepath)
-elif os.name == "posix": # For Linux, Mac, etc.
-	subprocess.call(("xdg-open", filepath))
+np.random.seed(19680801)
+data = np.random.random((50, 50, 50))
+
+fig, ax = plt.subplots()
+
+for i in range(len(data)):
+    ax.cla()
+    ax.imshow(data[i])
+    ax.set_title("frame {}".format(i))
+    # Note that using time.sleep does *not* work here!
+    plt.pause(0.1)
