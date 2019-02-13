@@ -8,7 +8,6 @@ class ECA:
 	seedConfig=BitString(21)
 	t0=BitString(21)
 	tDam=BitString(21)
-	frequencies=np.zeros(50, dtype=int)
 	damageFreq=np.zeros(21, dtype=int)
 	steps=0
 	denPer=0
@@ -17,11 +16,13 @@ class ECA:
 	t0Freq=0
 	damFreq=0
 	strProb=np.zeros(2 ** entStringLen, dtype=float)
+	dmgR=np.zeros(2, dtype=int)
 	lyapExp=np.zeros(21, dtype=float)
 	hX=0.0
 	#Pygame variables
 	cellColor=(0, 0, 0)
 	bckgColor=(255, 255, 255)
+	bckgGColor=(160, 160, 160)
 	defectColor=(255, 0, 0)
 	screen=pygame.Surface((0, 0))
 
@@ -31,7 +32,6 @@ class ECA:
 		self.seedConfig=BitString(l)
 		self.t0=BitString(l)
 		self.tDam=BitString(l)
-		self.frequencies=np.zeros(self.steps)
 		self.damaFreq=np.zeros(l)
 
 	def setT0(self, str0, oz):
@@ -79,11 +79,27 @@ class ECA:
 				if (bitStr.bits[i] ^ dmgBitstr.bits[i]):
 					self.screen.fill(self.defectColor, (x, y, 2, 2))
 				else:
-					if bitStr.bits[i]:
+					if dmgBitstr.bits[i]:
 						self.screen.fill(self.cellColor, (x, y, 2, 2))
 					else:
 						self.screen.fill(self.bckgColor, (x, y, 2, 2))
 			x += 2
+
+	def drawCone(self, dmgBitstr, y):
+		if (y == 0):
+			if dmgBitstr.bits[self.dmgPos]:
+				self.screen.fill(self.cellColor, (self.dmgPos * 2, 0, 2, 2))
+			else:
+				self.screen.fill(self.bckgColor, (self.dmgPos * 2, 0, 2, 2))
+		else:
+			y *= 2
+			x=self.dmgR[0]
+			for i in range(self.dmgR[0], self.dmgR[1] + 1):
+				if dmgBitstr.bits[i]:
+					self.screen.fill(self.cellColor, (x * 2, y, 2, 2))
+				else:
+					self.screen.fill(self.bckgColor, (x * 2, y, 2, 2))
+				x += 1
 
 	def saveToPNG(self, file):
 		pygame.image.save(self.screen, file)
@@ -97,10 +113,33 @@ class ECA:
 		self.tDam=copy.deepcopy(self.seedConfig)
 		self.tDam.bits[self.dmgPos]=not(self.tDam.bits[self.dmgPos])
 
+	def getConeRatio(self, t, y):
+		if (y == 0):
+			self.dmgR[0]=self.dmgPos
+			self.dmgR[1]=self.dmgPos
+		else:
+			i=0
+			while(i < self.dmgPos):
+				if (self.t0.bits[i] ^ t.bits[i]):
+					self.dmgR[0]=i
+					break
+				else:
+					i += 1
+
+			i=self.t0.length - 1
+			while(i > self.dmgPos):
+				if (self.t0.bits[i] ^ t.bits[i]):
+					self.dmgR[1]=i
+					break
+				else:
+					i -= 1
+
+			if ((self.dmgR[1] - self.dmgR[0]) > (2 * y)):
+				self.dmgR[0]=self.dmgPos
+		
 	def countDefects(self):
-		defects=0
-		for i in range(self.t0.length):
-			defects += self.damageFreq[i]
+		for x in range(self.dmgR[0], self.dmgR[1]):
+			self.damageFreq[x] += 1
 
 	def getLyapunovExp(self, t):
 		for i in range(len(self.lyapExp)):
@@ -126,9 +165,7 @@ class ECA:
 				theta += 1
 			
 		self.hX=((1.0 / self.entStringLen) * math.log(theta, 2))
-	
-	def getTempEntropy(self):
-		pass
+
 			
 '''
 print("Create ECA")

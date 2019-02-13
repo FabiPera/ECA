@@ -188,6 +188,10 @@ class Widgets():
 		self.eca.entStringLen=strLen
 		self.eca.setDamage()
 
+	def saveSettings(self):
+		pass
+		#Dlg=gtk.FileChooserDialog(title="Save", parent=None, action = gtk.FILE_CHOOSER_ACTION_SAVE,  buttons=None, backend=None)
+
 	def runSimulation(self, button):
 		print("Simulation")
 		self.spinner.start()
@@ -210,14 +214,8 @@ class Widgets():
 		self.setAnalysisSettings()
 		self.eca.createSimScreen("Damage simulation", self.eca.seedConfig.length*2, self.eca.steps*2)
 		hx=np.zeros(self.eca.steps, dtype=float)
+		
 		for i in range(self.eca.steps):
-			for j in range(self.eca.t0.length):
-				if (self.eca.t0.bits[j] ^ self.eca.tDam.bits[j]):
-					self.eca.damageFreq[j] += 1
-			
-			if (i > 0):
-				self.eca.getLyapunovExp(i)
-
 			self.eca.updateScreen(y=i, bitStr=self.eca.t0, dmgBitstr=self.eca.tDam)
 			self.eca.getTopEntropy()
 			entFile.write(str(self.eca.hX) + "\n")
@@ -230,27 +228,34 @@ class Widgets():
 		self.eca.saveToPNG("DamageSimulation.png")
 		self.openImage("DamageSimulation.png")
 		self.spinner.stop()
+
+		self.setSimulationSettings()
+		self.setAnalysisSettings()
+		self.eca.createSimScreen("Damage Cone", self.eca.seedConfig.length*2, self.eca.steps*2)
+		self.eca.screen.fill(self.eca.bckgGColor)
+		for i in range(self.eca.steps):
+			self.eca.getConeRatio(self.eca.tDam, i)
+			self.eca.drawCone(self.eca.tDam, i)
+			self.eca.t0=copy.deepcopy(self.eca.evolve(self.eca.t0))
+			self.eca.tDam=copy.deepcopy(self.eca.evolve(self.eca.tDam))
+
+		self.eca.saveToPNG("DamageCone.png")
+		self.openImage("DamageCone.png")
+
+
+		"""
 		fig=plt.figure() 
 		fig.canvas.set_window_title("Analysis") 
 		plt.subplot(2, 1, 1)
 		plt.title("Entropy")
 		a=np.arange(self.eca.steps)
-		plt.scatter(a, y=hx, marker=".")
+		plt.plot(a, hx, marker=".", linestyle="")
 		plt.subplot(2, 1, 2)
 		plt.title("Lyapunov exponents")
 		b=np.arange(self.eca.t0.length)
-		plt.scatter(b, y=self.eca.lyapExp, marker=".")
+		plt.plot(b, self.eca.lyapExp, marker=".", linestyle="")
 		plt.show()
-		"""
-		plt.title("Entropy")
-		a=np.arange(self.eca.steps)
-		plt.scatter(a, y=hx, marker=".")
-		plt.show()
-		
-		plt.title("Lyapunov exponents")
-		a=np.arange(self.eca.t0.length)
-		plt.scatter(a, y=self.eca.lyapExp, marker=".")
-		plt.show()
+		0101101110010010001
 		"""
 
 	def openImage(self, filePath):
