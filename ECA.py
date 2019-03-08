@@ -1,30 +1,64 @@
 import numpy as np, copy, math, sys, pygame
+from numba import jit, int32
 from pygame.locals import *
 from BitString import BitString
 
 class ECA:
-	
+
+	"""
+	ECA object contains the representation of a Elementary Cellular Automata.
+
+	Parameters
+	----------
+		r : int
+			Value of the rule.
+		s : int
+			Number of steps for the evolution.
+		l : int
+			Number of cells in the configuration.
+
+	Attributes
+	----------
+		steps : int
+			Number of steps for the evolution of the ECA.
+		denPer : int
+			Percentage of cells with value 1 in the global configuration.
+		dmgPos : int
+			Position of the introduced defect.
+		hx : float
+			Entropy value.
+		entStringLen: int
+			Length of the strings for entropy calculation.
+		rule : BitString
+			Base 2 representation of the rule.
+		seedConfig : BitString 
+			Global configuration of the ECA.
+		t0 : BitString
+			Configuration to evolve.
+		tDam : BitString
+			Configuration to evolve with one defect introduced.
+		damageFreq : numpy array
+			Array to track the damage spreading along the time.
+		strProb : numpy array
+			Array to count the probability of strings.
+		dmgR : numpy array
+			Ratio of the damage cone in the current configuration.
+		lyapExp : numpy array
+			Values of the Lyapunov exponents of each cell.
+	"""
+	steps=0
+	denPer=0
+	dmgPos=0
+	hX=0.0
+	entStringLen=3
 	rule=BitString(8)
 	seedConfig=BitString(21)
 	t0=BitString(21)
 	tDam=BitString(21)
 	damageFreq=np.zeros(21, dtype=int)
-	steps=0
-	denPer=0
-	dmgPos=0
-	entStringLen=3
-	t0Freq=0
-	damFreq=0
 	strProb=np.zeros(2 ** entStringLen, dtype=float)
 	dmgR=np.zeros(2, dtype=int)
 	lyapExp=np.zeros(21, dtype=float)
-	hX=0.0
-	#Pygame variables
-	cellColor=(0, 0, 0)
-	bckgColor=(255, 255, 255)
-	bckgGColor=(160, 160, 160)
-	defectColor=(255, 0, 0)
-	screen=pygame.Surface((0, 0))
 
 	def __init__(self, r=94, s=512, l=1024):
 		self.rule.bsFromInt(r)
@@ -32,21 +66,48 @@ class ECA:
 		self.seedConfig=BitString(l)
 		self.t0=BitString(l)
 		self.tDam=BitString(l)
-		self.damaFreq=np.zeros(l)
+		self.damageFreq=np.zeros(l)
 
 	def setT0(self, str0, oz):
+		"""
+		Initialize the seed configuration from a string.
+
+		Parameters
+		----------
+			str0 : string
+				Seed string to initalize the configuration.
+			oz : int
+				Value for fill the seed configuration (0 or 1).
+		"""
 		if (oz):
 			self.seedConfig.bits=np.ones(self.seedConfig.length, dtype=int)
 
-		self.seedConfig.setStringBits(str0)
+		self.seedConfig.bsFromString(str0)
 		self.t0=copy.deepcopy(self.seedConfig)
 
 	def setRandomT0(self):
+		"""
+		Initialize a random seed configuration.
+		"""
 		dens=((self.denPer * self.t0.length) // 100)
-		self.seedConfig.setRandomBits(dens)
+		self.seedConfig.bsFromRandomVal(dens)
 		self.t0=copy.deepcopy(self.seedConfig)
 
+	
 	def evolve(self, t0):
+		"""
+		Evolve a configuration with the ECA rule.
+		
+		Parameters
+		----------
+			t0 : BitString
+				Configuration to evolve.
+
+		Returns
+		-------
+			t1 : BitString
+				Configuration evolved.
+		"""
 		t1=BitString(t0.length)
 		n=0
 		neighb=BitString(3)
@@ -62,62 +123,16 @@ class ECA:
 
 		return t1
 	
-	def createSimScreen(self, hStr, width, height):
-		self.screen=pygame.Surface((width, height))
-		self.screen.fill(self.bckgColor)
-
-	def updateScreen(self, y, bitStr=None, dmgBitstr=None):
-		y *= 2
-		x=0
-		for i in range(bitStr.length):
-			if (dmgBitstr == None):
-				if bitStr.bits[i]:
-					self.screen.fill(self.cellColor, (x, y, 2, 2))
-				else:
-					self.screen.fill(self.bckgColor, (x, y, 2, 2))
-			else:
-				if (bitStr.bits[i] ^ dmgBitstr.bits[i]):
-					self.screen.fill(self.defectColor, (x, y, 2, 2))
-				else:
-					if dmgBitstr.bits[i]:
-						self.screen.fill(self.cellColor, (x, y, 2, 2))
-					else:
-						self.screen.fill(self.bckgColor, (x, y, 2, 2))
-			x += 2
-
-	def drawCone(self, dmgBitstr, y):
-		if (y == 0):
-			if dmgBitstr.bits[self.dmgPos]:
-				self.screen.fill(self.cellColor, (self.dmgPos * 2, 0, 2, 2))
-			else:
-				self.screen.fill(self.bckgColor, (self.dmgPos * 2, 0, 2, 2))
-		else:
-			y *= 2
-			x=self.dmgR[0]
-			for i in range(self.dmgR[0], self.dmgR[1] + 1):
-				if dmgBitstr.bits[i]:
-					self.screen.fill(self.cellColor, (x * 2, y, 2, 2))
-				else:
-					self.screen.fill(self.bckgColor, (x * 2, y, 2, 2))
-				x += 1
-
-	def saveToPNG(self, file):
-		pygame.image.save(self.screen, file)
-		print("Simulation saved")
-	
 	def setDamage(self):
-		self.damageFreq=np.zeros(self.t0.length)
 		self.lyapExp=np.zeros(self.t0.length, dtype=float)
-		self.tDam=BitString(self.t0.length)
 		self.t0=copy.deepcopy(self.seedConfig)
 		self.tDam=copy.deepcopy(self.seedConfig)
 		self.tDam.bits[self.dmgPos]=not(self.tDam.bits[self.dmgPos])
 
 	def getConeRatio(self, t, y):
-		if (y == 0):
-			self.dmgR[0]=self.dmgPos
-			self.dmgR[1]=self.dmgPos
-		else:
+		self.dmgR[0]=self.dmgPos
+		self.dmgR[1]=self.dmgPos
+		if(y > 0):
 			i=0
 			while(i < self.dmgPos):
 				if (self.t0.bits[i] ^ t.bits[i]):
@@ -125,7 +140,6 @@ class ECA:
 					break
 				else:
 					i += 1
-
 			i=self.t0.length - 1
 			while(i > self.dmgPos):
 				if (self.t0.bits[i] ^ t.bits[i]):
@@ -133,13 +147,15 @@ class ECA:
 					break
 				else:
 					i -= 1
-
 			if ((self.dmgR[1] - self.dmgR[0]) > (2 * y)):
 				self.dmgR[0]=self.dmgPos
 		
 	def countDefects(self):
-		for x in range(self.dmgR[0], self.dmgR[1]):
-			self.damageFreq[x] += 1
+		if (self.dmgR[0] == self.dmgR[1]):
+			self.damageFreq[self.dmgPos] += 1
+		else:
+			for x in range(self.dmgR[0], self.dmgR[1] + 1):
+				self.damageFreq[x] += 1
 
 	def getLyapunovExp(self, t):
 		for i in range(len(self.lyapExp)):
@@ -165,37 +181,3 @@ class ECA:
 				theta += 1
 			
 		self.hX=((1.0 / self.entStringLen) * math.log(theta, 2))
-
-			
-'''
-print("Create ECA")
-eca=ECA(94, 512, 1024)
-eca.setT0("11111", 0)
-print(eca.seedConfig)
-eca.dmgPos=513
-#eca.dmgPos=510
-#eca.dmgPos=511
-#eca.dmgPos=512
-#eca.dmgPos=513
-eca.setDamage()
-print(eca.rule)
-eca.createSimScreen("Simulation", eca.seedConfig.length*2, eca.steps*2)
-for i in range(eca.steps):
-	for j in range(eca.t0.length):
-		if (eca.t0.bits[j] ^ eca.tDam.bits[j]):
-			eca.damageFreq[j] += 1
-	
-	if (i > 0):
-		lyapN=eca.countDefects()
-		lyapExp=eca.getLyapunovExp(1, lyapN)
-		#print(lyapExp)
-
-	eca.updateScreen(y=i, bitStr=eca.t0, dmgBitstr=eca.tDam)
-	eca.getTopEntropy(3)
-	#print(eca.tDam)
-	eca.t0=copy.deepcopy(eca.evolve(eca.t0))
-	eca.tDam=copy.deepcopy(eca.evolve(eca.tDam))
-	#print(eca.hX)
-
-eca.saveToPNG("Simulation18Dam5.png")
-'''

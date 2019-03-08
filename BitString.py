@@ -1,41 +1,48 @@
-import numpy as np, copy, random
+import numpy as np, copy, random, math
+from numba import njit
 
 class BitString:
-	
 	"""
+	The BitString object contains the representation in base 2 of a base 10 number.
+
+	Parameters
+	----------
+	l : int 
+		Length of the bitstring.
+
 	Attributes
 	----------
-		bits : numpy array
-			contains the values of the bitstring
-		length : int 
-			length of the bitstring
+	bits : unsigned int8 array.
+		Contains the values of the bitstring.
+	length : int 
+		Length of the bitstring.
 	"""
-	bits=np.zeros(8, dtype=int)
+	bits=np.zeros(8, dtype=np.uint8)
 	length=8
 
 	def __init__(self, l):
-		self.bits=np.zeros(l, dtype=int)
+		self.bits=np.zeros(l, dtype=np.uint8)
 		self.length=l
 
 	def bsFromInt(self, n):
 		"""
-		Initialize the bitstring from a number in base 10
+		Initialize the bitstring from a base 10 number.
 
 		Parameters
 		----------
-			n : int
-				number in base 10 to convert
+		n : int
+			Base 10 number to convert.
 		"""
 		self.bits=self.intToBin(n, self.length)
 
-	def setStringBits(self, str):
+	def bsFromString(self, str):
 		"""
 		Initialize the bitstring from a string.
 
 		Parameters
 		----------
-			str : string
-				string with the values for the bitstring.
+		str : string
+			String with the values for the bitstring.
 		"""
 		x=self.length - len(str)
 		x=x // 2
@@ -45,16 +52,16 @@ class BitString:
 			else:
 				self.bits[x + i]=0
 
-	def setRandomBits(self, dens):
+	def bsFromRandomVal(self, dens):
 		"""
 		Initialize the bitstring with a random configuration.
 
 		Parameters
 		----------
-			dens : int
-				density of 1 values in the bitstring.
+		dens : int
+			Density of 1 values in the bitstring.
 		"""
-		self.bits=np.ones(self.length, dtype=int)
+		self.bits=np.ones(self.length, dtype=np.uint8)
 		freq=self.length
 		while(freq > dens):
 			n=random.randint(0, self.length - 1)
@@ -62,34 +69,19 @@ class BitString:
 				self.bits[n]=0
 				freq -= 1
 
-	def __str__(self):
-		"""
-		Get the string form of a bitstring
-
-		Returns
-		-------
-			string
-				string from the values of the bitstring numpy array
-		"""
-		string=""
-		for i in range(self.length):
-			string=string+str(self.bits[i])
-		
-		return string
-
 	def getValue(self, i):
 		"""
-		Get the value of the element in certain position
+		Get the value of the element in certain position.
 
 		Parameters
 		----------
-			i : int
-				position of the element.
+		i : int
+			Position of the element.
 
 		Returns
 		-------
-			bits[mod(i)]
-				the element in the position mod(i) (gets the module of i due to ring condition)
+		bits[mod(i)]
+			The element in the position mod(i) (gets the module of i due to ring condition).
 		"""
 		n=self.mod(i)
 		return self.bits[n]
@@ -101,22 +93,22 @@ class BitString:
 
 		Parameters
 		----------
-			n : int
-				number to get the module.
+		n : int
+			Number to get the module.
 		"""
 		if (n < 0):
 			return self.length + n
 		else:
 			return n % self.length
-	
+
 	def binToInt(self):
 		"""
 		Get the base 10 value of the bitstring.
 
 		Returns
 		-------
-			n : int
-				base 10 value of the bitstring.
+		n : int
+			Base 10 value of the bitstring.
 		"""
 		n=0
 		for i in range(self.length):
@@ -131,51 +123,25 @@ class BitString:
 
 		Parameters
 		----------
-			n : int
-				decimal number to convert.
-			size : int
-				number of bits for the bitstring.
-		
+		n : int
+			Base 10 number to convert.
+		size : int
+			Number of bits for the bitstring.
 		Returns
 		-------
-			bits : numpy array
-				base 2 value of the base 10 number n.
+		bits :
+			Base 2 value of the base 10 number n.
 		"""
-		b=np.zeros(size, dtype=int)
-		bits=np.zeros(size, dtype=int)
-		i=0
-		j=0
-		while(n):
-			b[i]=(n % 2)
-			n=(n // 2)
-			i += 1
-		i -= 1
-		
-		while(j < size):
-			if(i >= 0):
-				bits[i]=b[i]
-				i -= 1
-			j += 1
+		if(n):
+			binstr=np.base_repr(n, base=2)
+			binstr=np.base_repr(n, base=2, padding=(size - len(binstr)))
+			bits=np.zeros(size, dtype=np.uint8)
+			x=size - 1
+			for i in range(size):
+				if(binstr[i] == '1'):
+					bits[x]=1
+				x -= 1
+		else:
+			bits=np.zeros(size, dtype=np.uint8)
 
 		return bits
-
-'''
-print("Create BitString")
-bitS=BitString(8)
-print(bitS)
-print("Set BitString int value")
-bitS.bsFromInt(10)
-print(bitS)
-print(bitS.binToInt())
-
-config=BitString(50)
-dens=(50 * 50) // 100
-config.setRandomBits(dens)
-print(config)
-
-configStr=BitString(10)
-configStr.setStringBits("0111101010")
-print(configStr)
-00000000000000000000000
-000000000000000000000000
-'''
