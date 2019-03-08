@@ -159,7 +159,7 @@ static void drawDamSimulation(cairo_t* cr, ECA eca){
 
 static void drawSimulation(cairo_t *cr, ECA eca){
 	int x=0, y=0;
-	hXValuesFile.open("hXValuestxt");
+	hXValuesFile.open("hXValues.txt");
 	eca.t0=eca.seedConfig;
 	cairo_set_line_width(cr, 0);
 	for(int i=0; i < eca.steps; i++){		

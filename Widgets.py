@@ -1,14 +1,28 @@
-import gi, sys, copy, subprocess, os
+import gi, sys, copy, subprocess, os, pygame
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from gi.repository import Gio
+from pygame.locals import *
 from ECA import ECA
 
 class Widgets():
-	
+	"""
+	Attributes
+	----------
+		cellColor : tuple
+			RGB values to draw cells in state 1.
+		bckgColor : tuple
+			RGB values to draw background and cells in state 0.
+		bckgGColor : tuple
+			RGB values to draw background of the damage cone.
+		defectColor : tuple
+			RGB values to draw cells with state change.
+		screen : pygame Surface
+			Surface to draw simulations. 
+	"""
 	mainLayout = Gtk.Box(orientation=1)
 	toolbarLayout = Gtk.Box(orientation=0)
 	tabViewLayout = Gtk.Box(orientation=0, spacing=30)
@@ -37,6 +51,12 @@ class Widgets():
 	spinnerLayout = Gtk.Box(orientation=0)
 	spinner = Gtk.Spinner()
 	eca=ECA()
+	#Pygame variables
+	cellColor=(0, 0, 0)
+	bckgColor=(255, 255, 255)
+	bckgGColor=(160, 160, 160)
+	defectColor=(255, 0, 0)
+	screen=pygame.Surface((0, 0))
 	
 	def __init__(self):
 		self.createToolbar()
@@ -188,52 +208,35 @@ class Widgets():
 		self.eca.entStringLen=strLen
 		self.eca.setDamage()
 
+	def saveSettings(self):
+		pass
+		#Dlg=gtk.FileChooserDialog(title="Save", parent=None, action = gtk.FILE_CHOOSER_ACTION_SAVE,  buttons=None, backend=None)
+
 	def runSimulation(self, button):
 		print("Simulation")
 		self.spinner.start()
 		self.setSimulationSettings()
-		self.eca.createSimScreen("Simulation", self.eca.seedConfig.length*2, self.eca.steps*2)
+		self.createSimScreen(self.eca.seedConfig.length*2, self.eca.steps*2)
 		for i in range(self.eca.steps):
-			self.eca.updateScreen(y=i, bitStr=self.eca.t0, dmgBitstr=None)
+			self.drawConfiguration(y=i, bitStr=self.eca.t0, dmgBitstr=None)
 			self.eca.t0=copy.deepcopy(self.eca.evolve(self.eca.t0))
 
-		self.eca.saveToPNG("Simulation.png")
+		self.saveToPNG(self.screen, "Simulation.png")
 		self.openImage("Simulation.png")
 		self.spinner.stop()
 		
 	def runAnalysis(self, button):
 		print("Analysis")
+		entFile=open("entFile.txt", "w")
+		lyapExpFile=open("lyapExp.txt", "w")
 		self.spinner.start()
 		self.setSimulationSettings()
 		self.setAnalysisSettings()
-		self.eca.createSimScreen("Damage simulation", self.eca.seedConfig.length*2, self.eca.steps*2)
+		self.createSimScreen(self.eca.seedConfig.length*2, self.eca.steps*2)
 		hx=np.zeros(self.eca.steps, dtype=float)
-		le=np.zeros(self.eca.steps, dtype=float)
-		entFile=open("entFile.txt", "w")
-		lyapExpFile=open("lyapExp.txt", "w")
-		lyapN0=1
+		
 		for i in range(self.eca.steps):
-			#self.eca.damageFreq=np.zeros(self.eca.t0.length)
-			for j in range(self.eca.t0.length):
-				if (self.eca.t0.bits[j] ^ self.eca.tDam.bits[j]):
-					self.eca.damageFreq[j] += 1
-			
-			"""
-			if (i == 1):
-				lyapN=self.eca.countDefects()
-				dif0=abs(lyapN0 - lyapN)
-				lyapN0=lyapN
-
-			elif (i > 1):
-				lyapN=self.eca.countDefects()
-				difn=abs(lyapN0 - lyapN)
-				lyapExp=self.eca.getLyapunovExp(difn, dif0, i)
-				lyapExpFile.write(str(lyapExp) + "\n")
-				le[i]=lyapExp
-				lyapN0=lyapN
-			"""
-
-			self.eca.updateScreen(y=i, bitStr=self.eca.t0, dmgBitstr=self.eca.tDam)
+			self.drawConfiguration(y=i, bitStr=self.eca.t0, dmgBitstr=self.eca.tDam)
 			self.eca.getTopEntropy()
 			entFile.write(str(self.eca.hX) + "\n")
 			hx[i]=self.eca.hX
@@ -242,13 +245,89 @@ class Widgets():
 
 		entFile.close()
 		lyapExpFile.close()
-		self.eca.saveToPNG("DamageSimulation.png")
+		self.saveToPNG(self.screen, "DamageSimulation.png")
 		self.openImage("DamageSimulation.png")
 		self.spinner.stop()
-		plt.title("Entropy")
-		a=np.arange(self.eca.steps)
-		plt.scatter(a, y=hx, marker="s")
-		plt.show()
+
+		self.setSimulationSettings()
+		self.setAnalysisSettings()
+		self.createSimScreen(self.eca.seedConfig.length*2, self.eca.steps*2)
+		self.screen.fill(self.bckgGColor)
+		for i in range(self.eca.steps):
+			self.eca.getConeRatio(self.eca.tDam, i)
+			self.drawCone(self.eca.tDam, i)
+			self.eca.countDefects()
+			self.eca.t0=copy.deepcopy(self.eca.evolve(self.eca.t0))
+			self.eca.tDam=copy.deepcopy(self.eca.evolve(self.eca.tDam))
+
+		print(self.eca.damageFreq)
+
+		self.saveToPNG(self.screen, "DamageCone.png")
+		self.openImage("DamageCone.png")
+
+	def createSimScreen(self, width, height):
+		"""
+		Initialize the surface for draw simulations.
+		
+		Parameters
+		----------
+			width : int
+				Length of width in pixels.
+			height : int
+				Length of height in pixels.
+		"""
+		self.screen=pygame.Surface((width, height))
+		self.screen.fill(self.bckgColor)
+
+	def drawConfiguration(self, y, bitStr=None, dmgBitstr=None):
+		"""
+		Draw the next step of the evolution in the simulation screen.
+
+		Parameters
+		----------
+			y : int
+				Step of the evolution.
+			bitStr : BitString
+				Configuration to draw.
+			dmgBitstr : BitString
+		"""
+		y *= 2
+		x=0
+		for i in range(bitStr.length):
+			if (dmgBitstr == None):
+				if bitStr.bits[i]:
+					self.screen.fill(self.cellColor, (x, y, 2, 2))
+				else:
+					self.screen.fill(self.bckgColor, (x, y, 2, 2))
+			else:
+				if (bitStr.bits[i] ^ dmgBitstr.bits[i]):
+					self.screen.fill(self.defectColor, (x, y, 2, 2))
+				else:
+					if dmgBitstr.bits[i]:
+						self.screen.fill(self.cellColor, (x, y, 2, 2))
+					else:
+						self.screen.fill(self.bckgColor, (x, y, 2, 2))
+			x += 2
+
+	def drawCone(self, dmgBitstr, y):
+		if (y == 0):
+			if dmgBitstr.bits[self.eca.dmgPos]:
+				self.screen.fill(self.cellColor, (self.eca.dmgPos * 2, 0, 2, 2))
+			else:
+				self.screen.fill(self.bckgColor, (self.eca.dmgPos * 2, 0, 2, 2))
+		else:
+			y *= 2
+			x=self.eca.dmgR[0]
+			for i in range(self.eca.dmgR[0], self.eca.dmgR[1] + 1):
+				if dmgBitstr.bits[i]:
+					self.screen.fill(self.cellColor, (x * 2, y, 2, 2))
+				else:
+					self.screen.fill(self.bckgColor, (x * 2, y, 2, 2))
+				x += 1
+	
+	def saveToPNG(self, screen, path):
+		pygame.image.save(screen, path)
+		print("Simulation saved")
 
 	def openImage(self, filePath):
 		if sys.platform.startswith("darwin"):
@@ -257,3 +336,6 @@ class Widgets():
 			os.startfile(filePath)
 		elif os.name == "posix":
 			subprocess.call(("xdg-open", filePath))
+
+
+	#0101101110010010001
