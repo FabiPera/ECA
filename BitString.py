@@ -1,5 +1,4 @@
 import numpy as np, copy, random, math
-from numba import njit
 
 class BitString:
 	"""
@@ -7,7 +6,7 @@ class BitString:
 
 	Parameters
 	----------
-	l : int 
+	length : int 
 		Length of the bitstring.
 
 	Attributes
@@ -20,9 +19,9 @@ class BitString:
 	bits=np.zeros(8, dtype=np.uint8)
 	length=8
 
-	def __init__(self, l):
-		self.bits=np.zeros(l, dtype=np.uint8)
-		self.length=l
+	def __init__(self, length=8):
+		self.bits=np.zeros(length, dtype=np.uint8)
+		self.length=length
 
 	def bsFromInt(self, n):
 		"""
