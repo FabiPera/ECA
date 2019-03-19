@@ -16,37 +16,16 @@ class ECA:
 
 	Attributes
 	----------
-		steps : int
-			Number of steps for the evolution of the ECA.
 		denPer : int
 			Percentage of cells with value 1 in the global configuration.
-		dmgPos : int
-			Position of the introduced defect.
-		hx : float
-			Entropy value.
-		entStringLen: int
-			Length of the strings for entropy calculation.
 		rule : BitString
 			Base 2 representation of the rule.
 		initConf : BitString 
-			Global configuration of the ECA.
+			Initial configuration of the ECA.
 		currentConf : BitString
 			Configuration to evolve.
-		tDam : BitString
-			Configuration to evolve with one defect introduced.
-		damageFreq : numpy array
-			Array to track the damage spreading along the time.
-		strProb : numpy array
-			Array to count the probability of strings.
-		dmgR : numpy array
-			Ratio of the damage cone in the current configuration.
-		lyapExp : numpy array
-			Values of the Lyapunov exponents of each cell.
 	"""
 	denPer=0
-	dmgPos=0
-	hX=0.0
-	entStringLen=3
 	rule=BitString()
 	initConf=BitString()
 	currentConf=BitString()
@@ -55,12 +34,10 @@ class ECA:
 		self.rule.bsFromInt(rule)
 		self.initConf=BitString(length)
 		self.currentConf=BitString(length)
-		self.tDam=BitString(length)
-		self.damageFreq=np.zeros(length)
 
 	def setInitConf(self, seed, oz):
 		"""
-		Initialize the seed configuration from a string.
+		Initialize the configuration from a string.
 
 		Parameters
 		----------
@@ -77,7 +54,7 @@ class ECA:
 
 	def setRandInitConf(self):
 		"""
-		Initialize a random seed configuration.
+		Initialize a random configuration.
 		"""
 		dens=((self.denPer * self.currentConf.length) // 100)
 		self.initConf.bsFromRandomVal(dens)
@@ -112,4 +89,3 @@ class ECA:
 				tn.bits[i]=0
 
 		return tn
-

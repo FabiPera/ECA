@@ -3,7 +3,7 @@ from pygame.locals import *
 from BitString import BitString
 
 class SimScreen:
-	
+
 	width=0
 	height=0
 	cellColor=(0, 0, 0)
