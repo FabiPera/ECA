@@ -1,7 +1,4 @@
-import gi, sys, copy, subprocess, os, pygame
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-import numpy as np
+import gi, sys, copy, subprocess, os, pygame, matplotlib.pyplot as plt, numpy as np
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from gi.repository import Gio
@@ -261,6 +258,12 @@ class Widgets():
 			self.eca.tDam=copy.deepcopy(self.eca.evolve(self.eca.tDam))
 
 		print(self.eca.damageFreq)
+		self.eca.getLyapunovExp(self.eca.steps)
+		print(self.eca.lyapExp)
+
+		x=np.arange(self.eca.seedConfig.length)
+		plt.plot(self.eca.lyapExp, marker='.')
+		plt.show()
 
 		self.saveToPNG(self.screen, "DamageCone.png")
 		self.openImage("DamageCone.png")
