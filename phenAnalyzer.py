@@ -9,12 +9,12 @@ class PhenAnalyzer:
 
 	dfctPos=0
 	strLength=3
-	tn=BitString()
 	dmgFreq=np.zeros(8, dtype=np.uint8)
 	lyapExp=np.zeros(8, dtype=float)
 	dmgRad=np.zeros(2, dtype=np.uint8)
 	strProb=np.zeros(2 ** strLength, dtype=float)
 	sim=Simulation()
+	damSim=Simulation()
 
 	def __init__(self, dfctPos=0, strLength=3):
 		self.dfctPos=dfctPos

@@ -22,18 +22,14 @@ class ECA:
 			Base 2 representation of the rule.
 		initConf : BitString 
 			Initial configuration of the ECA.
-		currentConf : BitString
-			Configuration to evolve.
 	"""
 	denPer=0
 	rule=BitString()
 	initConf=BitString()
-	currentConf=BitString()
 
 	def __init__(self, rule=0, length=8):
 		self.rule.bsFromInt(rule)
 		self.initConf=BitString(length)
-		self.currentConf=BitString(length)
 
 	def setInitConf(self, seed, oz):
 		"""
@@ -47,19 +43,16 @@ class ECA:
 				Value for fill the initial configuration (0 or 1).
 		"""
 		if (oz):
-			self.initConf.bits=np.ones(self.initConf.length, dtype=int)
+			self.initConf.bits=np.ones(len(self.initConf), dtype=int)
 
 		self.initConf.bsFromString(seed)
-		self.currentConf=copy.deepcopy(self.initConf)
 
 	def setRandInitConf(self):
 		"""
 		Initialize a random configuration.
 		"""
-		dens=((self.denPer * self.currentConf.length) // 100)
+		dens=((self.denPer * len(self.initConf)) // 100)
 		self.initConf.bsFromRandomVal(dens)
-		self.currentConf=copy.deepcopy(self.initConf)
-
 	
 	def evolve(self, t):
 		"""
@@ -75,10 +68,10 @@ class ECA:
 			tn : BitString
 				Configuration evolved.
 		"""
-		tn=BitString(t.length)
+		tn=BitString(len(t))
 		n=0
 		neighb=BitString(3)
-		for i in range(t.length):
+		for i in range(len(t)):
 			neighb.bits[2]=t.getValue(i - 1)
 			neighb.bits[1]=t.getValue(i)
 			neighb.bits[0]=t.getValue(i + 1)
