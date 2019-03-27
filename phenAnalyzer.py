@@ -1,4 +1,4 @@
-import numpy as np, copy, math, sys, pygame, subprocess, os
+import numpy as np, copy
 from pygame.locals import *
 from BitString import BitString
 from ECA import ECA
@@ -9,8 +9,7 @@ class PhenAnalyzer:
 
 	dfctPos=0
 	strLength=3
-	dmgFreq=np.zeros(8, dtype=np.uint8)
-	lyapExp=np.zeros(8, dtype=float)
+	lyapExp=np.zeros(8, dtype=np.float32)
 	dmgRad=np.zeros(2, dtype=np.uint8)
 	strProb=np.zeros(2 ** strLength, dtype=float)
 	sim=Simulation()
@@ -21,14 +20,11 @@ class PhenAnalyzer:
 		self.strLength=strLength
 
 	def setSimulation(self, sim=Simulation()):
-		self.sim=sim
-		length=sim.eca.initConf.length
-		self.tn=BitString(length)
-		self.dmgFreq=np.zeros(length, dtype=np.uint8)
-		self.lyapExp=np.zeros(length, dtype=float)
-		self.sim.eca.currentConf=copy.deepcopy(self.sim.eca.initConf)
-		self.tn=copy.deepcopy(self.sim.eca.initConf)
-		self.tn.bits[self.dfctPos]=not(self.tn.bits[self.dfctPos])
+		self.sim=copy.deepcopy(sim)
+		self.damSim=copy.deepcopy(sim)
+		length=self.sim.eca.initConf.length
+		self.lyapExp=np.zeros(length, dtype=np.float32)
+		self.damSim.tn.bits[self.dfctPos]=not(self.damSim.tn.bits[self.dfctPos])
 
 	def getConeRatio(self, t, y):
 		self.dmgRad[0]=self.dfctPos
@@ -83,8 +79,10 @@ class PhenAnalyzer:
 			
 		self.hX=((1.0 / self.entStringLen) * math.log(theta, 2))
 
-	def run(self):
-		sScreen=SimScreen(self.tn.length, self.sim.steps)
+	def runAnalysis(self):
+		sScreen=SimScreen(self.damSim.tn.length, self.sim.steps)
+
+		
 
 		for i in range(self.sim.steps):
 			sScreen.drawConfiguration(y=i, bitStr=self.sim.eca.currentConf, dmgBitstr=self.tn)

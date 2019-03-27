@@ -184,7 +184,7 @@ class Widgets():
 			seed=self.getStringValue(self.entrySeed)
 			eca.setInitConf(seed, self.switchConfValue)
 
-		sim=Simulation(eca, steps)
+		sim=Simulation(steps, eca)
 		print(rule)
 		print(steps)
 		print(cells)

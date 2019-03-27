@@ -1,4 +1,4 @@
-import numpy as np, copy, random, math
+import numpy as np, copy, random
 
 class BitString:
 	"""

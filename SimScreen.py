@@ -1,4 +1,4 @@
-import numpy as np, copy, math, sys, pygame, subprocess, os
+import numpy as np, copy, sys, pygame, subprocess, os
 from pygame.locals import *
 from BitString import BitString
 
