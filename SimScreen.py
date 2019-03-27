@@ -31,11 +31,12 @@ class SimScreen:
 			dmgBitstr : BitString
 		"""
 		y *= 2
-		x=0
 		
 		if(xL == None and xR == None):
 			xL=0
 			xR=self.width // 2
+
+		x=xL * 2
 
 		for i in range(xL, xR):
 			if (dmgBitstr == None):
