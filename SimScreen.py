@@ -18,7 +18,7 @@ class SimScreen:
 		self.screen=pygame.Surface((self.width, self.height))
 		self.screen.fill(self.bckgGColor)
 
-	def drawConfiguration(self, y, bitStr=None, dmgBitstr=None):
+	def drawConfiguration(self, y, xL=None, xR=None, bitStr=None, dmgBitstr=None):
 		"""
 		Draw the next step of the evolution in the simulation screen.
 
@@ -32,7 +32,12 @@ class SimScreen:
 		"""
 		y *= 2
 		x=0
-		for i in range(bitStr.length):
+		
+		if(xL == None and xR == None):
+			xL=0
+			xR=self.width // 2
+
+		for i in range(xL, xR):
 			if (dmgBitstr == None):
 				if bitStr.bits[i]:
 					self.screen.fill(self.cellColor, (x, y, 2, 2))
