@@ -46,8 +46,8 @@ class PhenAnalyzer:
 					break
 				else:
 					i -= 1
-			if ((self.dmgRad[1] - self.dmgRad[0]) > (2 * y)):
-				self.dmgRad[0]=self.dfctPos
+			#if ((self.dmgRad[1] - self.dmgRad[0]) > (2 * y)):
+			#	self.dmgRad[0]=self.dfctPos
 		
 	def countDefects(self):
 		if (self.dmgRad[0] == self.dmgRad[1]):
