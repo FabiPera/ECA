@@ -5,7 +5,7 @@ from gi.repository import Gio
 from pygame.locals import *
 from ECA import ECA
 from Simulation import Simulation
-#from PhenAnalyzer import PhenAnalyzer
+from PhenAnalyzer import PhenAnalyzer
 from SimScreen import SimScreen
 
 class Widgets():
@@ -37,7 +37,7 @@ class Widgets():
 	simulationWindow = Gtk.Window.new(0)
 	spinnerLayout = Gtk.Box(orientation=0)
 	spinner = Gtk.Spinner()
-	#phenA=PhenAnalyzer()
+	phenA=PhenAnalyzer()
 	
 	def __init__(self):
 		self.createToolbar()
@@ -194,8 +194,8 @@ class Widgets():
 	def setAnalysisSettings(self, sim=Simulation()):
 		defectPos=self.getIntValue(self.entryDefect)
 		strLength=self.getIntValue(self.entryStrLength)
-		#self.phenA=PhenAnalyzer(defectPos, strLength)
-		#self.phenA.setSimulation(sim)
+		self.phenA=PhenAnalyzer(defectPos, strLength)
+		self.phenA.setSimulation(sim)
 
 	def runSimulation(self, button):
 		print("Simulation")
@@ -209,7 +209,7 @@ class Widgets():
 		self.spinner.start()
 		sim=self.setSimulationSettings()
 		self.setAnalysisSettings(sim)
-		self.phenA.run()
+		self.phenA.runAnalysis()
 		self.spinner.stop()
 
 		"""

@@ -30,12 +30,11 @@ class SimScreen:
 				Configuration to draw.
 			dmgBitstr : BitString
 		"""
-		y *= 2
-		
 		if(xL == None and xR == None):
 			xL=0
 			xR=self.width // 2
 
+		y *= 2
 		x=xL * 2
 
 		for i in range(xL, xR):
@@ -53,22 +52,6 @@ class SimScreen:
 					else:
 						self.screen.fill(self.bckgColor, (x, y, 2, 2))
 			x += 2
-
-	def drawCone(self, dmgBitstr, y):
-		if (y == 0):
-			if dmgBitstr.bits[self.eca.dmgPos]:
-				self.screen.fill(self.cellColor, (self.eca.dmgPos * 2, 0, 2, 2))
-			else:
-				self.screen.fill(self.bckgColor, (self.eca.dmgPos * 2, 0, 2, 2))
-		else:
-			y *= 2
-			x=self.eca.dmgR[0]
-			for i in range(self.eca.dmgR[0], self.eca.dmgR[1] + 1):
-				if dmgBitstr.bits[i]:
-					self.screen.fill(self.cellColor, (x * 2, y, 2, 2))
-				else:
-					self.screen.fill(self.bckgColor, (x * 2, y, 2, 2))
-				x += 1
 
 	def saveToPNG(self, screen, path):
 		pygame.image.save(screen, path)

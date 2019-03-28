@@ -21,18 +21,13 @@ class Simulation:
 		sScreen=SimScreen(self.tn.length, self.steps)
 
 		for i in range(self.steps):
-			sScreen.drawConfiguration(y=i, bitStr=self.tn, dmgBitstr=None)
+			sScreen.drawConfiguration(y=i, bitStr=self.tn)
 			self.tn=copy.deepcopy(self.eca.evolve(self.tn))
 		
 		sScreen.saveToPNG(sScreen.screen, fileName)
 		sScreen.openImage(fileName)
 
 	def stepForward(self):
-		if(self.currentStep and (self.currentStep < self.steps)):
+		if(self.currentStep < self.steps):
 			self.tn=copy.deepcopy(self.eca.evolve(self.tn))
 			self.currentStep += 1
-		else:
-			self.tn=copy.deepcopy(self.eca.initConf)
-			self.tn=copy.deepcopy(self.eca.evolve(self.tn))
-			self.currentStep += 1
-		
