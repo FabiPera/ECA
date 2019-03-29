@@ -10,7 +10,7 @@ class PhenAnalyzer:
 	dfctPos=0
 	strLength=3
 	lyapExp=np.zeros(8, dtype=np.float32)
-	dmgRad=np.zeros(2, dtype=np.uint8)
+	dmgRad=np.zeros(2, dtype=np.uint32)
 	strProb=np.zeros(2 ** strLength, dtype=float)
 	sim=Simulation()
 	damSim=Simulation()
@@ -28,7 +28,7 @@ class PhenAnalyzer:
 		self.lyapExp=np.zeros(length, dtype=np.float32)
 		self.damSim.tn.bits[self.dfctPos]=not(self.damSim.tn.bits[self.dfctPos])
 
-	def getConeRatio(self, y):
+	def getConeRadius(self, y):
 		self.dmgRad[0]=self.dfctPos
 		self.dmgRad[1]=self.dfctPos
 		if(y > 0):
@@ -46,8 +46,8 @@ class PhenAnalyzer:
 					break
 				else:
 					i -= 1
-			#if ((self.dmgRad[1] - self.dmgRad[0]) > (2 * y)):
-			#	self.dmgRad[0]=self.dfctPos
+			if ((self.dmgRad[1] - self.dmgRad[0]) > (2 * y)):
+				self.dmgRad[0]=self.dfctPos
 		
 	def countDefects(self):
 		if (self.dmgRad[0] == self.dmgRad[1]):
@@ -100,7 +100,7 @@ class PhenAnalyzer:
 		self.damSim.tn.bits[self.dfctPos]=not(self.damSim.tn.bits[self.dfctPos])
 
 		for i in range(self.sim.steps):
-			self.getConeRatio(i)
+			self.getConeRadius(i)
 			sScreen.drawConfiguration(y=i, xL=(self.dmgRad[0]), xR=(self.dmgRad[1] + 1), bitStr=self.damSim.tn)
 			self.damSim.stepForward()
 			self.sim.stepForward()
