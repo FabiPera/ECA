@@ -1,8 +1,7 @@
-import gi, sys, copy, subprocess, os, pygame, matplotlib.pyplot as plt, numpy as np
+import gi, sys, copy, matplotlib.pyplot as plt, numpy as np
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from gi.repository import Gio
-from pygame.locals import *
 from ECA import ECA
 from Simulation import Simulation
 from PhenAnalyzer import PhenAnalyzer
@@ -211,25 +210,6 @@ class Widgets():
 		self.setAnalysisSettings(sim)
 		self.phenA.runAnalysis()
 		self.spinner.stop()
-
-		"""
-		self.setSimulationSettings()
-		self.setAnalysisSettings()
-		self.createSimScreen(self.eca.seedConfig.length * 2, self.eca.steps * 2)
-		self.screen.fill(self.bckgGColor)
-		for i in range(self.eca.steps):
-			self.eca.getConeRatio(self.eca.tDam, i)
-			self.drawCone(self.eca.tDam, i)
-			self.eca.countDefects()
-			self.eca.t0=copy.deepcopy(self.eca.evolve(self.eca.t0))
-			self.eca.tDam=copy.deepcopy(self.eca.evolve(self.eca.tDam))
-
-		print(self.eca.damageFreq)
-		self.eca.getLyapunovExp(self.eca.steps)
-		print(self.eca.lyapExp)
-		self.saveToPNG(self.screen, "DamageCone.png")
-		self.openImage("DamageCone.png")
-		"""
 
 	#0101101110010010001
 	#8191 max

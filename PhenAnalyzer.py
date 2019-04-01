@@ -1,4 +1,4 @@
-import numpy as np, copy, math
+import numpy as np, copy, math, matplotlib.pyplot as plt
 from pygame.locals import *
 from BitString import BitString
 from ECA import ECA
@@ -111,3 +111,9 @@ class PhenAnalyzer:
 		print(self.lyapExp)
 		sScreen.saveToPNG(sScreen.screen, "DamageCone.png")
 		sScreen.openImage("DamageCone.png")
+		x=np.arange(len(self.lyapExp))
+		#plt.plot(self.lyapExp, marker=",", color="#800080")
+		plt.plot(self.lyapExp, "m,-")
+		plt.savefig("LyapunovExp.png")
+		sScreen.openImage("LyapunovExp.png")
+		#plt.show()
