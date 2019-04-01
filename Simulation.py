@@ -6,6 +6,27 @@ from SimScreen import SimScreen
 
 class Simulation:
 
+	"""
+	Simulation object contains the representation of a ECA evolution simulation.
+
+	Parameters
+	----------
+		steps : int
+			Value of steps in the evolution.
+		eca : ECA
+			ECA used in the evolution simulation.
+
+	Attributes
+	----------
+		steps : int
+			Value of steps in the evolution.
+		currentStep : int
+			Value of the current step (step by step evolution).
+		eca : ECA
+			ECA used in the evolution simulation.
+		tn : BitString
+			Current configuration in the evolution.
+	"""
 	steps=0
 	currentStep=0
 	eca=ECA()
@@ -17,6 +38,14 @@ class Simulation:
 		self.tn=copy.deepcopy(self.eca.initConf)
 	
 	def run(self, fileName="Simulation.png"):
+		"""
+		Run the evolution simulation.
+
+		Parameters
+		----------
+		filename : string
+			Name of the file to save the simulation.
+		"""
 		self.tn=copy.deepcopy(self.eca.initConf)
 		sScreen=SimScreen(self.tn.length, self.steps)
 
@@ -28,6 +57,9 @@ class Simulation:
 		sScreen.openImage(fileName)
 
 	def stepForward(self):
+		"""
+		Advance one step in the evolution simulation.
+		"""
 		if(self.currentStep < self.steps):
 			self.tn=copy.deepcopy(self.eca.evolve(self.tn))
 			self.currentStep += 1
