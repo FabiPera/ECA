@@ -1,5 +1,4 @@
-import numpy as np, copy, random, math
-from numba import njit
+import numpy as np, copy, random
 
 class BitString:
 	"""
@@ -7,7 +6,7 @@ class BitString:
 
 	Parameters
 	----------
-	l : int 
+	length : int 
 		Length of the bitstring.
 
 	Attributes
@@ -20,13 +19,13 @@ class BitString:
 	bits=np.zeros(8, dtype=np.uint8)
 	length=8
 
-	def __init__(self, l):
-		self.bits=np.zeros(l, dtype=np.uint8)
-		self.length=l
+	def __init__(self, length=8):
+		self.bits=np.zeros(length, dtype=np.uint8)
+		self.length=length
 
 	def bsFromInt(self, n):
 		"""
-		Initialize the bitstring from a base 10 number.
+		Initializes the bitstring from a base 10 number.
 
 		Parameters
 		----------
@@ -37,7 +36,7 @@ class BitString:
 
 	def bsFromString(self, str):
 		"""
-		Initialize the bitstring from a string.
+		Initializes the bitstring from a string.
 
 		Parameters
 		----------
@@ -54,12 +53,12 @@ class BitString:
 
 	def bsFromRandomVal(self, dens):
 		"""
-		Initialize the bitstring with a random configuration.
+		Initializes the bitstring with a random configuration.
 
 		Parameters
 		----------
 		dens : int
-			Density of 1 values in the bitstring.
+			Density of cells with value 1 in the bitstring.
 		"""
 		self.bits=np.ones(self.length, dtype=np.uint8)
 		freq=self.length
@@ -71,7 +70,7 @@ class BitString:
 
 	def getValue(self, i):
 		"""
-		Get the value of the element in certain position.
+		Gets the value of the element in the given position.
 
 		Parameters
 		----------
@@ -103,7 +102,7 @@ class BitString:
 
 	def binToInt(self):
 		"""
-		Get the base 10 value of the bitstring.
+		Gets the base 10 value of the bitstring.
 
 		Returns
 		-------
@@ -119,7 +118,7 @@ class BitString:
 
 	def intToBin(self, n, size):
 		"""
-		Get a bitstring from a int.
+		Gets a bitstring from a int.
 
 		Parameters
 		----------
