@@ -39,7 +39,7 @@ class Simulation:
 	
 	def run(self, fileName="Simulation.png"):
 		"""
-		Run the evolution simulation.
+		Runs the evolution simulation.
 
 		Parameters
 		----------
@@ -58,7 +58,7 @@ class Simulation:
 
 	def stepForward(self):
 		"""
-		Advance one step in the evolution simulation.
+		Advances one step in the evolution simulation.
 		"""
 		if(self.currentStep < self.steps):
 			self.tn=copy.deepcopy(self.eca.evolve(self.tn))

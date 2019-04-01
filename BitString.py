@@ -25,7 +25,7 @@ class BitString:
 
 	def bsFromInt(self, n):
 		"""
-		Initialize the bitstring from a base 10 number.
+		Initializes the bitstring from a base 10 number.
 
 		Parameters
 		----------
@@ -36,7 +36,7 @@ class BitString:
 
 	def bsFromString(self, str):
 		"""
-		Initialize the bitstring from a string.
+		Initializes the bitstring from a string.
 
 		Parameters
 		----------
@@ -53,7 +53,7 @@ class BitString:
 
 	def bsFromRandomVal(self, dens):
 		"""
-		Initialize the bitstring with a random configuration.
+		Initializes the bitstring with a random configuration.
 
 		Parameters
 		----------
@@ -70,7 +70,7 @@ class BitString:
 
 	def getValue(self, i):
 		"""
-		Get the value of the element in the given position.
+		Gets the value of the element in the given position.
 
 		Parameters
 		----------
@@ -102,7 +102,7 @@ class BitString:
 
 	def binToInt(self):
 		"""
-		Get the base 10 value of the bitstring.
+		Gets the base 10 value of the bitstring.
 
 		Returns
 		-------
@@ -118,7 +118,7 @@ class BitString:
 
 	def intToBin(self, n, size):
 		"""
-		Get a bitstring from a int.
+		Gets a bitstring from a int.
 
 		Parameters
 		----------

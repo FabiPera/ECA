@@ -7,6 +7,30 @@ from SimScreen import SimScreen
 
 class PhenAnalyzer:
 
+	"""
+	PhenAnalyzer object contains the representation of a phenotipic analyzer.
+
+	Parameters
+	----------
+		dfctPos : int
+			Position in which a defect was introduce.
+		strLength : int
+			Lenght of the strings to analyze.
+	Attributes
+	----------
+		dfctPos : int
+			Position in which a defect was introduce.
+		strLength : int
+			Lenght of the strings to analyze.
+		lyapExp : float32 array
+			Lyapunov exponent of every cell in the configuration.
+		dmgRad : unsigned int32 array
+			Radius of the damage cone.
+		sim : Simulation
+			Original evolution simulation.
+		damSim : Simulation
+			Evolution simulation with a defect introduced.
+	"""
 	dfctPos=0
 	strLength=3
 	lyapExp=np.zeros(8, dtype=np.float32)
@@ -116,4 +140,4 @@ class PhenAnalyzer:
 		plt.plot(self.lyapExp, "m,-")
 		plt.savefig("LyapunovExp.png")
 		sScreen.openImage("LyapunovExp.png")
-		#plt.show()
+		plt.show()

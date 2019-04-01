@@ -33,7 +33,7 @@ class ECA:
 
 	def setInitConf(self, seed, oz):
 		"""
-		Initialize the configuration from a string.
+		Initializes the configuration from a string.
 
 		Parameters
 		----------
@@ -49,7 +49,7 @@ class ECA:
 
 	def setRandInitConf(self, denPer=50):
 		"""
-		Initialize a random configuration.
+		Initializes a random configuration.
 
 		Parameters
 		----------
@@ -61,7 +61,7 @@ class ECA:
 	
 	def evolve(self, t):
 		"""
-		Evolve a configuration with the ECA rule.
+		Evolves a configuration with the ECA rule.
 		
 		Parameters
 		----------
