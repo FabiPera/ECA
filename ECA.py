@@ -40,16 +40,21 @@ class ECA:
 			seed : string
 				Seed string to initalize the configuration.
 			oz : int
-				Value for fill the initial configuration (0 or 1).
+				Value to fill the remaining cells (0 or 1).
 		"""
 		if (oz):
-			self.initConf.bits=np.ones(self.initConf.length, dtype=int)
+			self.initConf.bits=np.ones(self.initConf.length, dtype=uint8)
 
 		self.initConf.bsFromString(seed)
 
 	def setRandInitConf(self, denPer=50):
 		"""
 		Initialize a random configuration.
+
+		Parameters
+		----------
+			denPer: int
+				Percentage of cells with value equals to 1.
 		"""
 		dens=((denPer * self.initConf.length) // 100)
 		self.initConf.bsFromRandomVal(dens)
