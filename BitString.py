@@ -58,7 +58,7 @@ class BitString:
 		Parameters
 		----------
 		dens : int
-			Density of 1 values in the bitstring.
+			Density of cells with value 1 in the bitstring.
 		"""
 		self.bits=np.ones(self.length, dtype=np.uint8)
 		freq=self.length
@@ -70,7 +70,7 @@ class BitString:
 
 	def getValue(self, i):
 		"""
-		Get the value of the element in certain position.
+		Get the value of the element in the given position.
 
 		Parameters
 		----------
