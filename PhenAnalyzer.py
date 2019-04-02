@@ -34,6 +34,7 @@ class PhenAnalyzer:
 	dfctPos=0
 	strLength=3
 	lyapExp=np.zeros(8, dtype=np.float32)
+	dens=np.zeros(8, dtype=np.uint32)
 	dmgRad=np.zeros(2, dtype=np.uint32)
 	strProb=np.zeros(2 ** strLength, dtype=float)
 	sim=Simulation()
@@ -50,6 +51,7 @@ class PhenAnalyzer:
 		self.damSim.tn=copy.deepcopy(self.sim.eca.initConf)
 		length=self.sim.eca.initConf.length
 		self.lyapExp=np.zeros(length, dtype=np.float32)
+		self.dens=np.zeros(self.sim.steps, dtype=np.uint32)
 		self.damSim.tn.bits[self.dfctPos]=not(self.damSim.tn.bits[self.dfctPos])
 
 	def getConeRadius(self, y):
@@ -110,6 +112,9 @@ class PhenAnalyzer:
 
 		for i in range(self.sim.steps):
 			sScreen.drawConfiguration(y=i, bitStr=self.sim.tn, dmgBitstr=self.damSim.tn)
+			for j in range(self.sim.tn.length):
+				if(self.sim.tn.bits[j]):
+					self.dens[i] += 1
 			self.sim.stepForward()
 			self.damSim.stepForward()
 
@@ -135,9 +140,12 @@ class PhenAnalyzer:
 		print(self.lyapExp)
 		sScreen.saveToPNG(sScreen.screen, "DamageCone.png")
 		sScreen.openImage("DamageCone.png")
-		x=np.arange(len(self.lyapExp))
-		#plt.plot(self.lyapExp, marker=",", color="#800080")
+		plt.figure("Density")
+		plt.plot(self.dens, "m,-")
+		plt.savefig("Density.png")
+		sScreen.openImage("Density.png")
+		plt.figure("Lyapunov exponents")
 		plt.plot(self.lyapExp, "m,-")
 		plt.savefig("LyapunovExp.png")
 		sScreen.openImage("LyapunovExp.png")
-		plt.show()
+		#plt.show()
