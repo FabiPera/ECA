@@ -9,33 +9,33 @@ from SimScreen import SimScreen
 
 class Widgets():
 
-	mainLayout = Gtk.Box(orientation=1)
-	toolbarLayout = Gtk.Box(orientation=0)
-	tabViewLayout = Gtk.Box(orientation=0, spacing=30)
-	tab1Layout = Gtk.Box(orientation=1, spacing=30)
-	tab2Layout = Gtk.Box(orientation=1, spacing=30)
-	layout11 = Gtk.Box(orientation=0)
-	layout12 = Gtk.Box(orientation=0)
-	layout13 = Gtk.Box(orientation=0)
-	layout21 = Gtk.Box(orientation=0)
-	layout22 = Gtk.Box(orientation=0)
-	toolbar = Gtk.Toolbar()
-	tabView = Gtk.Notebook.new()
-	adjRule = Gtk.Adjustment.new(0, 0, 256, 1, 1, 1)
-	entryRule = Gtk.SpinButton.new(adjRule, 1, 0)
-	switchRandConf = Gtk.Switch.new()
-	switchStr = Gtk.Switch.new()
-	entrySeed = Gtk.Entry.new()
-	entrySteps = Gtk.Entry.new()
-	entryCells = Gtk.Entry.new()
-	entryPer = Gtk.Entry.new()
-	entryDefect = Gtk.Entry.new()
-	entryStrLength = Gtk.Entry.new()
-	switchRandValue = 0
-	switchConfValue = 0
-	simulationWindow = Gtk.Window.new(0)
-	spinnerLayout = Gtk.Box(orientation=0)
-	spinner = Gtk.Spinner()
+	mainLayout=Gtk.Box(orientation=1)
+	toolbarLayout=Gtk.Box(orientation=0)
+	tabViewLayout=Gtk.Box(orientation=0, spacing=30)
+	tab1Layout=Gtk.Box(orientation=1, spacing=30)
+	tab2Layout=Gtk.Box(orientation=1, spacing=30)
+	layout11=Gtk.Box(orientation=0)
+	layout12=Gtk.Box(orientation=0)
+	layout13=Gtk.Box(orientation=0)
+	layout21=Gtk.Box(orientation=0)
+	layout22=Gtk.Box(orientation=0)
+	toolbar=Gtk.Toolbar()
+	tabView=Gtk.Notebook.new()
+	adjRule=Gtk.Adjustment.new(0, 0, 256, 1, 1, 1)
+	entryRule=Gtk.SpinButton.new(adjRule, 1, 0)
+	switchRandConf=Gtk.Switch.new()
+	switchStr=Gtk.Switch.new()
+	entrySeed=Gtk.Entry.new()
+	entrySteps=Gtk.Entry.new()
+	entryCells=Gtk.Entry.new()
+	entryPer=Gtk.Entry.new()
+	entryDefect=Gtk.Entry.new()
+	entryStrLength=Gtk.Entry.new()
+	switchRandValue=0
+	switchConfValue=0
+	simulationWindow=Gtk.Window.new(0)
+	spinnerLayout=Gtk.Box(orientation=0)
+	spinner=Gtk.Spinner()
 	phenA=PhenAnalyzer()
 	
 	def __init__(self):
@@ -177,8 +177,7 @@ class Widgets():
 		
 		if self.switchRandValue:
 			dens=self.getIntValue(self.entryPer)
-			eca.denPer=dens
-			eca.setRandInitConf()
+			eca.setRandInitConf(dens)
 		else:
 			seed=self.getStringValue(self.entrySeed)
 			eca.setInitConf(seed, self.switchConfValue)
