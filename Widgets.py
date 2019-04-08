@@ -5,7 +5,6 @@ from gi.repository import Gio
 from ECA import ECA
 from Simulation import Simulation
 from PhenAnalyzer import PhenAnalyzer
-from SimScreen import SimScreen
 
 class Widgets():
 
@@ -22,12 +21,14 @@ class Widgets():
 	toolbar=Gtk.Toolbar()
 	tabView=Gtk.Notebook.new()
 	adjRule=Gtk.Adjustment.new(0, 0, 256, 1, 1, 1)
-	entryRule=Gtk.SpinButton.new(adjRule, 1, 0)
+	adjWidth=Gtk.Adjustment.new(0, 0, 8192, 8, 1, 1)
+	adjHeigth=Gtk.Adjustment.new(0, 0, 8192, 8, 1, 1)
 	switchRandConf=Gtk.Switch.new()
 	switchStr=Gtk.Switch.new()
+	entryRule=Gtk.SpinButton.new(adjRule, 1, 0)
 	entrySeed=Gtk.Entry.new()
-	entrySteps=Gtk.Entry.new()
-	entryCells=Gtk.Entry.new()
+	entrySteps=Gtk.SpinButton.new(adjHeigth, 8, 0)
+	entryCells=Gtk.SpinButton.new(adjWidth, 8, 0)
 	entryPer=Gtk.Entry.new()
 	entryDefect=Gtk.Entry.new()
 	entryStrLength=Gtk.Entry.new()
@@ -113,6 +114,8 @@ class Widgets():
 
 		self.switchRandConf.connect("notify::active", self.switchRandActivate)
 		self.switchStr.connect("notify::active", self.switchConfActivate)
+		self.adjWidth.connect("value_changed", self.changeStepWidth)
+		self.adjHeigth.connect("value_changed", self.changeStepHeigth)
 
 	def createTab2(self):
 		labelDefect=Gtk.Label.new("Defect position: ")
@@ -162,10 +165,24 @@ class Widgets():
 			self.switchRandValue=0
 		
 	def switchConfActivate(self, switchStr, active):
-		if (switchStr.get_active()):
+		if(switchStr.get_active()):
 			self.switchConfValue=1
 		else:
 			self.switchConfValue=0
+
+	def changeStepWidth(self, widget):
+		val=self.adjWidth.get_value()
+		if(val):
+			self.adjWidth.set_step_increment(val)
+		else:
+			self.adjWidth.set_step_increment(8)
+
+	def changeStepHeigth(self, widget):
+		val=self.adjHeigth.get_value()
+		if(val):
+			self.adjHeigth.set_step_increment(val)
+		else:
+			self.adjHeigth.set_step_increment(8)
 
 	def saveSettings(self, button):
 		dialog=Gtk.FileChooserDialog("Save settings", None, Gtk.FileChooserAction.SAVE, (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
