@@ -1,4 +1,4 @@
-import gi, sys, copy, matplotlib.pyplot as plt, numpy as np
+import gi, sys, copy, matplotlib.pyplot as plt, numpy as np, FileManager as fileMan
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from gi.repository import Gio
@@ -67,6 +67,8 @@ class Widgets():
 
 		run.connect("clicked", self.runSimulation)
 		analysis.connect("clicked", self.runAnalysis)
+		save.connect("clicked", self.saveSettings)
+		load.connect("clicked", self.loadSettings)
 
 	def createTab1(self):
 		labelRule=Gtk.Label.new("Rule: ")
@@ -165,9 +167,39 @@ class Widgets():
 		else:
 			self.switchConfValue=0
 
-	def saveSettings(self):
-		pass
-		#Dlg=gtk.FileChooserDialog(title="Save", parent=None, action = gtk.FILE_CHOOSER_ACTION_SAVE,  buttons=None, backend=None)
+	def saveSettings(self, button):
+		dialog=Gtk.FileChooserDialog("Save settings", None, Gtk.FileChooserAction.SAVE, (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
+		response=dialog.run()
+		if(response == Gtk.ResponseType.OK):
+			rule=self.entryRule.get_value_as_int()
+			steps=self.getIntValue(self.entrySteps)
+			cells=self.getIntValue(self.entryCells)
+			
+			if(self.switchRandValue):
+				dens=self.getIntValue(self.entryPer)
+			else:
+				seed=self.getStringValue(self.entrySeed)
+			data={}
+			data["rule"]=str(rule)
+			data["seed"]=seed
+			data["steps"]=str(steps)
+			data["cells"]=str(cells)
+			fileMan.writeJSON(dialog.get_filename(), data)
+			print("Settings saved")
+			print("File selected: " + dialog.get_filename())
+		elif(response == Gtk.ResponseType.CANCEL):
+			print("Cancel clicked")
+		dialog.destroy()
+
+	def loadSettings(self, button):
+		dialog=Gtk.FileChooserDialog("Load settings", None, Gtk.FileChooserAction.OPEN, (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+		response=dialog.run()
+		if(response == Gtk.ResponseType.OK):
+			print("Settings load")
+			print("File selected: " + dialog.get_filename())
+		elif(response == Gtk.ResponseType.CANCEL):
+			print("Cancel clicked")
+		dialog.destroy()
 
 	def setSimulationSettings(self):
 		rule=self.entryRule.get_value_as_int()
@@ -201,6 +233,7 @@ class Widgets():
 		sim=self.setSimulationSettings()
 		sim.run()
 		self.spinner.stop()
+		fileMan.openImage("Simulation.png")
 		
 	def runAnalysis(self, button):
 		print("Analysis")
@@ -208,7 +241,12 @@ class Widgets():
 		sim=self.setSimulationSettings()
 		self.setAnalysisSettings(sim)
 		self.phenA.runAnalysis()
-		self.spinner.stop()
+		self.spinner.stop() 
+		fileMan.openImage("DamageSimulation.png")
+		fileMan.openImage("DamageCone.png")
+		fileMan.openImage("Density.png")
+		fileMan.openImage("LyapunovExp.png")
+		fileMan.openImage("Entropy.png")
 
 	#0101101110010010001
 	#8191 max

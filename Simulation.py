@@ -54,7 +54,7 @@ class Simulation:
 			self.tn=copy.deepcopy(self.eca.evolve(self.tn))
 		
 		sScreen.saveToPNG(sScreen.screen, fileName)
-		sScreen.openImage(fileName)
+		#sScreen.openImage(fileName)
 
 	def stepForward(self):
 		"""
