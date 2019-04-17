@@ -1,29 +1,19 @@
 import gi, sys
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
-from gi.repository import Gio
-from Widgets import Widgets
-
-class Window(Gtk.ApplicationWindow):
-	def __init__(self, app):
-		super(Window, self).__init__(title="ECA", application=app)
-		widgets=Widgets()
-		self.set_default_size(500, 250)
-		self.set_resizable(False)
-		self.add(widgets.mainLayout)
-		exitApp=widgets.toolbar.get_nth_item(0)
-		exitApp.connect("clicked", self.quitApp)
-		
-	def quitApp(self, par):
-		app.quit()
+from gi.repository import Gtk, Gio
+from MainWindow import MainWindow
+from MainWin import MainWin
 
 class Application(Gtk.Application):
+	
 	def __init__(self):
 		super(Application, self).__init__()
 	
 	def do_activate(self):
-		self.win=Window(self)
-		self.win.show_all()
+		#self.mainWindow=MainWindow(self)
+		#self.mainWindow.show_all()
+		self.mainWin=MainWin(self)
+		self.mainWin.show_all()
 
 	def do_startup(self):
 		Gtk.Application.do_startup(self)

@@ -29,7 +29,7 @@ print("Create BitString")
 bitS=BitString(32)
 print(bitS.bits)
 print("Set BitString int value")
-bitS.bsFromInt(4294967295)
+bitS.bsFromInt(36271939)
 print(bitS.bits)
 print(bitS.binToInt())
 
@@ -42,6 +42,9 @@ configStr=BitString(10)
 configStr.bsFromString("0111101010")
 print(configStr.bits)
 
+print("Create BitString")
+bitS=BitString(32)
+
 """
 #ECA test
 print("Create ECA")
@@ -53,9 +56,9 @@ eca.dmgPos=511
 #eca.dmgPos=511
 #eca.dmgPos=512
 #eca.dmgPos=513
-eca.setDamage()
+#eca.setDamage()
 print(eca.rule)
-eca.createSimScreen(eca.seedConfig.length*2, eca.steps*2)
+#eca.createSimScreen(eca.seedConfig.length*2, eca.steps*2)
 for i in range(eca.steps):
 	for j in range(eca.t0.length):
 		if (eca.t0.bits[j] ^ eca.tDam.bits[j]):

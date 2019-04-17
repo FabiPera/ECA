@@ -87,11 +87,11 @@ class PhenAnalyzer:
 			if(self.lyapExp[i] > 0):
 				self.lyapExp[i]=(1 / t) * (math.log(self.lyapExp[i]))
 
-	def getStrProb(self):
-		numOfStr=2 ** self.strLength
-		totalStr=self.sim.tn.length - self.strLength
+	def getStrProb(self, strl):
+		numOfStr=2 ** strl
+		#totalStr=self.sim.tn.length - strl
 		self.strProb=np.zeros(numOfStr, dtype=float)
-		bs=BitString(self.strLength)
+		bs=BitString(strl)
 		for i in range(numOfStr):
 			bs.bsFromInt(i)
 			bs=self.sim.eca.evolve(bs)
@@ -99,10 +99,10 @@ class PhenAnalyzer:
 			#print(str(i)+"-->"+str(nextState))
 			self.strProb[nextState] += 1.0
 		
-		for i in range(numOfStr):
-			self.strProb[i] /= numOfStr
+		#for i in range(numOfStr):
+		#	self.strProb[i] /= numOfStr
 
-		#print(self.strProb)
+		print(self.strProb)
 
 	def getEntropy(self, totalStr):
 		string=BitString(self.strLength)
@@ -127,6 +127,7 @@ class PhenAnalyzer:
 		return entropy
 
 	def runAnalysis(self):
+		self.getStrProb(20)
 		totalStr=self.sim.tn.length - self.strLength
 		#self.getStrProb()
 		entropy=np.zeros(self.sim.steps, dtype=np.float32)
