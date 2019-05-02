@@ -8,170 +8,177 @@ from SimSettingsWindow import SimSettingsWindow
 
 class MainWindow(Gtk.ApplicationWindow):
 
-	mainLayout=Gtk.Box(orientation=1)
-	toolbarLayout=Gtk.Box(orientation=0)
-	tabViewLayout=Gtk.Box(orientation=0, spacing=30)
-	tab1Layout=Gtk.Box(orientation=1, spacing=30)
-	tab2Layout=Gtk.Box(orientation=1, spacing=30)
-	layout11=Gtk.Box(orientation=0)
-	layout12=Gtk.Box(orientation=0)
-	layout13=Gtk.Box(orientation=0)
-	layout21=Gtk.Box(orientation=0)
-	layout22=Gtk.Box(orientation=0)
-	toolbar=Gtk.Toolbar()
-	tabView=Gtk.Notebook.new()
+	mainGrid=Gtk.Grid()
+	tab1Grid=Gtk.Grid()
+	tab2Grid=Gtk.Grid()
 	adjRule=Gtk.Adjustment.new(0, 0, 256, 1, 1, 1)
-	adjWidth=Gtk.Adjustment.new(0, 0, 8192, 8, 1, 1)
-	adjHeigth=Gtk.Adjustment.new(0, 0, 8192, 8, 1, 1)
+	adjDens=Gtk.Adjustment.new(50, 0, 100, 1, 1, 1)
+	adjWidth=Gtk.Adjustment.new(8, 8, 8192, 8, 1, 1)
+	adjHeigth=Gtk.Adjustment.new(8, 8, 8192, 8, 1, 1)
 	switchRandConf=Gtk.Switch.new()
 	switchStr=Gtk.Switch.new()
-	entryRule=Gtk.SpinButton.new(adjRule, 1, 0)
+	scaleRule=Gtk.Scale.new(0, adjRule)
+	scaleDens=Gtk.Scale.new(0, adjDens)
 	entrySeed=Gtk.Entry.new()
 	entrySteps=Gtk.SpinButton.new(adjHeigth, 8, 0)
 	entryCells=Gtk.SpinButton.new(adjWidth, 8, 0)
-	entryPer=Gtk.Entry.new()
 	entryDefect=Gtk.Entry.new()
 	entryStrLength=Gtk.Entry.new()
+	image=Gtk.Image.new_from_file("./Rules/rule0.png")
+	imageLayout=Gtk.Box(orientation=0, spacing=50)
 	switchRandValue=0
 	switchConfValue=0
-	spinnerLayout=Gtk.Box(orientation=0)
-	spinner=Gtk.Spinner()
-	simSettingsWindow=Gtk.Window.new(1)
-	simSettings=SimSettingsWindow()
 	phenA=PhenAnalyzer()
 	
 	def __init__(self, app):
-		super(MainWindow, self).__init__(title="ECA", application=app)
+		super(MainWindow, self).__init__(title="φ", application=app)
 		self.set_default_size(500, 250)
 		self.set_resizable(False)
-		self.createToolbar()
+		self.createHeaderBar()
+		self.createToolBar()
 		self.createTabView()
-		self.mainLayout.pack_start(self.toolbarLayout, 0, 0, 0)
-		self.mainLayout.pack_start(self.tabViewLayout, 0, 0, 0)
-		self.add(self.mainLayout)
+		self.add(self.mainGrid)
 
-		exitApp=self.toolbar.get_nth_item(0)
-		load=self.toolbar.get_nth_item(1)
-		save=self.toolbar.get_nth_item(2)
-		run=self.toolbar.get_nth_item(3)
-		analysis=self.toolbar.get_nth_item(4)
-		simSettings=self.toolbar.get_nth_item(5)
+	def createHeaderBar(self):
+		header=Gtk.HeaderBar.new()
+		header.set_show_close_button(True)
+		header.props.title="φ( )"
 
-		exitApp.connect("clicked", self.quitApp)
-		load.connect("clicked", self.loadSettings)
-		save.connect("clicked", self.saveSettings)
-		run.connect("clicked", self.runSimulation)
-		analysis.connect("clicked", self.runAnalysis)
-		simSettings.connect("clicked", self.showSimSettings)
+		settingsButton=Gtk.Button()
+		settingsIcon=Gio.ThemedIcon(name="help-about")
+		settings=Gtk.Image.new_from_gicon(settingsIcon, Gtk.IconSize.BUTTON)
+		settingsButton.add(settings)
 
-	def createToolbar(self):
-		imgExit=Gtk.Image.new_from_icon_name("application-exit", 0)
+		aboutButton=Gtk.Button()
+		aboutIcon=Gio.ThemedIcon(name="applications-graphics")
+		about=Gtk.Image.new_from_gicon(aboutIcon, Gtk.IconSize.BUTTON)
+		aboutButton.add(about)
+
+		scienceButton=Gtk.Button()
+		scienceIcon=Gio.ThemedIcon(name="applications-science")
+		science=Gtk.Image.new_from_gicon(scienceIcon, Gtk.IconSize.BUTTON)
+		scienceButton.add(science)
+
+		header.pack_start(settingsButton)
+		header.pack_start(aboutButton)
+		header.pack_start(scienceButton)
+		self.set_titlebar(header)
+
+	def createToolBar(self):
+		toolbar=Gtk.Toolbar()
+		
+		toolbar.set_style(Gtk.ToolbarStyle(2))
 		imgLoad=Gtk.Image.new_from_icon_name("document-open", 0)
 		imgSave=Gtk.Image.new_from_icon_name("media-floppy", 0)
 		imgRun=Gtk.Image.new_from_icon_name("media-playback-start", 0)
+		imgAnalysisFF=Gtk.Image.new_from_icon_name("document-open", 0)
 		imgAnalysis=Gtk.Image.new_from_icon_name("edit-find", 0)
-		imgSimSettings=Gtk.Image.new_from_icon_name("preferences-desktop-theme", 0)
-		#"help-faq"
-		#"applications-graphics"
-		#"applications-science"
-		#"preferences-desktop"
 
-		exitApp=Gtk.ToolButton.new(imgExit, "Exit")
 		load=Gtk.ToolButton.new(imgLoad, "Load settings")
 		save=Gtk.ToolButton.new(imgSave, "Save settings")
 		run=Gtk.ToolButton.new(imgRun, "Run simulation")
-		analysis=Gtk.ToolButton.new(imgAnalysis, "Run analysis")
-		simSettings=Gtk.ToolButton.new(imgSimSettings, "Simulation settings")
+		analysisFF=Gtk.ToolButton.new(imgAnalysisFF, "Analysis from file")
+		analysis=Gtk.ToolButton.new(imgAnalysis, "Run Analysis")
 
-		self.toolbar.insert(exitApp, -1)
-		self.toolbar.insert(load, -1)
-		self.toolbar.insert(save, -1)
-		self.toolbar.insert(run, -1)
-		self.toolbar.insert(analysis, -1)
-		self.toolbar.insert(simSettings, -1)
-		
-		self.toolbarLayout.pack_start(self.toolbar, 0, 0, 0)
+		toolbar.insert(run, -1)
+		toolbar.insert(load, -1)
+		toolbar.insert(save, -1)
+		toolbar.insert(analysis, -1)
+		toolbar.insert(analysisFF, -1)
 
-	def showSimSettings(self, widget):
-		self.simSettingsWindow.show_all()
+		run.connect("clicked", self.runSimulation)
 
-	def quitApp(self, par):
-		self.destroy()
-		#self.app.quit()
+		self.mainGrid.attach(toolbar, 0, 0, 6, 1)
 
 	def createTab1(self):
+		tabLayout=Gtk.Box(orientation=1, spacing=30)
+
 		labelRule=Gtk.Label.new("Rule: ")
-		labelRandConf=Gtk.Label.new("Random configuration: ")
+		labelRandConf=Gtk.Label.new("Random conf: ")
 		labelConf=Gtk.Label.new("Seed: ")
-		labelStr0=Gtk.Label.new("0")
-		labelStr1=Gtk.Label.new("1")
+		labelFill=Gtk.Label.new("Fill with 0's:")
 		labelSteps=Gtk.Label.new("Steps: ")
-		labelCells=Gtk.Label.new("Cells: ")
+		labelCells=Gtk.Label.new("Length: ")
 		labelDens=Gtk.Label.new("Density (%): ")
+		labelRuleIcon=Gtk.Label.new("Rule 0 icon")
 
 		self.switchStr.set_active(False)
 		self.switchRandConf.set_active(False)
-		self.entryPer.set_sensitive(False)
+		self.scaleRule.set_digits(0)
+		self.scaleDens.set_sensitive(False)
 		self.entrySeed.set_width_chars(20)
 		self.entrySteps.set_width_chars(5)
 		self.entryCells.set_width_chars(5)
-		self.entryPer.set_width_chars(5)
-		
-		self.layout11.set_halign(0)
-		self.layout12.set_halign(0)
-		self.layout11.pack_start(labelRule, 1, 0, 10)
-		self.layout11.pack_start(self.entryRule, 1, 0, 10)
-		self.layout11.pack_start(labelRandConf, 1, 0, 10)
-		self.layout11.pack_start(self.switchRandConf, 1, 0, 10)
-		self.layout12.pack_start(labelConf, 1, 0, 10)
-		self.layout12.pack_start(self.entrySeed, 1, 0, 10)
-		self.layout12.pack_start(labelStr0, 1, 0, 5)
-		self.layout12.pack_start(self.switchStr, 1, 0, 10)
-		self.layout12.pack_start(labelStr1, 1, 0, 5)
-		self.layout13.pack_start(labelSteps, 1, 0, 10)
-		self.layout13.pack_start(self.entrySteps, 1, 0, 10)
-		self.layout13.pack_start(labelCells, 1, 0, 10)
-		self.layout13.pack_start(self.entryCells, 1, 0, 10)
-		self.layout13.pack_start(labelDens, 1, 0, 10)
-		self.layout13.pack_start(self.entryPer, 1, 0, 10)
-		self.spinnerLayout.pack_start(self.spinner, 1, 0, 0)
-		self.tab1Layout.pack_start(self.layout11, 1, 0, 0)
-		self.tab1Layout.pack_start(self.layout12, 1, 0, 0)
-		self.tab1Layout.pack_start(self.layout13, 1, 0, 0)
-		self.tab1Layout.pack_start(self.spinnerLayout, 1, 0, 0)
+		tabLayout.set_border_width(20)
+		self.tab1Grid.set_row_spacing(10)
+		self.tab1Grid.set_column_spacing(25)
+		self.tab1Grid.set_column_homogeneous(False)
+
+		layoutRandSwitch=Gtk.Box(orientation=0, spacing=50)
+		layoutFillSwitch=Gtk.Box(orientation=0, spacing=50)
+		layoutRandSwitch.pack_start(self.switchRandConf, 0, 0, 50)
+		layoutFillSwitch.pack_start(self.switchStr, 0, 0, 50)
+
+		self.tab1Grid.attach(labelRandConf, 0, 0, 1, 1)
+		self.tab1Grid.attach(layoutRandSwitch, 1, 0, 1, 1)
+		self.tab1Grid.attach(labelRuleIcon, 2, 0, 3, 1)
+		self.tab1Grid.attach(labelFill, 0, 1, 1, 1)
+		self.tab1Grid.attach(layoutFillSwitch, 1, 1, 1, 1)
+		self.tab1Grid.attach(labelRule, 0, 2, 1, 1)
+		self.tab1Grid.attach(self.scaleRule, 1, 2, 1, 1)
+		self.tab1Grid.attach(labelConf, 0, 3, 1, 1)
+		self.tab1Grid.attach(self.entrySeed, 1, 3, 1, 1)
+		self.tab1Grid.attach(labelSteps, 0, 4, 1, 1)
+		self.tab1Grid.attach(self.entrySteps, 1, 4, 1, 1)
+		self.tab1Grid.attach(labelCells, 0, 5, 1, 1)
+		self.tab1Grid.attach(self.entryCells, 1, 5, 1, 1)
+		self.tab1Grid.attach(labelDens, 0, 6, 1, 1)
+		self.tab1Grid.attach(self.scaleDens, 1, 6, 1, 1)
+		self.tab1Grid.attach(self.imageLayout, 3, 1, 2, 5)
+		self.imageLayout.pack_start(self.image, 1, 0, 0)
+		tabLayout.pack_start(self.tab1Grid, 1, 0, 0)
 
 		self.switchRandConf.connect("notify::active", self.switchRandActivate)
 		self.switchStr.connect("notify::active", self.switchConfActivate)
 		self.adjWidth.connect("value_changed", self.changeStepWidth)
 		self.adjHeigth.connect("value_changed", self.changeStepHeigth)
+		self.scaleRule.connect("value_changed", self.changeRuleImg)
+
+		return tabLayout
 
 	def createTab2(self):
+		tabLayout=Gtk.Box(orientation=1, spacing=30)
 		labelDefect=Gtk.Label.new("Defect position: ")
 		labelStrLength=Gtk.Label.new("String length: ")
 		
 		self.entryDefect.set_width_chars(5)
 		self.entryStrLength.set_width_chars(5)
+		self.set_border_width(20)
+		self.tab2Grid.set_row_spacing(10)
+		self.tab2Grid.set_column_spacing(25)
+		self.tab2Grid.set_column_homogeneous(False)
 
-		self.layout21.set_halign(0)
-		self.layout22.set_halign(0)
-		self.layout21.pack_start(labelDefect, 1, 0, 10)
-		self.layout21.pack_start(self.entryDefect, 1, 0, 10)
-		self.layout22.pack_start(labelStrLength, 1, 0, 10)
-		self.layout22.pack_start(self.entryStrLength, 1, 0, 10)
-		self.tab2Layout.pack_start(self.layout21, 1, 0, 0)
-		self.tab2Layout.pack_start(self.layout22, 1, 0, 0)
+		self.tab2Grid.attach(labelDefect, 0, 0, 1, 1)
+		self.tab2Grid.attach(self.entryDefect, 1, 0, 1, 1)
+		self.tab2Grid.attach(labelStrLength, 2, 0, 1, 1)
+		self.tab2Grid.attach(self.entryStrLength, 3, 0, 1, 1)
+		tabLayout.pack_start(self.tab2Grid, 1, 0, 0)
+
+		return tabLayout
 	
 	def createTabView(self):
+		tabView=Gtk.Notebook.new()
+		tab1Layout=self.createTab1()
+		tab2Layout=self.createTab2()
 		tabLabel1=Gtk.Label.new("Simulation Settings")
-		tabLabel2=Gtk.Label.new("Analysis")
-		self.tabView.set_border_width(20)
-		self.tab1Layout.set_border_width(20)
-		self.tab2Layout.set_border_width(20)
-		self.createTab1()
-		self.createTab2()
-		self.tabView.append_page(self.tab1Layout, tabLabel1)
-		self.tabView.append_page(self.tab2Layout, tabLabel2)
-		self.tabViewLayout.pack_start(self.tabView, 0, 0, 0)
+		tabLabel2=Gtk.Label.new("Phen. Analysis")
+		tabView.set_border_width(20)
+		#self.tab1Layout.set_border_width(20)
+		#self.tab2Layout.set_border_width(20)
+		#self.createTab2()
+		tabView.append_page(tab1Layout, tabLabel1)
+		tabView.append_page(tab2Layout, tabLabel2)
+		self.mainGrid.attach(tabView, 0, 1, 6, 1)
 
 	def getIntValue(self, entry):
 		value=entry.get_text()
@@ -185,19 +192,28 @@ class MainWindow(Gtk.ApplicationWindow):
 		if(switchRandConf.get_active()):
 			self.entrySeed.set_sensitive(False)
 			self.switchStr.set_sensitive(False)
-			self.entryPer.set_sensitive(True)
+			self.scaleDens.set_sensitive(True)
 			self.switchRandValue=1
 		else:
 			self.entrySeed.set_sensitive(True)
 			self.switchStr.set_sensitive(True)
-			self.entryPer.set_sensitive(False)
+			self.scaleDens.set_sensitive(False)
 			self.switchRandValue=0
 		
 	def switchConfActivate(self, switchStr, active):
+		label=self.tab1Grid.get_child_at(0, 1)
 		if(switchStr.get_active()):
 			self.switchConfValue=1
+			label.set_text("Fill with 1's")
 		else:
 			self.switchConfValue=0
+			label.set_text("Fill with 0's")
+
+	def changeRuleImg(self, widget):
+		label=self.tab1Grid.get_child_at(2, 0)
+		val=int(self.scaleRule.get_value())
+		label.set_text("Rule "+str(val)+" icon")
+		self.image.set_from_file("./Rules/rule"+str(val)+".png")
 
 	def changeStepWidth(self, widget):
 		val=self.adjWidth.get_value()
@@ -212,6 +228,32 @@ class MainWindow(Gtk.ApplicationWindow):
 			self.adjHeigth.set_step_increment(val)
 		else:
 			self.adjHeigth.set_step_increment(8)
+
+	def getSwitchRandValue(self):
+		return self.switchRandValue
+
+	def getSwitchConfValue(self):
+		return self.switchConfValue
+
+	def getRuleValue(self):
+		rule=int(self.scaleRule.get_value())
+		return rule
+
+	def getSeedValue(self):
+		seed=str(self.entrySeed.get_text())
+		return seed
+		
+	def getStepsValue(self):
+		steps=int(self.entrySteps.get_value())
+		return steps
+	
+	def getLengthValue(self):
+		length=int(self.entryCells.get_value())
+		return length
+
+	def getDensValue(self):
+		dens=int(self.scaleDens.get_value())
+		return dens
 
 	def saveSettings(self, button):
 		dialog=Gtk.FileChooserDialog("Save settings", None, Gtk.FileChooserAction.SAVE, (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
@@ -247,17 +289,23 @@ class MainWindow(Gtk.ApplicationWindow):
 			print("Cancel clicked")
 		dialog.destroy()
 
+	def runSimulation(self, button):
+		print("Simulation")
+		sim=self.setSimulationSettings()
+		sim.run()
+		fileMan.openImage("Simulation.png")
+
 	def setSimulationSettings(self):
-		rule=self.entryRule.get_value_as_int()
-		steps=self.getIntValue(self.entrySteps)
-		cells=self.getIntValue(self.entryCells)
+		rule=self.getRuleValue()
+		steps=self.getStepsValue()
+		cells=self.getLengthValue()
 		eca=ECA(rule, cells)
 		
 		if self.switchRandValue:
-			dens=self.getIntValue(self.entryPer)
+			dens=self.getDensValue()
 			eca.setRandInitConf(dens)
 		else:
-			seed=self.getStringValue(self.entrySeed)
+			seed=self.getSeedValue()
 			eca.setInitConf(seed, self.switchConfValue)
 
 		sim=Simulation(steps, eca)
@@ -272,14 +320,6 @@ class MainWindow(Gtk.ApplicationWindow):
 		strLength=self.getIntValue(self.entryStrLength)
 		self.phenA=PhenAnalyzer(defectPos, strLength)
 		self.phenA.setSimulation(sim)
-
-	def runSimulation(self, button):
-		print("Simulation")
-		self.spinner.start()
-		sim=self.setSimulationSettings()
-		sim.run()
-		self.spinner.stop()
-		fileMan.openImage("Simulation.png")
 		
 	def runAnalysis(self, button):
 		print("Analysis")
