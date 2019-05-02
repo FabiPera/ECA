@@ -4,6 +4,7 @@ from gi.repository import Gtk, Gio
 from ECA import ECA
 from Simulation import Simulation
 from PhenAnalyzer import PhenAnalyzer
+from SimModule import SimModule
 
 class MainWin(Gtk.ApplicationWindow):
 
@@ -16,8 +17,8 @@ class MainWin(Gtk.ApplicationWindow):
 	toolbar=Gtk.Toolbar()
 	adjRule=Gtk.Adjustment.new(0, 0, 256, 1, 1, 1)
 	adjDens=Gtk.Adjustment.new(50, 0, 100, 1, 1, 1)
-	adjWidth=Gtk.Adjustment.new(0, 0, 8192, 8, 1, 1)
-	adjHeigth=Gtk.Adjustment.new(0, 0, 8192, 8, 1, 1)
+	adjWidth=Gtk.Adjustment.new(8, 8, 8192, 8, 1, 1)
+	adjHeigth=Gtk.Adjustment.new(8, 8, 8192, 8, 1, 1)
 	switchRandConf=Gtk.Switch.new()
 	switchStr=Gtk.Switch.new()
 	scaleRule=Gtk.Scale.new(0, adjRule)
@@ -35,13 +36,38 @@ class MainWin(Gtk.ApplicationWindow):
 	switchConfValue=0
 	
 	def __init__(self, app):
-		super(MainWin, self).__init__(title="ECA", application=app)
+		super(MainWin, self).__init__(title="φ", application=app)
 		self.set_default_size(500, 250)
 		self.set_resizable(False)
-		self.createToolbar()
+		self.createHeaderBar()
 		self.createTabView()
 		self.add(self.mainGrid)
 
+	def createHeaderBar(self):
+		header=Gtk.HeaderBar.new()
+		header.set_show_close_button(True)
+		header.props.title="φ( )"
+
+		settingsButton=Gtk.Button()
+		settingsIcon=Gio.ThemedIcon(name="help-about")
+		settings=Gtk.Image.new_from_gicon(settingsIcon, Gtk.IconSize.BUTTON)
+		settingsButton.add(settings)
+
+		aboutButton=Gtk.Button()
+		aboutIcon=Gio.ThemedIcon(name="applications-graphics")
+		about=Gtk.Image.new_from_gicon(aboutIcon, Gtk.IconSize.BUTTON)
+		aboutButton.add(about)
+
+		scienceButton=Gtk.Button()
+		scienceIcon=Gio.ThemedIcon(name="applications-science")
+		science=Gtk.Image.new_from_gicon(scienceIcon, Gtk.IconSize.BUTTON)
+		scienceButton.add(science)
+
+		header.pack_start(settingsButton)
+		header.pack_start(aboutButton)
+		header.pack_start(scienceButton)
+		self.set_titlebar(header)
+	
 	def createToolbar(self):
 		#"help-faq"
 		#"applications-graphics"
@@ -68,16 +94,15 @@ class MainWin(Gtk.ApplicationWindow):
 		self.toolbar.insert(analysis, -1)
 		self.toolbar.insert(simSettings, -1)
 		
-		self.mainGrid.attach(self.toolbar, 0, 0, 6, 1)
+		#self.mainGrid.attach(self.toolbar, 0, 0, 6, 1)
 
 	def createTab1(self):
 		labelRule=Gtk.Label.new("Rule: ")
 		labelRandConf=Gtk.Label.new("Random conf: ")
 		labelConf=Gtk.Label.new("Seed: ")
-		labelStr0=Gtk.Label.new("Fill 0:")
-		labelStr1=Gtk.Label.new("1")
+		labelStr0=Gtk.Label.new("Fill with 0's:")
 		labelSteps=Gtk.Label.new("Steps: ")
-		labelCells=Gtk.Label.new("Cells: ")
+		labelCells=Gtk.Label.new("Length: ")
 		labelDens=Gtk.Label.new("Density (%): ")
 		
 		self.switchStr.set_active(False)
@@ -135,13 +160,14 @@ class MainWin(Gtk.ApplicationWindow):
 		self.tab2Layout.pack_start(self.layout22, 1, 0, 0)
 
 	def createTabView(self):
-		tabLabel1=Gtk.Label.new("Simulation Settings")
-		tabLabel2=Gtk.Label.new("Analysis")
+		tabLabel1=Gtk.Label.new("Simulation")
+		tabLabel2=Gtk.Label.new("Phen. Analysis")
 		self.tabView.set_border_width(20)
 		self.createTab1()
+		tab1Lay=SimModule()
 		#self.createTab2()
-		self.tabView.append_page(self.tab1Layout, tabLabel1)
-		self.mainGrid.attach(self.tabView, 0, 1, 6, 3)
+		self.tabView.append_page(tab1Lay, tabLabel1)
+		self.mainGrid.attach(self.tabView, 0, 0, 6, 8)
 		#self.tabView.append_page(self.tab2Layout, tabLabel2)
 		#self.tabViewLayout.pack_start(self.tabView, 0, 0, 0)
 
@@ -173,15 +199,17 @@ class MainWin(Gtk.ApplicationWindow):
 			self.switchRandValue=0
 		
 	def switchConfActivate(self, switchStr, active):
+		label=self.tab1.get_child_at(0, 1)
 		if(switchStr.get_active()):
 			self.switchConfValue=1
+			label.set_text("Fill with 1's")
 		else:
 			self.switchConfValue=0
+			label.set_text("Fill with 0's")
 
 	def changeRuleImg(self, widget):
 		val=int(self.scaleRule.get_value())
 		self.image.set_from_file("./Rules/rule"+str(val)+".png")
-		#self.imageLayout.pack_start(self.image, 1, 0, 0)
 
 	def changeStepWidth(self, widget):
 		val=self.adjWidth.get_value()
