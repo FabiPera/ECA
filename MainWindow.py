@@ -4,7 +4,6 @@ from gi.repository import Gtk, Gio
 from ECA import ECA
 from Simulation import Simulation
 from PhenAnalyzer import PhenAnalyzer
-from SimSettingsWindow import SimSettingsWindow
 
 class MainWindow(Gtk.ApplicationWindow):
 
@@ -15,6 +14,7 @@ class MainWindow(Gtk.ApplicationWindow):
 	adjDens=Gtk.Adjustment.new(50, 0, 100, 1, 1, 1)
 	adjWidth=Gtk.Adjustment.new(8, 8, 8192, 8, 1, 1)
 	adjHeigth=Gtk.Adjustment.new(8, 8, 8192, 8, 1, 1)
+	adjDfctPos=Gtk.Adjustment.new(4, 0, 8, 1, 1, 1)
 	switchRandConf=Gtk.Switch.new()
 	switchStr=Gtk.Switch.new()
 	scaleRule=Gtk.Scale.new(0, adjRule)
@@ -23,6 +23,7 @@ class MainWindow(Gtk.ApplicationWindow):
 	entrySteps=Gtk.SpinButton.new(adjHeigth, 8, 0)
 	entryCells=Gtk.SpinButton.new(adjWidth, 8, 0)
 	entryDefect=Gtk.Entry.new()
+	scaleDfectPos=Gtk.Scale.new(0, adjDfctPos)
 	entryStrLength=Gtk.Entry.new()
 	image=Gtk.Image.new_from_file("./Rules/rule0.png")
 	imageLayout=Gtk.Box(orientation=0, spacing=50)
@@ -87,11 +88,13 @@ class MainWindow(Gtk.ApplicationWindow):
 		toolbar.insert(analysisFF, -1)
 
 		run.connect("clicked", self.runSimulation)
+		analysis.connect("clicked", self.runAnalysis)		
 
 		self.mainGrid.attach(toolbar, 0, 0, 6, 1)
 
 	def createTab1(self):
 		tabLayout=Gtk.Box(orientation=1, spacing=30)
+		tabLayout.set_border_width(20)
 
 		labelRule=Gtk.Label.new("Rule: ")
 		labelRandConf=Gtk.Label.new("Random conf: ")
@@ -105,14 +108,18 @@ class MainWindow(Gtk.ApplicationWindow):
 		self.switchStr.set_active(False)
 		self.switchRandConf.set_active(False)
 		self.scaleRule.set_digits(0)
+		self.scaleDfectPos.set_digits(0)
 		self.scaleDens.set_sensitive(False)
 		self.entrySeed.set_width_chars(20)
 		self.entrySteps.set_width_chars(5)
 		self.entryCells.set_width_chars(5)
-		tabLayout.set_border_width(20)
+		self.entryStrLength.set_text("10")
 		self.tab1Grid.set_row_spacing(10)
 		self.tab1Grid.set_column_spacing(25)
 		self.tab1Grid.set_column_homogeneous(False)
+		self.tab2Grid.set_row_spacing(10)
+		self.tab2Grid.set_column_spacing(25)
+		self.tab2Grid.set_column_homogeneous(False)
 
 		layoutRandSwitch=Gtk.Box(orientation=0, spacing=50)
 		layoutFillSwitch=Gtk.Box(orientation=0, spacing=50)
@@ -148,6 +155,8 @@ class MainWindow(Gtk.ApplicationWindow):
 
 	def createTab2(self):
 		tabLayout=Gtk.Box(orientation=1, spacing=30)
+		tabLayout.set_border_width(20)
+
 		labelDefect=Gtk.Label.new("Defect position: ")
 		labelStrLength=Gtk.Label.new("String length: ")
 		
@@ -159,23 +168,24 @@ class MainWindow(Gtk.ApplicationWindow):
 		self.tab2Grid.set_column_homogeneous(False)
 
 		self.tab2Grid.attach(labelDefect, 0, 0, 1, 1)
-		self.tab2Grid.attach(self.entryDefect, 1, 0, 1, 1)
-		self.tab2Grid.attach(labelStrLength, 2, 0, 1, 1)
-		self.tab2Grid.attach(self.entryStrLength, 3, 0, 1, 1)
+		self.tab2Grid.attach(self.scaleDfectPos, 1, 0, 3, 1)
+		#self.tab2Grid.attach(self.entryDefect, 1, 0, 1, 1)
+		self.tab2Grid.attach(labelStrLength, 0, 1, 1, 1)
+		self.tab2Grid.attach(self.entryStrLength, 1, 1, 3, 1)
 		tabLayout.pack_start(self.tab2Grid, 1, 0, 0)
 
 		return tabLayout
 	
 	def createTabView(self):
 		tabView=Gtk.Notebook.new()
+		tabView.set_border_width(10)
+
 		tab1Layout=self.createTab1()
 		tab2Layout=self.createTab2()
+
 		tabLabel1=Gtk.Label.new("Simulation Settings")
 		tabLabel2=Gtk.Label.new("Phen. Analysis")
-		tabView.set_border_width(20)
-		#self.tab1Layout.set_border_width(20)
-		#self.tab2Layout.set_border_width(20)
-		#self.createTab2()
+
 		tabView.append_page(tab1Layout, tabLabel1)
 		tabView.append_page(tab2Layout, tabLabel2)
 		self.mainGrid.attach(tabView, 0, 1, 6, 1)
@@ -217,6 +227,8 @@ class MainWindow(Gtk.ApplicationWindow):
 
 	def changeStepWidth(self, widget):
 		val=self.adjWidth.get_value()
+		self.adjDfctPos.set_upper(val)
+		self.adjDfctPos.set_value((val // 2) - 1)
 		if(val):
 			self.adjWidth.set_step_increment(val)
 		else:
@@ -254,6 +266,14 @@ class MainWindow(Gtk.ApplicationWindow):
 	def getDensValue(self):
 		dens=int(self.scaleDens.get_value())
 		return dens
+
+	def getDfctPos(self):
+		pos=int(self.scaleDfectPos.get_value())
+		return pos
+
+	def getStrLength(self):
+		length=int(self.entryStrLength.get_text())
+		return length
 
 	def saveSettings(self, button):
 		dialog=Gtk.FileChooserDialog("Save settings", None, Gtk.FileChooserAction.SAVE, (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
@@ -316,18 +336,18 @@ class MainWindow(Gtk.ApplicationWindow):
 		return sim
 	
 	def setAnalysisSettings(self, sim=Simulation()):
-		defectPos=self.getIntValue(self.entryDefect)
-		strLength=self.getIntValue(self.entryStrLength)
+		defectPos=self.getDfctPos()
+		strLength=self.getStrLength()
+		print(defectPos)
+		print(strLength)
 		self.phenA=PhenAnalyzer(defectPos, strLength)
 		self.phenA.setSimulation(sim)
 		
 	def runAnalysis(self, button):
 		print("Analysis")
-		self.spinner.start()
 		sim=self.setSimulationSettings()
 		self.setAnalysisSettings(sim)
-		self.phenA.runAnalysis()
-		self.spinner.stop() 
+		self.phenA.runAnalysis() 
 		fileMan.openImage("DamageSimulation.png")
 		fileMan.openImage("DamageCone.png")
 		fileMan.openImage("Density.png")

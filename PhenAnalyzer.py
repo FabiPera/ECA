@@ -127,7 +127,6 @@ class PhenAnalyzer:
 		return entropy
 
 	def runAnalysis(self):
-		self.getStrProb(20)
 		totalStr=self.sim.tn.length - self.strLength
 		#self.getStrProb()
 		entropy=np.zeros(self.sim.steps, dtype=np.float32)
