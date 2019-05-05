@@ -95,19 +95,3 @@ class SimScreen:
 		"""
 		pygame.image.save(screen, filePath)
 		print("Simulation saved")
-
-	def openImage(self, filePath):
-		"""
-			Opens a .png image.
-
-			Parameters
-			----------
-				filePath : string
-					Path of the file.
-		"""
-		if sys.platform.startswith("darwin"):
-			subprocess.call(("open", filePath))
-		elif os.name == "nt":
-			os.startfile(filePath)
-		elif os.name == "posix":
-			subprocess.call(("xdg-open", filePath))

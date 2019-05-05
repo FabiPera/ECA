@@ -42,8 +42,8 @@ class ECA:
 			oz : int
 				Value to fill the remaining cells (0 or 1).
 		"""
-		if (oz):
-			self.initConf.bits=np.ones(self.initConf.length, dtype=uint8)
+		if(oz):
+			self.initConf.bits=np.ones(self.initConf.length, dtype=np.uint8)
 
 		self.initConf.bsFromString(seed)
 
