@@ -89,18 +89,13 @@ class PhenAnalyzer:
 
 	def getStrProb(self, strl):
 		numOfStr=2 ** strl
-		#totalStr=self.sim.tn.length - strl
 		self.strProb=np.zeros(numOfStr, dtype=float)
 		bs=BitString(strl)
 		for i in range(numOfStr):
 			bs.bsFromInt(i)
 			bs=self.sim.eca.evolve(bs)
 			nextState=bs.binToInt()
-			#print(str(i)+"-->"+str(nextState))
 			self.strProb[nextState] += 1.0
-		
-		#for i in range(numOfStr):
-		#	self.strProb[i] /= numOfStr
 
 		print(self.strProb)
 
@@ -115,20 +110,17 @@ class PhenAnalyzer:
 				k += 1
 			n=string.binToInt()
 			self.strProb[n] += 1.0
-			#print(str(string.bits)+"="+str(n)+" prob="+str(self.strProb[n]))
 		
 		for i in range(len(self.strProb)):
 			if(self.strProb[i]):
 				theta += 1.0
 			
-		#print("log2="+str(math.log(theta, 2)))	
 		if(theta):
 			entropy=((1.0 / self.strLength) * math.log(theta, 2))
 		return entropy
 
 	def runAnalysis(self):
 		totalStr=self.sim.tn.length - self.strLength
-		#self.getStrProb()
 		entropy=np.zeros(self.sim.steps, dtype=np.float32)
 		sScreen=SimScreen(self.damSim.tn.length, self.sim.steps)
 
@@ -136,7 +128,6 @@ class PhenAnalyzer:
 			self.strProb=np.zeros(2 ** self.strLength, dtype=float)
 			sScreen.drawConfiguration(y=i, bitStr=self.sim.tn, dmgBitstr=self.damSim.tn)
 			entropy[i]=self.getEntropy(totalStr)
-			#print("Entropy "+str(i)+"="+str(entropy[i]))
 			for j in range(self.sim.tn.length):
 				if(self.sim.tn.bits[j]):
 					self.dens[i] += 1
@@ -144,7 +135,6 @@ class PhenAnalyzer:
 			self.damSim.stepForward()
 
 		sScreen.saveToPNG(sScreen.screen, "DamageSimulation.png")
-		#sScreen.openImage("DamageSimulation.png")
 		
 		sScreen=SimScreen(self.damSim.tn.length, self.sim.steps)
 		self.sim.tn=copy.deepcopy(self.sim.eca.initConf)
@@ -160,24 +150,18 @@ class PhenAnalyzer:
 			self.sim.stepForward()
 			self.countDefects()
 
-		#print(self.lyapExp)
 		self.getLyapunovExp(self.sim.steps)
-		#print(self.lyapExp)
 		sScreen.saveToPNG(sScreen.screen, "DamageCone.png")
-		#sScreen.openImage("DamageCone.png")
 		plt.figure("Density")
 		plt.plot(self.dens, "m,-")
 		plt.savefig("Density.png")
 		plt.clf()
-		#sScreen.openImage("Density.png")
 		plt.figure("Lyapunov exponents")
 		plt.plot(self.lyapExp, "m,-")
 		plt.savefig("LyapunovExp.png")
 		plt.clf()
-		#sScreen.openImage("LyapunovExp.png")
 		plt.figure("Entropy")
 		plt.plot(entropy, "m,-")
 		plt.savefig("Entropy.png")
 		plt.clf()
-		#sScreen.openImage("Entropy.png")
 		#plt.show()

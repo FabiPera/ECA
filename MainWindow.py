@@ -1,6 +1,6 @@
 import gi, FileManager as fileMan
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gio
+from gi.repository import Gtk, Gio, GdkPixbuf
 from ECA import ECA
 from Simulation import Simulation
 from PhenAnalyzer import PhenAnalyzer
@@ -15,6 +15,7 @@ class MainWindow(Gtk.ApplicationWindow):
 	adjWidth=Gtk.Adjustment.new(8, 8, 8192, 8, 1, 1)
 	adjHeigth=Gtk.Adjustment.new(8, 8, 8192, 8, 1, 1)
 	adjDfctPos=Gtk.Adjustment.new(4, 0, 8, 1, 1, 1)
+	adjStrLenght=Gtk.Adjustment.new(8, 0, 1024, 8, 1, 1)
 	switchRandConf=Gtk.Switch.new()
 	switchStr=Gtk.Switch.new()
 	scaleRule=Gtk.Scale.new(0, adjRule)
@@ -24,9 +25,12 @@ class MainWindow(Gtk.ApplicationWindow):
 	entryCells=Gtk.SpinButton.new(adjWidth, 8, 0)
 	entryDefect=Gtk.Entry.new()
 	scaleDfectPos=Gtk.Scale.new(0, adjDfctPos)
-	entryStrLength=Gtk.Entry.new()
-	image=Gtk.Image.new_from_file("./Rules/rule0.png")
-	imageLayout=Gtk.Box(orientation=0, spacing=50)
+	entryStrLength=Gtk.SpinButton.new(adjStrLenght, 8, 0)
+	lyapPixbuf=GdkPixbuf.Pixbuf.new_from_file_at_scale(filename="./Lyapunov/rule90.png", width=250, height=125, preserve_aspect_ratio=True)
+	lyapunovImage=Gtk.Image.new_from_pixbuf(lyapPixbuf)
+	ruleImage=Gtk.Image.new_from_file("./Rules/rule0.png")
+	lyapunovImageLayout=Gtk.Box(orientation=0, spacing=50)
+	ruleImageLayout=Gtk.Box(orientation=0, spacing=50)
 	switchRandValue=0
 	switchConfValue=0
 	phenA=PhenAnalyzer()
@@ -109,11 +113,11 @@ class MainWindow(Gtk.ApplicationWindow):
 		self.switchRandConf.set_active(False)
 		self.scaleRule.set_digits(0)
 		self.scaleDfectPos.set_digits(0)
+		self.scaleDens.set_digits(0)
 		self.scaleDens.set_sensitive(False)
 		self.entrySeed.set_width_chars(20)
 		self.entrySteps.set_width_chars(5)
 		self.entryCells.set_width_chars(5)
-		self.entryStrLength.set_text("10")
 		self.tab1Grid.set_row_spacing(10)
 		self.tab1Grid.set_column_spacing(25)
 		self.tab1Grid.set_column_homogeneous(False)
@@ -141,8 +145,8 @@ class MainWindow(Gtk.ApplicationWindow):
 		self.tab1Grid.attach(self.entryCells, 1, 5, 1, 1)
 		self.tab1Grid.attach(labelDens, 0, 6, 1, 1)
 		self.tab1Grid.attach(self.scaleDens, 1, 6, 1, 1)
-		self.tab1Grid.attach(self.imageLayout, 3, 1, 2, 5)
-		self.imageLayout.pack_start(self.image, 1, 0, 0)
+		self.tab1Grid.attach(self.ruleImageLayout, 3, 1, 2, 5)
+		self.ruleImageLayout.pack_start(self.ruleImage, 1, 0, 0)
 		tabLayout.pack_start(self.tab1Grid, 1, 0, 0)
 
 		self.switchRandConf.connect("notify::active", self.switchRandActivate)
@@ -150,6 +154,7 @@ class MainWindow(Gtk.ApplicationWindow):
 		self.adjWidth.connect("value_changed", self.changeStepWidth)
 		self.adjHeigth.connect("value_changed", self.changeStepHeigth)
 		self.scaleRule.connect("value_changed", self.changeRuleImg)
+		self.adjStrLenght.connect("value_changed", self.changeStrLenght)
 
 		return tabLayout
 
@@ -159,6 +164,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
 		labelDefect=Gtk.Label.new("Defect position: ")
 		labelStrLength=Gtk.Label.new("String length: ")
+		labelLyap=Gtk.Label.new("Damage spreading preview: ")
 		
 		self.entryDefect.set_width_chars(5)
 		self.entryStrLength.set_width_chars(5)
@@ -168,10 +174,12 @@ class MainWindow(Gtk.ApplicationWindow):
 		self.tab2Grid.set_column_homogeneous(False)
 
 		self.tab2Grid.attach(labelDefect, 0, 0, 1, 1)
-		self.tab2Grid.attach(self.scaleDfectPos, 1, 0, 3, 1)
-		#self.tab2Grid.attach(self.entryDefect, 1, 0, 1, 1)
-		self.tab2Grid.attach(labelStrLength, 0, 1, 1, 1)
-		self.tab2Grid.attach(self.entryStrLength, 1, 1, 3, 1)
+		self.tab2Grid.attach(self.scaleDfectPos, 1, 0, 2, 1)
+		self.tab2Grid.attach(labelStrLength, 0, 2, 1, 1)
+		self.tab2Grid.attach(self.entryStrLength, 1, 2, 2, 1)
+		self.tab2Grid.attach(labelLyap, 3, 0, 3, 1)
+		self.tab2Grid.attach(self.lyapunovImageLayout, 3, 1, 3, 5)
+		self.lyapunovImageLayout.pack_start(self.lyapunovImage, 1, 0, 0)
 		tabLayout.pack_start(self.tab2Grid, 1, 0, 0)
 
 		return tabLayout
@@ -223,7 +231,7 @@ class MainWindow(Gtk.ApplicationWindow):
 		label=self.tab1Grid.get_child_at(2, 0)
 		val=int(self.scaleRule.get_value())
 		label.set_text("Rule "+str(val)+" icon")
-		self.image.set_from_file("./Rules/rule"+str(val)+".png")
+		self.ruleImage.set_from_file("./Rules/rule"+str(val)+".png")
 
 	def changeStepWidth(self, widget):
 		val=self.adjWidth.get_value()
@@ -240,6 +248,13 @@ class MainWindow(Gtk.ApplicationWindow):
 			self.adjHeigth.set_step_increment(val)
 		else:
 			self.adjHeigth.set_step_increment(8)
+
+	def changeStrLenght(self, widget):
+		val=self.adjStrLenght.get_value()
+		if(val):
+			self.adjStrLenght.set_step_increment(val)
+		else:
+			self.adjStrLenght.set_step_increment(8)
 
 	def getSwitchRandValue(self):
 		return self.switchRandValue
