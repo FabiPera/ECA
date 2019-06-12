@@ -93,6 +93,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
 		run.connect("clicked", self.runSimulation)
 		analysis.connect("clicked", self.runAnalysis)		
+		save.connect("clicked", self.saveSettings)
 
 		self.mainGrid.attach(toolbar, 0, 0, 6, 1)
 
@@ -294,19 +295,17 @@ class MainWindow(Gtk.ApplicationWindow):
 		dialog=Gtk.FileChooserDialog("Save settings", None, Gtk.FileChooserAction.SAVE, (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
 		response=dialog.run()
 		if(response == Gtk.ResponseType.OK):
-			rule=self.entryRule.get_value_as_int()
-			steps=self.getIntValue(self.entrySteps)
-			cells=self.getIntValue(self.entryCells)
-			
-			if(self.switchRandValue):
-				dens=self.getIntValue(self.entryPer)
-			else:
-				seed=self.getStringValue(self.entrySeed)
+			rule=self.getRuleValue()
+			steps=self.getStepsValue()
+			cells=self.getStepsValue()
+			seed=self.getSeedValue()
+
 			data={}
-			data["rule"]=str(rule)
+			data["rule"]=rule
 			data["seed"]=seed
-			data["steps"]=str(steps)
-			data["cells"]=str(cells)
+			data["steps"]=steps
+			data["cells"]=cells
+			data["fill"]=self.switchConfValue
 			fileMan.writeJSON(dialog.get_filename(), data)
 			print("Settings saved")
 			print("File selected: " + dialog.get_filename())
@@ -318,6 +317,17 @@ class MainWindow(Gtk.ApplicationWindow):
 		dialog=Gtk.FileChooserDialog("Load settings", None, Gtk.FileChooserAction.OPEN, (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
 		response=dialog.run()
 		if(response == Gtk.ResponseType.OK):
+			with open(dialog.get_filename()) as json_file:  
+				data = json.load(json_file)
+				for p in data['people']:
+					print('Name: ' + p['name'])
+					print('Website: ' + p['website'])
+					print('From: ' + p['from'])
+					print('')
+			rule=self.getRuleValue()
+			steps=self.getStepsValue()
+			cells=self.getStepsValue()
+			seed=self.getSeedValue()
 			print("Settings load")
 			print("File selected: " + dialog.get_filename())
 		elif(response == Gtk.ResponseType.CANCEL):

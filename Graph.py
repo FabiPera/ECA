@@ -22,5 +22,5 @@ def getStrProb(strl, eca):
 			filewriter.writerow(ad[x])
     
 
-eca=ECA(90, 30)
-getStrProb(30, eca)
+eca=ECA(90, 20)
+getStrProb(20, eca)
