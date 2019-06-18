@@ -32,15 +32,15 @@ class PhenAnalyzer:
 			Evolution simulation with a defect introduced.
 	"""
 	dfctPos=0
-	strLength=10
-	lyapExp=np.zeros(8, dtype=np.float32)
-	dens=np.zeros(8, dtype=np.uint32)
-	dmgRad=np.zeros(2, dtype=np.uint32)
-	strProb=np.zeros(2 ** strLength, dtype=float)
+	strLength=16
+	lyapExp=np.zeros(8, dtype=np.float)
+	dens=np.zeros(8, dtype=np.uint)
+	dmgRad=np.zeros(2, dtype=np.uint)
+	strProb=np.zeros((2 ** strLength), dtype=float)
 	sim=Simulation()
 	damSim=Simulation()
 
-	def __init__(self, dfctPos=0, strLength=3):
+	def __init__(self, dfctPos=0, strLength=16):
 		self.dfctPos=dfctPos
 		self.strLength=strLength
 
@@ -50,8 +50,8 @@ class PhenAnalyzer:
 		self.sim.tn=copy.deepcopy(self.sim.eca.initConf)
 		self.damSim.tn=copy.deepcopy(self.sim.eca.initConf)
 		length=self.sim.eca.initConf.length
-		self.lyapExp=np.zeros(length, dtype=np.float32)
-		self.dens=np.zeros(self.sim.steps, dtype=np.uint32)
+		self.lyapExp=np.zeros(length, dtype=np.float)
+		self.dens=np.zeros(self.sim.steps, dtype=np.uint)
 		self.damSim.tn.bits[self.dfctPos]=not(self.damSim.tn.bits[self.dfctPos])
 
 	def getConeRadius(self, y):
@@ -82,10 +82,36 @@ class PhenAnalyzer:
 			for x in range(self.dmgRad[0], self.dmgRad[1] + 1):
 				self.lyapExp[x] += 1.0
 
+	def getTrinomialRow(self, kn, prev=np.ones(1, dtype=np.uint)):
+		if(len(prev) == 1):
+			return np.ones(3, dtype=np.uint)
+		else:
+			current=np.ones((len(prev) + 2), dtype=np.uint)
+			currentmid=len(current) // 2
+			prevmid=len(prev) // 2
+			for i in range(kn):
+				pointer1=prevmid - i
+				pointer2=prevmid + i
+				if(pointer1 == pointer2):
+					current[currentmid]=prev[prevmid - 1] + prev[prevmid] + prev[prevmid + 1]
+				else:
+					if((pointer1 - 1) >= 0):
+						current[currentmid - i]=prev[prevmid - i - 1] + prev[prevmid - i] + prev[prevmid - i + 1]
+						current[currentmid + i]=current[currentmid - i]
+					else:
+						current[currentmid - i]=prev[prevmid - i] + prev[prevmid - i + 1]
+						current[currentmid + i]=current[currentmid - i]
+			return current
+
 	def getLyapunovExp(self, t):
 		for i in range(len(self.lyapExp)):
 			if(self.lyapExp[i] > 0):
 				self.lyapExp[i]=(1 / t) * (math.log(self.lyapExp[i]))
+
+	def getLyapunovExpNorm(self, t, tRow):
+		for i in range(self.dmgRad[0], self.dmgRad[1] + 1):
+			self.lyapExpNorm[i]=(1 / t) * (math.log(tRow[i]))
+
 
 	def getStrProb(self, strl):
 		numOfStr=2 ** strl
@@ -120,12 +146,13 @@ class PhenAnalyzer:
 		return entropy
 
 	def runAnalysis(self):
+		ttRow=np.ones(1, dtype=np.uint)
 		totalStr=self.sim.tn.length - self.strLength
 		entropy=np.zeros(self.sim.steps, dtype=np.float32)
 		sScreen=SimScreen(self.damSim.tn.length, self.sim.steps)
 
 		for i in range(self.sim.steps):
-			self.strProb=np.zeros(2 ** self.strLength, dtype=float)
+			self.strProb=np.zeros((2 ** self.strLength), dtype=float)
 			sScreen.drawConfiguration(y=i, bitStr=self.sim.tn, dmgBitstr=self.damSim.tn)
 			entropy[i]=self.getEntropy(totalStr)
 			for j in range(self.sim.tn.length):
@@ -144,6 +171,7 @@ class PhenAnalyzer:
 		self.damSim.tn.bits[self.dfctPos]=not(self.damSim.tn.bits[self.dfctPos])
 
 		for i in range(self.sim.steps):
+			#tRow=self.getTrinomialRow((i + 1), tRow)
 			self.getConeRadius(i)
 			sScreen.drawConfiguration(y=i, xL=(self.dmgRad[0]), xR=(self.dmgRad[1] + 1), bitStr=self.damSim.tn)
 			self.damSim.stepForward()
@@ -164,4 +192,3 @@ class PhenAnalyzer:
 		plt.plot(entropy, "m,-")
 		plt.savefig("Entropy.png")
 		plt.clf()
-		#plt.show()

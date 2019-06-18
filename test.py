@@ -1,27 +1,6 @@
-import numpy as np
-from numba import vectorize, int32
-from timeit import default_timer as timer
+import numpy as np, math
 from BitString import BitString
 from ECA import ECA
-
-"""
-@vectorize([int32(int32, int32)], target="parallel")
-def f(x, y):
-    #for i in range(a.size):
-    #    c[i]=x[i] + y[i]
-    return x + y
-
-a=np.ones(50000, dtype=np.int32)
-b=np.ones(50000, dtype=np.int32)
-#c=np.zeros(10000, dtype=np.int32)
-
-#f(a, b, c)
-c=f(a, b)
-start=timer()
-vt=timer() - start
-
-print(c[0])
-print(str(vt)+" seconds")
 
 """
 #BitString test
@@ -44,6 +23,7 @@ print(configStr.bits)
 
 print("Create BitString")
 bitS=BitString(32)
+"""
 
 """
 #ECA test
@@ -78,3 +58,46 @@ for i in range(eca.steps):
 
 eca.saveToPNG("Simulation18Dam5.png")
 """
+
+def trinomialValue(n, k): 
+	if(n == 0 and k == 0): 
+		return 1
+		
+	if(k < -n or k > n): 
+		return 0
+	
+	return(trinomialValue (n - 1, k - 1) + trinomialValue (n - 1, k) + trinomialValue (n - 1, k + 1))
+
+def trinomial(kn, prev=np.ones(1, dtype=int)):
+	if(len(prev) == 1):
+		return np.ones(3, dtype=int)
+	
+	else:
+		current=np.ones((len(prev) + 2), dtype=np.uint)
+		currentmid=len(current) // 2
+		prevmid=len(prev) // 2
+		for i in range(kn):
+			pointer1=prevmid - i
+			pointer2=prevmid + i
+			if(pointer1 == pointer2):
+				current[currentmid]=prev[prevmid - 1] + prev[prevmid] + prev[prevmid + 1]
+			else:
+				if((pointer1 - 1) >= 0):
+					current[currentmid - i]=prev[prevmid - i - 1] + prev[prevmid - i] + prev[prevmid - i + 1]
+					current[currentmid + i]=current[currentmid - i]
+				else:
+					current[currentmid - i]=prev[prevmid - i] + prev[prevmid - i + 1]
+					current[currentmid + i]=current[currentmid - i]
+		return current
+
+row=np.ones(1, dtype=np.uint)
+n=input()
+print(row)
+for i in range(int(n)):
+	row=trinomial((i + 1), row)
+	print(row)
+
+mid=len(row) // 2
+print(row[mid])
+print((1 / (int(n) - 1)) * (math.log(row[mid])))
+#print(trinomialValue(63, 0))
