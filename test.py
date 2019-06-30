@@ -105,7 +105,7 @@ print((1 / (int(n) - 1)) * (math.log(row[mid])))
 #print(trinomialValue(63, 0))
 """
 
-rule=int(input())
+rule=90
 eca=ECA(rule, 2048)
 eca.setConf("1", 0)
 
