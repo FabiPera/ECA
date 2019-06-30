@@ -1,6 +1,7 @@
 import numpy as np, math
 from BitString import BitString
 from ECA import ECA
+from Simulation import Simulation
 
 """
 #BitString test
@@ -58,7 +59,7 @@ for i in range(eca.steps):
 
 eca.saveToPNG("Simulation18Dam5.png")
 """
-
+"""
 def trinomialValue(n, k): 
 	if(n == 0 and k == 0): 
 		return 1
@@ -101,3 +102,11 @@ mid=len(row) // 2
 print(row[mid])
 print((1 / (int(n) - 1)) * (math.log(row[mid])))
 #print(trinomialValue(63, 0))
+"""
+
+rule = 90
+eca = ECA(rule, 2048)
+eca.setInitConf("1", 0)
+
+sim = Simulation(1024, eca)
+sim.run()
