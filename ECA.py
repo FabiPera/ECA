@@ -1,6 +1,7 @@
-import numpy as np, copy, math, sys, pygame
-from pygame.locals import *
-from BitString import BitString
+import numpy as np, copy
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import as_completed
+from Bitstring import Bitstring
 
 class ECA:
 
@@ -16,22 +17,22 @@ class ECA:
 
 	Attributes
 	----------
-		rule : BitString
+		rule : Bitstring
 			Base 2 representation of the rule.
-		neighb : BitString
-			BitString to compute the neighborhood of the current cell.
-		initConf : BitString 
+		neighb : Bitstring
+			Bitstring to compute the neighborhood of the current cell.
+		initConf : Bitstring 
 			Initial configuration of the ECA.
 	"""
-	rule=BitString(8)
-	neighb=BitString(3)
-	initConf=BitString()
+	rule = Bitstring(8)
+	xn = Bitstring()
+	#threadpool = ThreadPoolExecutor(64)
 
 	def __init__(self, rule=0, length=8):
 		self.rule.bsFromInt(rule)
-		self.initConf=BitString(length)
+		self.xn = Bitstring(length)
 
-	def setInitConf(self, seed, oz):
+	def setConf(self, seed, oz):
 		"""
 		Initializes the configuration from a string.
 
@@ -43,11 +44,11 @@ class ECA:
 				Value to fill the remaining cells (0 or 1).
 		"""
 		if(oz):
-			self.initConf.bits=np.ones(self.initConf.length, dtype=np.uint8)
+			self.xn.bits=np.ones(self.xn.length, dtype=np.uint8)
 
-		self.initConf.bsFromString(seed)
+		self.xn.bsFromString(seed)
 
-	def setRandInitConf(self, denPer=50):
+	def setRandConf(self, denPer=50):
 		"""
 		Initializes a random configuration.
 
@@ -56,33 +57,60 @@ class ECA:
 			denPer: int
 				Percentage of cells with value equals to 1.
 		"""
-		dens=((denPer * self.initConf.length) // 100)
-		self.initConf.bsFromRandomVal(dens)
+		dens = ((denPer * self.xn.length) // 100)
+		self.xn.bsFromRandomVal(dens)
 	
-	def evolve(self, t):
+	def threadingEvol(self, i):
+		neighb=Bitstring(3)
+		neighb.bits[2]=self.xn.getValue(i - 1)
+		neighb.bits[1]=self.xn.getValue(i)
+		neighb.bits[0]=self.xn.getValue(i + 1)
+		n=neighb.binToInt()
+		if(self.rule.bits[n]):
+			return 1
+		else:
+			return 0
+
+
+	def evolve(self):
 		"""
 		Evolves a configuration with the ECA rule.
 		
 		Parameters
 		----------
-			t : BitString
+			t : Bitstring
 				Configuration to evolve.
 
 		Returns
 		-------
-			tn : BitString
+			tn : Bitstring
 				Configuration evolved.
-		"""
-		tn=BitString(t.length)
+		
+		neighb=Bitstring(3)
+		tn=Bitstring(t.length)
 		n=0
 		for i in range(t.length):
-			self.neighb.bits[2]=t.getValue(i - 1)
-			self.neighb.bits[1]=t.getValue(i)
-			self.neighb.bits[0]=t.getValue(i + 1)
-			n=self.neighb.binToInt()
-			if (self.rule.bits[n]):
+			neighb.bits[2]=t.getValue(i - 1)
+			neighb.bits[1]=t.getValue(i)
+			neighb.bits[0]=t.getValue(i + 1)
+			n=neighb.binToInt()
+			if(self.rule.bits[n]):
 				tn.bits[i]=1
 			else:
 				tn.bits[i]=0
 
 		return tn
+		"""
+		indices = [i for i in range(self.xn.length)]
+		with ThreadPoolExecutor(max_workers = 64) as executor:
+			results = executor.map(self.threadingEvol, indices)
+		r = ""
+		for result in results:
+			r += str(result)
+		
+		#print(r)
+		
+		tn = Bitstring(len(r))
+		tn.bsFromString(r)
+
+		self.xn = copy.deepcopy(tn)

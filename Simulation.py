@@ -1,6 +1,6 @@
 import numpy as np, copy
 from pygame.locals import *
-from BitString import BitString
+from Bitstring import Bitstring
 from ECA import ECA
 from SimScreen import SimScreen
 
@@ -24,18 +24,18 @@ class Simulation:
 			Value of the current step (step by step evolution).
 		eca : ECA
 			ECA used in the evolution simulation.
-		tn : BitString
+		tn : Bitstring
 			Current configuration in the evolution.
 	"""
 	steps=0
 	currentStep=0
 	eca=ECA()
-	tn=BitString()
+	tn=Bitstring()
 	
 	def __init__(self, steps=0, eca=ECA()):
 		self.steps=steps
 		self.eca=copy.deepcopy(eca)
-		self.tn=copy.deepcopy(self.eca.initConf)
+		self.tn=copy.deepcopy(self.eca.xn)
 	
 	def run(self, fileName="Simulation.png"):
 		"""
@@ -46,12 +46,13 @@ class Simulation:
 		filename : string
 			Name of the file to save the simulation.
 		"""
-		self.tn=copy.deepcopy(self.eca.initConf)
+		self.tn=copy.deepcopy(self.eca.xn)
 		sScreen=SimScreen(self.tn.length, self.steps)
 
 		for i in range(self.steps):
 			sScreen.drawConfiguration(y=i, bitStr=self.tn)
-			self.tn=copy.deepcopy(self.eca.evolve(self.tn))
+			self.eca.evolve()
+			self.tn=copy.deepcopy(self.eca.xn)
 		
 		sScreen.saveToPNG(sScreen.screen, fileName)
 		#sScreen.openImage(fileName)

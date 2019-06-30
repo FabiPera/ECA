@@ -1,28 +1,30 @@
 import numpy as np, math
-from BitString import BitString
+from Bitstring import Bitstring
 from ECA import ECA
+#from Plotter import Plotter
+from Simulation import Simulation
 
 """
-#BitString test
-print("Create BitString")
-bitS=BitString(32)
+#Bitstring test
+print("Create Bitstring")
+bitS=Bitstring(32)
 print(bitS.bits)
-print("Set BitString int value")
+print("Set Bitstring int value")
 bitS.bsFromInt(36271939)
 print(bitS.bits)
 print(bitS.binToInt())
 
-config=BitString(50)
+config=Bitstring(50)
 dens=(50 * 50) // 100
 config.bsFromRandomVal(dens)
 print(config.bits)
 
-configStr=BitString(10)
+configStr=Bitstring(10)
 configStr.bsFromString("0111101010")
 print(configStr.bits)
 
-print("Create BitString")
-bitS=BitString(32)
+print("Create Bitstring")
+bitS=Bitstring(32)
 """
 
 """
@@ -58,7 +60,7 @@ for i in range(eca.steps):
 
 eca.saveToPNG("Simulation18Dam5.png")
 """
-
+"""
 def trinomialValue(n, k): 
 	if(n == 0 and k == 0): 
 		return 1
@@ -101,3 +103,11 @@ mid=len(row) // 2
 print(row[mid])
 print((1 / (int(n) - 1)) * (math.log(row[mid])))
 #print(trinomialValue(63, 0))
+"""
+
+rule=int(input())
+eca=ECA(rule, 2048)
+eca.setConf("1", 0)
+
+sim=Simulation(1024, eca)
+sim.run()

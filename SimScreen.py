@@ -1,6 +1,6 @@
 import numpy as np, copy, sys, pygame, subprocess, os
 from pygame.locals import *
-from BitString import BitString
+from Bitstring import Bitstring
 
 class SimScreen:
 
@@ -56,9 +56,9 @@ class SimScreen:
 				Position from which will began to draw.
 			xR : int
 				Position until which will ends to draw.
-			bitStr : BitString
+			bitStr : Bitstring
 				Configuration to draw.
-			dmgBitstr : BitString
+			dmgBitstr : Bitstring
 				Configuration to compare and draw the defects.
 		"""
 		if(xL == None and xR == None):
@@ -68,7 +68,7 @@ class SimScreen:
 		y *= 2
 		x=xL * 2
 
-		for i in range(xL, xR):
+		for i in range(xL, int(xR)):
 			if (dmgBitstr == None):
 				if bitStr.bits[i]:
 					self.screen.fill(self.cell1Clr, (x, y, 2, 2))

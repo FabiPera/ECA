@@ -101,10 +101,10 @@ class MainWindow(Gtk.ApplicationWindow):
 		tabLayout=Gtk.Box(orientation=1, spacing=30)
 		tabLayout.set_border_width(20)
 
-		labelRule=Gtk.Label.new("Rule: ")
-		labelRandConf=Gtk.Label.new("Random conf: ")
+		labelRule=Gtk.Label.new("Rule:")
+		labelRandConf=Gtk.Label.new("Random: ")
 		labelConf=Gtk.Label.new("Seed: ")
-		labelFill=Gtk.Label.new("Fill with 0's:")
+		labelFill=Gtk.Label.new("Fill w/0:")
 		labelSteps=Gtk.Label.new("Steps: ")
 		labelCells=Gtk.Label.new("Length: ")
 		labelDens=Gtk.Label.new("Density (%): ")
@@ -223,10 +223,10 @@ class MainWindow(Gtk.ApplicationWindow):
 		label=self.tab1Grid.get_child_at(0, 1)
 		if(switchStr.get_active()):
 			self.switchConfValue=1
-			label.set_text("Fill with 1's")
+			label.set_text("Fill w/1")
 		else:
 			self.switchConfValue=0
-			label.set_text("Fill with 0's")
+			label.set_text("Fill w/0")
 
 	def changeRuleImg(self, widget):
 		label=self.tab1Grid.get_child_at(2, 0)

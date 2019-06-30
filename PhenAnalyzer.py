@@ -1,6 +1,6 @@
 import numpy as np, copy, math, matplotlib.pyplot as plt
 from pygame.locals import *
-from BitString import BitString
+from Bitstring import Bitstring
 from ECA import ECA
 from Simulation import Simulation
 from SimScreen import SimScreen
@@ -47,9 +47,9 @@ class PhenAnalyzer:
 	def setSimulation(self, sim=Simulation()):
 		self.sim=copy.deepcopy(sim)
 		self.damSim=copy.deepcopy(sim)
-		self.sim.tn=copy.deepcopy(self.sim.eca.initConf)
-		self.damSim.tn=copy.deepcopy(self.sim.eca.initConf)
-		length=self.sim.eca.initConf.length
+		self.sim.tn=copy.deepcopy(self.sim.eca.xn)
+		self.damSim.tn=copy.deepcopy(self.sim.eca.xn)
+		length=self.sim.eca.xn.length
 		self.lyapExp=np.zeros(length, dtype=np.float)
 		self.dens=np.zeros(self.sim.steps, dtype=np.uint)
 		self.damSim.tn.bits[self.dfctPos]=not(self.damSim.tn.bits[self.dfctPos])
@@ -79,7 +79,7 @@ class PhenAnalyzer:
 		if (self.dmgRad[0] == self.dmgRad[1]):
 			self.lyapExp[self.dfctPos] += 1.0
 		else:
-			for x in range(self.dmgRad[0], self.dmgRad[1] + 1):
+			for x in range(self.dmgRad[0], int(self.dmgRad[1] + 1)):
 				self.lyapExp[x] += 1.0
 
 	def getTrinomialRow(self, kn, prev=np.ones(1, dtype=np.uint)):
@@ -116,7 +116,7 @@ class PhenAnalyzer:
 	def getStrProb(self, strl):
 		numOfStr=2 ** strl
 		self.strProb=np.zeros(numOfStr, dtype=float)
-		bs=BitString(strl)
+		bs=Bitstring(strl)
 		for i in range(numOfStr):
 			bs.bsFromInt(i)
 			bs=self.sim.eca.evolve(bs)
@@ -126,7 +126,7 @@ class PhenAnalyzer:
 		print(self.strProb)
 
 	def getEntropy(self, totalStr):
-		string=BitString(self.strLength)
+		string=Bitstring(self.strLength)
 		theta=0.0
 		entropy=0.0
 		for i in range(totalStr):
@@ -164,8 +164,8 @@ class PhenAnalyzer:
 		sScreen.saveToPNG(sScreen.screen, "DamageSimulation.png")
 		
 		sScreen=SimScreen(self.damSim.tn.length, self.sim.steps)
-		self.sim.tn=copy.deepcopy(self.sim.eca.initConf)
-		self.damSim.tn=copy.deepcopy(self.sim.eca.initConf)
+		self.sim.tn=copy.deepcopy(self.sim.eca.xn)
+		self.damSim.tn=copy.deepcopy(self.sim.eca.xn)
 		self.damSim.currentStep=0
 		self.sim.currentStep=0
 		self.damSim.tn.bits[self.dfctPos]=not(self.damSim.tn.bits[self.dfctPos])
