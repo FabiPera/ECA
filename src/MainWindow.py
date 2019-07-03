@@ -173,8 +173,6 @@ class MainWindow(Gtk.ApplicationWindow):
 		self.tab2Grid.attach(labelStrLength, 0, 2, 1, 1)
 		self.tab2Grid.attach(self.entryStrLength, 1, 2, 2, 1)
 		self.tab2Grid.attach(labelLyap, 3, 0, 3, 1)
-		#self.tab2Grid.attach(self.lyapunovImageLayout, 3, 1, 3, 5)
-		#self.lyapunovImageLayout.pack_start(self.lyapunovImage, 1, 0, 0)
 		tabLayout.pack_start(self.tab2Grid, 1, 0, 0)
 
 		return tabLayout
@@ -195,6 +193,7 @@ class MainWindow(Gtk.ApplicationWindow):
 		tabView.append_page(tab2Layout, tabLabel2)
 		self.mainGrid.attach(tabView, 0, 1, 6, 1)
 
+	"""
 	def getIntValue(self, entry):
 		value = entry.get_text()
 		return int(value)
@@ -202,26 +201,27 @@ class MainWindow(Gtk.ApplicationWindow):
 	def getStringValue(self, entry):
 		value = entry.get_text()
 		return str(value)
+	"""
 
 	def switchRandActivate(self, switchRandConf, active):
 		if(switchRandConf.get_active()):
 			self.entrySeed.set_sensitive(False)
 			self.switchStr.set_sensitive(False)
 			self.scaleDens.set_sensitive(True)
-			self.switchRandValue=1
+			self.switchRandValue = 1
 		else:
 			self.entrySeed.set_sensitive(True)
 			self.switchStr.set_sensitive(True)
 			self.scaleDens.set_sensitive(False)
-			self.switchRandValue=0
+			self.switchRandValue = 0
 		
 	def switchConfActivate(self, switchStr, active):
 		label = self.tab1Grid.get_child_at(0, 1)
 		if(switchStr.get_active()):
-			self.switchConfValue=1
+			self.switchConfValue = 1
 			label.set_text("Fill w/1")
 		else:
-			self.switchConfValue=0
+			self.switchConfValue = 0
 			label.set_text("Fill w/0")
 
 	def changeRuleImg(self, widget):
