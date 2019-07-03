@@ -95,7 +95,7 @@ class Bitstring:
 		n : int
 			Number to get the module.
 		"""
-		if (n < 0):
+		if(n < 0):
 			return self.length + n
 		else:
 			return n % self.length

@@ -2,7 +2,6 @@ import numpy as np, copy, math, matplotlib.pyplot as plt
 from pygame.locals import *
 from Bitstring import Bitstring
 from ECA import ECA
-from Simulation import Simulation
 from SimScreen import SimScreen
 
 class PhenAnalyzer:
@@ -37,8 +36,8 @@ class PhenAnalyzer:
 	dens=np.zeros(8, dtype=np.uint)
 	dmgRad=np.zeros(2, dtype=np.uint)
 	strProb=np.zeros((2 ** strLength), dtype=float)
-	sim=Simulation()
-	damSim=Simulation()
+	#sim=Simulation()
+	#damSim=Simulation()
 
 	def __init__(self, dfctPos=0, strLength=16):
 		self.dfctPos=dfctPos
