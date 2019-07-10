@@ -11,10 +11,12 @@ class MainWindow(Gtk.ApplicationWindow):
 		self.set_default_size(500, 250)
 		self.set_resizable(False)
 
+		#Create the header bar and attach it to the main window
 		header = Gtk.HeaderBar.new()
 		header.set_show_close_button(True)
 		header.props.title="φ( )"
 
+		#Create the buttons for the header bar
 		settingsButton = Gtk.Button()
 		settingsIcon = Gio.ThemedIcon(name="help-about")
 		settings = Gtk.Image.new_from_gicon(settingsIcon, Gtk.IconSize.BUTTON)
@@ -35,9 +37,11 @@ class MainWindow(Gtk.ApplicationWindow):
 		header.pack_start(scienceButton)
 		self.set_titlebar(header)
 
+		#Create the toolbar and attach it to the main window
 		toolbar = Gtk.Toolbar()
 		toolbar.set_style(Gtk.ToolbarStyle(2))
 
+		#Create the buttons for the toolbar
 		imgLoad = Gtk.Image.new_from_icon_name("document-open", 0)
 		imgSave = Gtk.Image.new_from_icon_name("media-floppy", 0)
 		imgRun = Gtk.Image.new_from_icon_name("media-playback-start", 0)
@@ -55,6 +59,7 @@ class MainWindow(Gtk.ApplicationWindow):
 		
 		self.mainGrid.attach(toolbar, 0, 0, 6, 1)
 
+		#Create the tabview and attach it to the main window
 		tabView = Gtk.Notebook.new()
 		tabView.set_border_width(10)
 
@@ -76,6 +81,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
 class SimulatorTab(Gtk.Box):	
 
+	#Widgets for simulation inputs
 	tab1Grid = Gtk.Grid()
 	adjRule = Gtk.Adjustment.new(0, 0, 256, 1, 1, 1)
 	adjDens = Gtk.Adjustment.new(50, 0, 100, 1, 1, 1)
@@ -106,13 +112,16 @@ class SimulatorTab(Gtk.Box):
 		labelDens = Gtk.Label.new("Density (%): ")
 		labelRuleIcon = Gtk.Label.new("Rule 0 icon")
 
+		#Disable for random simulation
 		self.switchStr.set_active(False)
 		self.switchRandConf.set_active(False)
 		self.scaleDens.set_sensitive(False)
 
+		#Disable decimal digits
 		self.scaleRule.set_digits(0)
 		self.scaleDens.set_digits(0)
 		
+		#Set the width in chars for the inputs
 		self.entrySeed.set_width_chars(20)
 		self.entrySteps.set_width_chars(5)
 		self.entryCells.set_width_chars(5)
@@ -126,6 +135,7 @@ class SimulatorTab(Gtk.Box):
 		layoutRandSwitch.pack_start(self.switchRandConf, 0, 0, 50)
 		layoutFillSwitch.pack_start(self.switchStr, 0, 0, 50)
 
+		#Attach widgets to grid
 		self.tab1Grid.attach(labelRandConf, 0, 0, 1, 1)
 		self.tab1Grid.attach(layoutRandSwitch, 1, 0, 1, 1)
 		self.tab1Grid.attach(labelRuleIcon, 2, 0, 3, 1)
@@ -173,6 +183,7 @@ class SimulatorTab(Gtk.Box):
 
 class AnalyzerTab(Gtk.Box):
 
+	#Widgets for analysis inputs
 	tab2Grid = Gtk.Grid()
 	adjDfctPos = Gtk.Adjustment.new(4, 0, 8, 1, 1, 1)
 	adjStrLenght = Gtk.Adjustment.new(8, 0, 1024, 8, 1, 1)
@@ -188,6 +199,7 @@ class AnalyzerTab(Gtk.Box):
 		labelStrLength = Gtk.Label.new("String length: ")
 		labelLyap = Gtk.Label.new("Damage spreading preview: ")
 		
+		#Set the width in chars for the inputs
 		self.entryDefect.set_width_chars(5)
 		self.entryStrLength.set_width_chars(5)
 		self.scaleDfectPos.set_digits(0)
@@ -196,6 +208,7 @@ class AnalyzerTab(Gtk.Box):
 		self.tab2Grid.set_column_spacing(25)
 		self.tab2Grid.set_column_homogeneous(False)
 
+		#Attach widgets to the grid
 		self.tab2Grid.attach(labelDefect, 0, 0, 1, 1)
 		self.tab2Grid.attach(self.scaleDfectPos, 1, 0, 2, 1)
 		self.tab2Grid.attach(labelStrLength, 0, 2, 1, 1)
