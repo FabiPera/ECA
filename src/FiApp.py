@@ -1,15 +1,16 @@
-import gi, sys
+import gi, sys, Plotter
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gio, Gdk
 from FiGUI import *
 
 class FiApp(Gtk.Application):
 
-	cellSize=1
-	cell1 = Gdk.RGBA(0, 0, 0, 1)
-	cell0 = Gdk.RGBA(1, 1, 1, 1)
-	bckg = Gdk.RGBA(0.62, 0.62, 0.62, 1)
-	dfct = Gdk.RGBA(1, 0, 0, 1)
+	#cellSize=1
+	#cell1 = Gdk.RGBA(0, 0, 0, 1)
+	#cell0 = Gdk.RGBA(1, 1, 1, 1)
+	#bckg = Gdk.RGBA(0.62, 0.62, 0.62, 1)
+	#dfct = Gdk.RGBA(1, 0, 0, 1)
+	settings = Plotter.SimSettings()
 	switchRandValue = 0
 	switchConfValue = 0
 	switchAnalysisValue = 0
