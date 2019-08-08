@@ -90,7 +90,6 @@ class FiApp(Gtk.Application):
 		label.set_text("Rule "+str(val)+" icon")
 		self.mainWindow.tab1.ruleImage.set_from_file("../img/rule"+str(val)+".png")
 
-
 	def onWidthChange(self, widget):
 		val = self.mainWindow.tab1.adjWidth.get_value()
 		self.mainWindow.tab2.adjDfctPos.set_upper(val)

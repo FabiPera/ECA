@@ -1,8 +1,6 @@
-import numpy as np, math
+import numpy as np, math, cairo, copy
 from Bitstring import Bitstring
 from ECA import ECA
-#from Plotter import Plotter
-from Simulation import Simulation
 
 """
 #Bitstring test
@@ -60,7 +58,7 @@ for i in range(eca.steps):
 
 eca.saveToPNG("Simulation18Dam5.png")
 """
-
+"""
 def trinomialValue(n, k): 
 	if(n == 0 and k == 0): 
 		return 1
@@ -104,7 +102,89 @@ print(row[mid])
 print((1 / (int(n) - 1)) * (math.log(row[mid])))
 #print(trinomialValue(63, 0))
 """
+"""
 bs=Bitstring(8)
 bs.bsFromInt(10)
 print(bs.binToInt())
 """
+
+pixels = 1
+width = 10001
+heigth = 5000
+
+eca = ECA(110, width)
+eca.setConf("1", 0)
+t = copy.deepcopy(eca.x)
+
+surface = cairo.ImageSurface(cairo.FORMAT_RGB24, width, heigth)
+context = cairo.Context(surface)
+context.rectangle(0, 0, width, heigth)
+context.set_source_rgb(0.62, 0.62, 0.62)
+context.fill()
+
+x = pixels
+y = pixels
+
+for i in range(heigth):
+	for j in range(width):
+		if(t.bits[j]):
+			context.rectangle(x, y, pixels, pixels)
+			context.set_source_rgb(0, 0, 0)
+			context.fill()
+		else:
+			context.rectangle(x, y, pixels, pixels)
+			context.set_source_rgb(1, 1, 1)
+			context.fill()
+		x += pixels
+	x = pixels
+	y += pixels
+	t = copy.deepcopy(eca.evolve(t))
+
+"""
+while(y < (heigth - pixels)):
+	while(x < (width - pixels)):
+		if(x < (width - pixels)):
+			context.rectangle(x, y, pixels, pixels)
+			context.set_source_rgb(0, 0, 0)
+			context.fill()
+			x += pixels
+		else:
+			break
+		if(x < (width - pixels)):
+			context.rectangle(x, y, pixels, pixels)
+			context.set_source_rgb(1, 1, 1)
+			context.fill()
+			x += pixels
+		else:
+			break
+		if(x < (width - pixels)):
+			context.rectangle(x, y, pixels, pixels)
+			context.set_source_rgb(1, 0, 0)
+			context.fill()
+			x += pixels
+		else:
+			break
+
+	x = pixels
+	y += (2 * pixels)
+"""
+
+"""
+for i in range(75):
+	for j in range(150):
+		if(x.bits[j]):
+			context.rectangle(j, i, 1, 1)
+			context.set_source_rgb(0, 0, 0)
+			context.fill()
+		else:
+			context.rectangle(j, i, 1, 1)
+			context.set_source_rgb(1, 1, 1)
+			context.fill()
+	x = copy.deepcopy(eca.evolve(x))
+
+#context.rectangle(60, 179, 10, 10)
+#context.set_source_rgb(1, 0, 0)
+#context.fill()
+"""
+
+surface.write_to_png("../img/preview.png")

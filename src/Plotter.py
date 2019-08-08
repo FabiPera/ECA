@@ -79,6 +79,8 @@ def drawSimStep(surface, settings=SimSettings(), y=0, xL=None, xR=None, t=None, 
 					context.fill()
 		x += self.cellSize
 
+	return surface
+
 
 """
 class Plotter:
