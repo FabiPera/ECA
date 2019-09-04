@@ -1,16 +1,16 @@
-import gi, sys, Plotter
+import gi, sys
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gio, Gdk
 from FiGUI import *
+from Simulation import *
 
 class FiApp(Gtk.Application):
 
-	#cellSize=1
-	#cell1 = Gdk.RGBA(0, 0, 0, 1)
-	#cell0 = Gdk.RGBA(1, 1, 1, 1)
-	#bckg = Gdk.RGBA(0.62, 0.62, 0.62, 1)
-	#dfct = Gdk.RGBA(1, 0, 0, 1)
-	settings = Plotter.SimSettings()
+	cellSize = 1
+	cell1 = Gdk.RGBA(0, 0, 0, 1)
+	cell0 = Gdk.RGBA(1, 1, 1, 1)
+	bckg = Gdk.RGBA(0.62, 0.62, 0.62, 1)
+	dfct = Gdk.RGBA(1, 0, 0, 1)
 	switchRandValue = 0
 	switchConfValue = 0
 	switchAnalysisValue = 0
@@ -26,12 +26,12 @@ class FiApp(Gtk.Application):
 		super(FiApp, self).__init__()
 	
 	def do_activate(self):
-		self.mainWindow=MainWindow(self)
+		self.mainWindow = MainWindow(self)
 		
 		self.mainWindow.tab1.switchRandConf.connect("notify::active", self.onRandConfSwitch)
 		self.mainWindow.tab1.switchStr.connect("notify::active", self.onFillSwitch)
 		self.mainWindow.tab1.adjWidth.connect("value_changed", self.onWidthChange)
-		self.mainWindow.tab1.adjHeigth.connect("value_changed", self.onHeigthChange)
+		self.mainWindow.tab1.adjHeight.connect("value_changed", self.onHeightChange)
 		self.mainWindow.tab1.scaleRule.connect("value_changed", self.onRuleChange)
 		self.mainWindow.tab2.adjStrLenght.connect("value_changed", self.onStrLenChange)
 		self.mainWindow.tab2.switchSrc.connect("notify::active", self.onAnalysisSwitch)
@@ -94,20 +94,24 @@ class FiApp(Gtk.Application):
 		val = self.mainWindow.tab1.adjWidth.get_value()
 		self.mainWindow.tab2.adjDfctPos.set_upper(val)
 		self.mainWindow.tab2.adjDfctPos.set_value((val // 2) - 1)
+		self.length = int(val)
+		self.dfctPos = int((val // 2) - 1)
 		if(val):
 			self.mainWindow.tab1.adjWidth.set_step_increment(val)
 		else:
 			self.mainWindow.tab1.adjWidth.set_step_increment(8)
 
-	def onHeigthChange(self, widget):
-		val = self.mainWindow.tab1.adjHeigth.get_value()
+	def onHeightChange(self, widget):
+		val = self.mainWindow.tab1.adjHeight.get_value()
+		self.steps = int(val)
 		if(val):
-			self.mainWindow.tab1.adjHeigth.set_step_increment(val)
+			self.mainWindow.tab1.adjHeight.set_step_increment(val)
 		else:
-			self.mainWindow.tab1.adjHeigth.set_step_increment(8)
+			self.mainWindow.tab1.adjHeight.set_step_increment(8)
 
 	def onStrLenChange(self, widget):
 		val = self.mainWindow.tab2.adjStrLenght.get_value()
+		self.strLen = val
 		if(val):
 			self.mainWindow.tab2.adjStrLenght.set_step_increment(val)
 		else:
@@ -115,6 +119,29 @@ class FiApp(Gtk.Application):
 
 	def runSimulation(self, button):
 		print("Runing simulation...")
+		self.seed = self.mainWindow.tab1.getSeedValue()
+		eca = ECA(self.rule, self.length)
+		if(self.switchRandValue):
+			eca.setRandConf(self.density)
+		else:
+			eca.setConf(self.seed, self.switchConfValue)
+			print("Initial configuration")
+		
+		if(self.switchConfValue):
+			print("Fill with 1")
+		else:
+			print("Fill with 0")
+
+		print("Rule: " + str(self.rule))
+		print("Seed: " + self.seed)
+		print("Steps: " + str(self.steps))
+		print("Length: " + str(self.length))
+		print("Density: " + str(self.density))
+		print("Defect Position: " + str(self.dfctPos))
+		print("String length: " + str(self.strLen))
+
+		sim = Simulation(eca, self.steps)
+		sim.runSimulation()
 
 	def runAnalysis(self, button):
 		print("Runing analysis...")

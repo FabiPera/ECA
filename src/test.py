@@ -1,6 +1,7 @@
 import numpy as np, math, cairo, copy
 from Bitstring import Bitstring
-from ECA import ECA
+from Simulation import *
+#from Plotter import *
 
 """
 #Bitstring test
@@ -108,24 +109,29 @@ bs.bsFromInt(10)
 print(bs.binToInt())
 """
 
-pixels = 1
-width = 10001
-heigth = 5000
 
-eca = ECA(110, width)
+pixels = 1
+width = 1001
+height = 500
+
+eca = ECA(90, width)
 eca.setConf("1", 0)
+xp = Bitstring(1001)
+sim = Simulation(eca, 500)
+sim.runSimulation(xp)
+"""
 t = copy.deepcopy(eca.x)
 
-surface = cairo.ImageSurface(cairo.FORMAT_RGB24, width, heigth)
+surface = cairo.ImageSurface(cairo.FORMAT_RGB24, width, height)
 context = cairo.Context(surface)
-context.rectangle(0, 0, width, heigth)
+context.rectangle(0, 0, width, height)
 context.set_source_rgb(0.62, 0.62, 0.62)
 context.fill()
 
 x = pixels
 y = pixels
 
-for i in range(heigth):
+for i in range(height):
 	for j in range(width):
 		if(t.bits[j]):
 			context.rectangle(x, y, pixels, pixels)
@@ -139,9 +145,13 @@ for i in range(heigth):
 	x = pixels
 	y += pixels
 	t = copy.deepcopy(eca.evolve(t))
+	
+surface.write_to_png("../img/preview.png")
 
 """
-while(y < (heigth - pixels)):
+
+"""
+while(y < (height - pixels)):
 	while(x < (width - pixels)):
 		if(x < (width - pixels)):
 			context.rectangle(x, y, pixels, pixels)
@@ -185,6 +195,17 @@ for i in range(75):
 #context.rectangle(60, 179, 10, 10)
 #context.set_source_rgb(1, 0, 0)
 #context.fill()
-"""
 
-surface.write_to_png("../img/preview.png")
+"""
+"""
+width = 1001
+height = 500
+
+eca = ECA(90, width)
+eca.setConf("1", 0)
+settings = SimSettings()
+
+simulation = Simulation(eca)
+
+simulation.runSimulation()
+"""

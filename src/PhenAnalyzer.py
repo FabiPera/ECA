@@ -111,7 +111,6 @@ class PhenAnalyzer:
 		for i in range(self.dmgRad[0], self.dmgRad[1] + 1):
 			self.lyapExpNorm[i]=(1 / t) * (math.log(tRow[i]))
 
-
 	def getStrProb(self, strl):
 		numOfStr=2 ** strl
 		self.strProb=np.zeros(numOfStr, dtype=float)

@@ -1,4 +1,6 @@
-import numpy as np, copy
+import numpy as np, copy, gi, cairo, Plotter
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, Gio, Gdk
 from Bitstring import Bitstring
 
 class ECA:
@@ -90,24 +92,62 @@ class Simulation:
 	
 	steps = 0
 	eca = ECA()
+	xn = Bitstring()
 
 	def __init__(self, eca=ECA()):
 		self.eca = copy.deepcopy(eca)
+		self.xn = copy.deepcopy(eca.x)
 
 	def setSteps(self, steps=512):
 		self.steps = steps
 
 	def setECA(self, eca=ECA()):
 		self.eca = copy.deepcopy(eca)
+
+	def setXn(self, xn=Bitstring()):
+		self.xn = copy.deepcopy(xn)
+
+	def runSimulation(self):
+		width = self.eca.x.length * 1
+		height = self.steps * 1
+		surface = cairo.ImageSurface(cairo.FORMAT_RGB24, width, height)
+		for i in range(self.steps):
+			Plotter.drawSimStep(surface, y=i, t=self.xn)
+			self.xn = copy.deepcopy(self.eca.evolve(self.xn))
+		surface.write_to_png("../img/Simulation.png")
+
+	def nextStep(self, x=None):
+		self.xn = copy.deepcopy(self.eca.evolve(self.xn))
+		steps -= 1
+
+class SimSettings():
+
+	cellSize = 1
+	state0Color = Gdk.RGBA(1, 1, 1, 1)
+	state1Color = Gdk.RGBA(0, 0, 0, 1)
+	bckgColor = Gdk.RGBA(0.62, 0.62, 0.62, 1)
+	dfctColor = Gdk.RGBA(1, 0, 0, 1)
+
+	def __init__(self, cellSize=1, state0Color=Gdk.RGBA(1, 1, 1, 1), state1Color=Gdk.RGBA(0, 0, 0, 1), bckgColor=Gdk.RGBA(0.62, 0.62, 0.62, 1), dfctColor=Gdk.RGBA(1, 0, 0, 1)):
+		self.cellSize = cellSize
+		self.state0Color = state0Color
+		self.state1Color = state1Color
+		self.bckgColor = bckgColor
+		self.dfctColor = dfctColor
+
+	def setCellSize(self, cellSize=1):
+		self.cellSize = cellSize
+
+	def setState0Color(self, state0Color=Gdk.RGBA(1, 1, 1, 1)):
+		self.state0Color = state0Color
+
+	def setState1Color(self, state1Color=Gdk.RGBA(0, 0, 0, 1)):
+		self.state1Color = state1Color
+
+	def setBckgColor(self, bckgColor=Gdk.RGBA(0.62, 0.62, 0.62, 1)):
+		self.bckgColor = bckgColor
+
+	def setDfctColor(self, dfctColor=Gdk.RGBA(1, 0, 0, 1)):
+		self.dfctColor = dfctColor
+
 	
-	def nextStep(self, x0, x1=None):
-		if(x1 == None):
-			xn = Bitstring(x0.length)
-			xn = copy.deepcopy(self.eca.evolve(x0))
-			steps -= 1
-		else:
-			x0n = Bitstring(x0.length)
-			x1n = Bitstring(x1.length)
-			x0n = copy.deepcopy(self.eca.evolve(x0))
-			x1n = copy.deepcopy(self.eca.evolve(x1))
-			steps -= 1	

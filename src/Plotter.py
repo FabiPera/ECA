@@ -36,13 +36,13 @@ class SimSettings():
 
 def createSurface(cells, steps, cellSize):
 	width = cells * cellSize
-	heigth = steps * cellSize
-	surface = cairo.ImageSurface(cairo.FORMAT_RGB24, width, heigth)
+	height = steps * cellSize
+	surface = cairo.ImageSurface(cairo.FORMAT_RGB24, width, height)
 	return surface
 
 def drawSimStep(surface, settings=SimSettings(), y=0, xL=None, xR=None, t=None, tp=None):
 	context = cairo.Context(surface)
-	context.rectangle(0, 0, surface.get_width, surface.get_heigth)
+	context.rectangle(0, 0, surface.get_width, surface.get_height)
 	context.set_source_rgb(settings.bckgColor.red, settings.bckgColor.green, settings.bckgColor.blue)
 	context.fill()
 	
@@ -79,7 +79,7 @@ def drawSimStep(surface, settings=SimSettings(), y=0, xL=None, xR=None, t=None, 
 					context.fill()
 		x += self.cellSize
 
-	return surface
+	#return surface
 
 
 """
@@ -95,14 +95,14 @@ class Plotter:
 	def __init__(self, cellSize=1):
 		self.cellSize=cellSize
 
-	def createSurface(self, width=0, heigth=0):
+	def createSurface(self, width=0, height=0):
 		width *= self.cellSize
-		heigth *= self.cellSize
-		screen = pygame.Surface((width, heigth))
+		height *= self.cellSize
+		screen = pygame.Surface((width, height))
 		screen.fill(self.bckg)
 		return screen
 
-	def drawStep(self, screen, width=1024, heigth=512, y=0, xL=None, xR=None, config=None, dmgConfig=None):
+	def drawStep(self, screen, width=1024, height=512, y=0, xL=None, xR=None, config=None, dmgConfig=None):
 
 		Draws the given configuration on the simulation screen.
 
