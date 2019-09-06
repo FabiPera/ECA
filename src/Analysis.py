@@ -18,11 +18,17 @@ class Analysis:
 		self.strLength = strLength
 		self.eca = copy.deepcopy(eca)
 
-	def simAnalysis(self):
+	def simAnalysis(self, sim1=Simulation(), sim2=Simulation()):
 		pass
 
 	def ruleAnalysis(self):
 		pass
+
+	def setDefect(self):
+		x = copy.deepcopy(self.eca.x)
+		x.bits[self.dfctPos] = not(self.eca.x.bits[self.dfctPos])
+		
+		return x
 
 	def getConeRadius(self, y, t, tp):
 		self.dmgRad[0] = self.dfctPos

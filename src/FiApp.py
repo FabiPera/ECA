@@ -3,6 +3,7 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gio, Gdk
 from FiGUI import *
 from Simulation import *
+from Analysis import *
 
 class FiApp(Gtk.Application):
 
@@ -141,10 +142,32 @@ class FiApp(Gtk.Application):
 		print("String length: " + str(self.strLen))
 
 		sim = Simulation(eca, self.steps)
-		sim.runSimulation()
+		sim.run(sim.steps)
+		sim.saveToPNG()
 
 	def runAnalysis(self, button):
 		print("Runing analysis...")
+		self.seed = self.mainWindow.tab1.getSeedValue()
+		if(self.switchAnalysisValue):
+			print("Rule analysis")
+			eca = ECA(self.rule, 5000)
+			eca.setRandConf()
+		else:
+			print("Simulation analysis")
+			eca = ECA(self.rule, self.length)
+			eca.setConf(self.seed, self.switchConfValue)
+			analysis = Analysis(self.dfctPos, self.strLen, eca)
+			sim1 = Simulation(eca, self.steps)
+			sim2 = Simulation(eca, self.steps)
+			sim2.eca.x = analysis.setDefect()
+
+		print("Rule: " + str(self.rule))
+		print("Seed: " + self.seed)
+		print("Steps: " + str(self.steps))
+		print("Length: " + str(self.length))
+		print("Density: " + str(self.density))
+		print("Defect Position: " + str(self.dfctPos))
+		print("String length: " + str(self.strLen))
 	
 	def saveSettings(self, button):
 		print("Saving setings...")
