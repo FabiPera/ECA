@@ -1,4 +1,4 @@
-import numpy as np, matplotlib.pyplot as plt, copy, math, 
+import numpy as np, matplotlib.pyplot as plt, copy, math
 from Bitstring import *
 from Simulation import *
 
@@ -9,7 +9,7 @@ class Analysis:
 	strLength = 16
 	dens = np.zeros(8, dtype=np.uint)
 	dmgRad = np.zeros(2, dtype=np.uint)
-	ttrow = np.zeros(1, dtype=np.udouble)
+	ttrow = np.zeros(1, dtype=np.double)
 	lyapExp = np.zeros(8, dtype=np.double)
 	strProb = np.zeros((2 ** strLength), dtype=float)
 
@@ -19,7 +19,7 @@ class Analysis:
 		self.eca = copy.deepcopy(eca)
 
 	def simAnalysis(self, sim1=Simulation(), sim2=Simulation()):
-		pass
+		print("Simulation analysis starting...")
 
 	def ruleAnalysis(self):
 		pass

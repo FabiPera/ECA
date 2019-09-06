@@ -160,6 +160,7 @@ class FiApp(Gtk.Application):
 			sim1 = Simulation(eca, self.steps)
 			sim2 = Simulation(eca, self.steps)
 			sim2.eca.x = analysis.setDefect()
+			analysis.simAnalysis(sim1, sim2)
 
 		print("Rule: " + str(self.rule))
 		print("Seed: " + self.seed)
