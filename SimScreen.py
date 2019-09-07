@@ -68,7 +68,7 @@ class SimScreen:
 		y *= 2
 		x=xL * 2
 
-		for i in range(xL, xR):
+		for i in range(int(xL), int(xR)):
 			if (dmgBitstr == None):
 				if bitStr.bits[i]:
 					self.screen.fill(self.cell1Clr, (x, y, 2, 2))

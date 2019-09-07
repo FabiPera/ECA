@@ -79,7 +79,7 @@ class PhenAnalyzer:
 		if (self.dmgRad[0] == self.dmgRad[1]):
 			self.lyapExp[self.dfctPos] += 1.0
 		else:
-			for x in range(self.dmgRad[0], self.dmgRad[1] + 1):
+			for x in range(int(self.dmgRad[0]), int(self.dmgRad[1] + 1)):
 				self.lyapExp[x] += 1.0
 
 	def getTrinomialRow(self, kn, prev=np.ones(1, dtype=np.uint)):
