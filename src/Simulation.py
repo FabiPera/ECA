@@ -88,7 +88,6 @@ class ECA:
 
 		return xn
 
-
 class Simulation:
 
 	eca = ECA()
@@ -115,16 +114,24 @@ class Simulation:
 		self.cellSize = cellSize
 
 	def setState0Color(self, color):
-		self.state0Color = color.copy()
+		self.state0Color.red = color.red
+		self.state0Color.blue = color.blue
+		self.state0Color.green = color.green
 
 	def setState1Color(self, color):
-		self.state1Color = color.copy()
+		self.state1Color.red = color.red
+		self.state1Color.blue = color.blue
+		self.state1Color.green = color.green
 
 	def setBckgColor(self, color):
-		self.bckgColor = color.copy()
+		self.bckgColor.red = color.red
+		self.bckgColor.blue = color.blue
+		self.bckgColor.green = color.green
 
 	def setDfctColor(self, color):
-		self.dfctColor = color.copy()
+		self.dfctColor.red = color.red
+		self.dfctColor.blue = color.blue
+		self.dfctColor.green = color.green
 
 	def setECA(self, eca):
 		self.eca = copy.deepcopy(eca)

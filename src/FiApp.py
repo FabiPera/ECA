@@ -35,6 +35,10 @@ class FiApp(Gtk.Application):
 		self.mainWindow.tab1.scaleRule.connect("value_changed", self.onRuleChange)
 		self.mainWindow.tab2.adjStrLenght.connect("value_changed", self.onStrLenChange)
 		self.mainWindow.tab2.switchSrc.connect("notify::active", self.onAnalysisSwitch)
+		self.mainWindow.tab3.state1Color.connect("color-set", self.onColor1Change)
+		self.mainWindow.tab3.state0Color.connect("color-set", self.onColor2Change)
+		self.mainWindow.tab3.bckgColor.connect("color-set", self.onColor3Change)
+		self.mainWindow.tab3.dfctColor.connect("color-set", self.onColor4Change)
 
 		run = self.mainWindow.toolbar.get_nth_item(0)
 		analysis = self.mainWindow.toolbar.get_nth_item(1)
@@ -117,6 +121,26 @@ class FiApp(Gtk.Application):
 		else:
 			self.mainWindow.tab2.adjStrLenght.set_step_increment(8)
 
+	def onColor1Change(self, widget):
+		self.cell1.red = widget.get_rgba().red
+		self.cell1.blue = widget.get_rgba().blue
+		self.cell1.green = widget.get_rgba().green
+
+	def onColor2Change(self, widget):
+		self.cell0.red = widget.get_rgba().red
+		self.cell0.blue = widget.get_rgba().blue
+		self.cell0.green = widget.get_rgba().green
+
+	def onColor3Change(self, widget):
+		self.bckg.red = widget.get_rgba().red
+		self.bckg.blue = widget.get_rgba().blue
+		self.bckg.green = widget.get_rgba().green
+
+	def onColor4Change(self, widget):
+		self.dfct.red = widget.get_rgba().red
+		self.dfct.blue = widget.get_rgba().blue
+		self.dfct.green = widget.get_rgba().green
+
 	def runSimulation(self, button):
 		print("Runing simulation...")
 		self.seed = self.mainWindow.tab1.getSeedValue()
@@ -141,7 +165,11 @@ class FiApp(Gtk.Application):
 		print("String length: " + str(self.strLen))
 
 		sim = Simulation(eca, self.steps)
-		sim.runSimulation()
+		sim.setState0Color(self.cell0)
+		sim.setState1Color(self.cell1)
+		sim.setBckgColor(self.bckg)
+		sim.run(sim.steps)
+		sim.saveToPNG()
 
 	def runAnalysis(self, button):
 		print("Runing analysis...")

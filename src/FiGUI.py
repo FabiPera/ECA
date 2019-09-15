@@ -65,10 +65,10 @@ class MainWindow(Gtk.ApplicationWindow):
 
 		self.tab1 = SimulationTab()
 		self.tab2 = AnalysisTab()
-		self.tab3Layout = SettingsTab()
+		self.tab3 = SettingsTab()
 		tabView.child_set_property(self.tab1, "tab-fill", True)
 		tabView.child_set_property(self.tab2, "tab-fill", True)
-		tabView.child_set_property(self.tab3Layout, "tab-fill", True)
+		tabView.child_set_property(self.tab3, "tab-fill", True)
 
 		tabLabel1 = Gtk.Label.new("Simulation Settings")
 		tabLabel2 = Gtk.Label.new("Analysis")
@@ -76,7 +76,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
 		tabView.append_page(self.tab1, tabLabel1)
 		tabView.append_page(self.tab2, tabLabel2)
-		tabView.append_page(self.tab3Layout, tabLabel3)
+		tabView.append_page(self.tab3, tabLabel3)
 		self.mainGrid.attach(tabView, 0, 1, 6, 1)
 		self.add(self.mainGrid)
 
