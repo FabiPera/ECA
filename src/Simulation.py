@@ -27,7 +27,7 @@ class ECA:
 	rule = Bitstring(8)
 	x = Bitstring()
 
-	def __init__(self, rule=0, length=8):
+	def __init__(self, rule=0, length=5000):
 		self.rule.bsFromInt(rule)
 		self.x = Bitstring(length)
 
@@ -142,10 +142,20 @@ class Simulation:
 	def setXn(self, x):
 		self.xn = copy.deepcopy(x)
 
-	def run(self, steps=1, xp=None):
-		for i in range(steps):
-			self.draw(y=i, t=self.xn, tp=xp)
-			self.xn = copy.deepcopy(self.eca.evolve(self.xn))
+	def setSettings(self, cellSize, color1, color2, color3, color4):
+		self.cellSize = cellSize
+		self.setState0Color(color1)
+		self.setState1Color(color2) 
+		self.setBckgColor(color3) 
+		self.setDfctColor(color4)
+
+	def run(self):
+		for i in range(self.steps):
+			self.stepForward(y=i)
+
+	def stepForward(self, y, xp=None):
+		self.draw(y=y, t=self.xn, tp=xp)
+		self.xn = copy.deepcopy(self.eca.evolve(self.xn))
 
 	def draw(self, y=0, xL=None, xR=None, t=None, tp=None):
 		context = cairo.Context(self.surface)

@@ -1,29 +1,32 @@
-import numpy as np, matplotlib.pyplot as plt, copy, math, 
+import numpy as np, matplotlib.pyplot as plt, copy, math
 from Bitstring import *
 from Simulation import *
 
 class Analysis:
 
-	eca = ECA()
 	dfctPos = 0
 	strLength = 16
+	sim = Simulation()
 	dens = np.zeros(8, dtype=np.uint)
 	dmgRad = np.zeros(2, dtype=np.uint)
-	ttrow = np.zeros(1, dtype=np.udouble)
+	ttrow = np.zeros(1, dtype=np.double)
 	lyapExp = np.zeros(8, dtype=np.double)
-	strProb = np.zeros((2 ** strLength), dtype=float)
+	strProb = np.zeros((2 ** strLength), dtype=np.double)
 
-	def __init__(self, dfctPos=0, strLength=16, eca=ECA()):
+	def __init__(self, dfctPos=0, strLength=16, sim=Simulation()):
 		self.dfctPos = dfctPos
 		self.strLength = strLength
-		self.eca = copy.deepcopy(eca)
+		self.dens = np.zeros(self.sim.steps, dtype=np.uint)
+		self.lyapExp = np.zeros(self.sim.steps, dtype=np.double)
+		self.strProb = np.zeros(int((2 ** self.strLength)), dtype=np.double)
+		self.sim = Simulation(sim.eca, sim.steps)
+		self.sim.setSettings(sim.cellSize, sim.state0Color, sim.state1Color, sim.bckgColor, sim.dfctColor)
 
-	def simAnalysis(self):
-		pass
-
-	def ruleAnalysis(self):
-		pass
-
+	def getDensity(self, xn):
+		for i in range(xn.length):
+			if(xn.bits[i]):
+				self.dens[i] += 1
+	
 	def getConeRadius(self, y, t, tp):
 		self.dmgRad[0] = self.dfctPos
 		self.dmgRad[1] = self.dfctPos
@@ -77,6 +80,59 @@ class Analysis:
 	def getLyapunovExp(self, t):
 		for i in range(len(self.lyapExp)):
 			if(self.lyapExp[i] > 0):
-				self.lyapExp[i] = (1 / t) * (math.log(self.lyapExp[i]))
+				self.lyapExp[i] = (1 / t) * (math.log(self.lyapExp[i]))	
 
-	
+	def getEntropy(self, totalStr):
+		string = Bitstring(self.strLength)
+		theta = 0.0
+		entropy = 0.0
+		for i in range(totalStr):
+			k = i
+			for j in range(self.strLength):
+				string.bits[j] = self.sim.xn.bits[k]
+				k += 1
+			n = string.binToInt()
+			self.strProb[n] += 1.0
+		
+		for i in range(len(self.strProb)):
+			if(self.strProb[i]):
+				theta += 1.0
+			
+		if(theta):
+			entropy = ((1.0 / self.strLength) * math.log(theta, 2))
+		return entropy
+
+	def simAnalysis(self):
+		asim = Simulation(self.sim.eca, self.sim.steps)
+		asim.setSettings(self.sim.cellSize, self.sim.state0Color, self.sim.state1Color, self.sim.bckgColor, self.sim.dfctColor)
+		asim.xn.bits[self.dfctPos] = not(asim.xn.bits[self.dfctPos])
+		totalStr = self.sim.xn.length - self.strLength
+		entropy = np.zeros(self.sim.steps, dtype=np.double)
+
+		for i in range(self.sim.steps):
+			self.strProb = np.zeros(int((2 ** self.strLength)), dtype=np.double)
+			self.getDensity(self.sim.xn)
+			self.getConeRadius(i, asim.xn, self.sim.xn)
+			self.countDefects(asim.xn, self.sim.xn)
+			asim.stepForward(i, self.sim.xn)
+			self.sim.stepForward(i)
+			entropy[i] = self.getEntropy(totalStr)
+		
+		self.getLyapunovExp(self.sim.steps)
+		plt.figure("Density")
+		plt.plot(self.dens, "m,-")
+		plt.savefig("Density.png")
+		plt.clf()
+		plt.figure("Lyapunov exponents")
+		plt.plot(self.lyapExp, "m,-")
+		plt.savefig("LyapunovExp.png")
+		plt.clf()
+		plt.figure("Entropy")
+		plt.plot(entropy, "m,-")
+		plt.savefig("Entropy.png")
+		plt.clf()
+		asim.saveToPNG(fileName="dsimulation.png")
+		self.sim.saveToPNG()
+
+	def ruleAnalysis(self):
+		pass

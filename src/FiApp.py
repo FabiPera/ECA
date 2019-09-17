@@ -1,8 +1,9 @@
-import gi, sys
+import gi, sys, subprocess, os
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gio, Gdk
 from FiGUI import *
 from Simulation import *
+from Analysis import *
 
 class FiApp(Gtk.Application):
 
@@ -115,7 +116,7 @@ class FiApp(Gtk.Application):
 
 	def onStrLenChange(self, widget):
 		val = self.mainWindow.tab2.adjStrLenght.get_value()
-		self.strLen = val
+		self.strLen = int(val)
 		if(val):
 			self.mainWindow.tab2.adjStrLenght.set_step_increment(val)
 		else:
@@ -141,6 +142,15 @@ class FiApp(Gtk.Application):
 		self.dfct.blue = widget.get_rgba().blue
 		self.dfct.green = widget.get_rgba().green
 
+	def openFile(self, filePath="../img/", fileName="simulation.png"):
+		path = filePath + fileName
+		if sys.platform.startswith("darwin"):
+			subprocess.call(("open", path))
+		elif os.name == "nt":
+			os.startfile(path)
+		elif os.name == "posix":
+			subprocess.call(("xdg-open", path))
+
 	def runSimulation(self, button):
 		print("Runing simulation...")
 		self.seed = self.mainWindow.tab1.getSeedValue()
@@ -161,18 +171,35 @@ class FiApp(Gtk.Application):
 		print("Steps: " + str(self.steps))
 		print("Length: " + str(self.length))
 		print("Density: " + str(self.density))
-		print("Defect Position: " + str(self.dfctPos))
-		print("String length: " + str(self.strLen))
 
 		sim = Simulation(eca, self.steps)
 		sim.setState0Color(self.cell0)
 		sim.setState1Color(self.cell1)
 		sim.setBckgColor(self.bckg)
-		sim.run(sim.steps)
+		sim.run()
 		sim.saveToPNG()
+		self.openFile()
 
 	def runAnalysis(self, button):
-		print("Runing analysis...")
+		self.seed = self.mainWindow.tab1.getSeedValue()
+		if(self.switchAnalysisValue):
+			print("Running rule analysis...")
+			eca = ECA(self.rule)
+			eca.setRandConf(50)
+			analysis = Analysis(self.dfctPos, self.strLen, eca)
+		else:
+			print("Running simulation analysis...")
+			print("Rule: " + str(self.rule))
+			print("Seed: " + self.seed)
+			print("Steps: " + str(self.steps))
+			print("Length: " + str(self.length))
+			print("Defect Position: " + str(self.dfctPos))
+			print("String length: " + str(self.strLen))
+			eca = ECA(self.rule, self.length)
+			eca.setConf(self.seed, self.switchConfValue)
+			sim = Simulation(eca, self.steps)
+			analysis = Analysis(self.dfctPos, self.strLen, sim)
+			analysis.simAnalysis()
 	
 	def saveSettings(self, button):
 		print("Saving setings...")
