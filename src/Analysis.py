@@ -10,7 +10,7 @@ class Analysis:
 	dens = np.zeros(8, dtype=np.uint)
 	dmgRad = np.zeros(2, dtype=np.uint)
 	ttrow = np.zeros(1, dtype=np.double)
-	lyapExp = np.zeros(8, dtype=np.double)
+	lyapExp = np.zeros(8, dtype=np.ulonglong)
 	strProb = np.zeros((2 ** strLength), dtype=np.double)
 
 	def __init__(self, dfctPos=0, strLength=16, sim=Simulation()):
@@ -56,11 +56,11 @@ class Analysis:
 				if(t.bits[x] ^ tp.bits[x]):
 					self.lyapExp[x] += 1.0
 
-	def getTrinomialRow(self, kn, prev=np.ones(1, dtype=np.uint)):
+	def getTrinomialRow(self, kn, prev=np.ones(1, dtype=np.ulonglong)):
 		if(len(prev) == 1):
-			return np.ones(3, dtype=np.uint)
+			return np.ones(3, dtype=np.ulonglong)
 		else:
-			current = np.ones((len(prev) + 2), dtype=np.uint)
+			current = np.ones((len(prev) + 2), dtype=np.ulonglong)
 			currentmid = len(current) // 2
 			prevmid=len(prev) // 2
 			for i in range(kn):
@@ -77,10 +77,17 @@ class Analysis:
 						current[currentmid + i] = current[currentmid - i]
 			return current
 
+	def getTrinomialRow(self,)
+
 	def getLyapunovExp(self, t):
 		for i in range(len(self.lyapExp)):
 			if(self.lyapExp[i] > 0):
-				self.lyapExp[i] = (1 / t) * (math.log(self.lyapExp[i]))	
+				self.lyapExp[i] = (1 / t) * (math.log(self.lyapExp[i]))
+
+	def getLyapunovExpTT(self, t):
+		for i in range(int(self.dmgRad[0]), int(self.dmgRad[1] + 1)):
+			if(self.ttrow[i] > 0):
+				self.ttrow[i] = (1 / t) * (math.log(self.ttrow[i]))
 
 	def getEntropy(self, totalStr):
 		string = Bitstring(self.strLength)
@@ -114,22 +121,30 @@ class Analysis:
 			self.getDensity(self.sim.xn)
 			self.getConeRadius(i, asim.xn, self.sim.xn)
 			self.countDefects(asim.xn, self.sim.xn)
+			self.ttrow = copy.deepcopy(self.getTrinomialRow((i + 1), self.ttrow))
 			asim.stepForward(i, self.sim.xn)
 			self.sim.stepForward(i)
 			entropy[i] = self.getEntropy(totalStr)
 		
 		self.getLyapunovExp(self.sim.steps)
+		for h in range(int(len(self.ttrow) // 2)):
+			print(self.ttrow[h])
+		#self.getLyapunovExpTT(self.sim.steps)
 		plt.figure("Density")
 		plt.plot(self.dens, "m,-")
-		plt.savefig("Density.png")
+		plt.savefig("../img/Density.png")
 		plt.clf()
 		plt.figure("Lyapunov exponents")
 		plt.plot(self.lyapExp, "m,-")
-		plt.savefig("LyapunovExp.png")
+		plt.savefig("../img/LyapunovExp.png")
 		plt.clf()
+		#plt.figure("Lyapunov exponents TT")
+		#plt.plot(self.ttrow, "m,-")
+		#plt.savefig("../img/LyapunovExpTT.png")
+		#plt.clf()
 		plt.figure("Entropy")
 		plt.plot(entropy, "m,-")
-		plt.savefig("Entropy.png")
+		plt.savefig("../img/Entropy.png")
 		plt.clf()
 		asim.saveToPNG(fileName="dsimulation.png")
 		self.sim.saveToPNG()
