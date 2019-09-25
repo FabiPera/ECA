@@ -87,12 +87,12 @@ class Analysis:
 		else:
 			nt = []
 			nt.append((n[0] +  (n[1] * 2)))
-			print(len(n) - 1)
-			for i in range(1, (len(n) - 1)):
-				k = n[i - 1] + n[i] + n[i + 1]
+			for i in range(1, (len(n))):
+				if(i != (len(n) - 1)):
+					k = n[i - 1] + n[i] + n[i + 1]
+				else:
+					k = n[i - 1] + n[i]	
 				nt.append(k)
-			k = n[len(n) - 1] + n[len(n)]
-			nt.append(k)
 			nt.append(1)
 
 			return nt
@@ -102,8 +102,10 @@ class Analysis:
 			if(self.lyapExp[i] > 0):
 				self.lyapExp[i] = (1 / t) * (math.log(self.lyapExp[i]))
 
+"""
 a = Analysis()
 n = [1]
-for i in range(4):
+for i in range(256):
 	print(n)
 	n = copy.deepcopy(a.getTrinomialRow(n))
+"""
