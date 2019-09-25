@@ -59,30 +59,51 @@ class Analysis:
 				if(t.bits[x] ^ tp.bits[x]):
 					self.lyapExp[x] += 1.0
 
-	def getTrinomialRow(self, kn, prev=np.ones(1, dtype=np.uint)):
-		if(len(prev) == 1):
-			return np.ones(3, dtype=np.uint)
+	#def getTrinomialRow(self, kn, prev=np.ones(1, dtype=np.uint)):
+		#if(len(prev) == 1):
+		#	return np.ones(3, dtype=np.uint)
+		#else:
+		#	current = np.ones((len(prev) + 2), dtype=np.uint)
+		#	currentmid = len(current) // 2
+		#	prevmid=len(prev) // 2
+		#	for i in range(kn):
+		#		pointer1 = prevmid - i
+		#		pointer2 = prevmid + i
+		#		if(pointer1 == pointer2):
+		#			current[currentmid] = prev[prevmid - 1] + prev[prevmid] + prev[prevmid + 1]
+		#		else:
+		#			if((pointer1 - 1) >= 0):
+		#				current[currentmid - i] = prev[prevmid - i - 1] + prev[prevmid - i] + prev[prevmid - i + 1]
+		#				current[currentmid + i] = current[currentmid - i]
+		#			else:
+		#				current[currentmid - i] = prev[prevmid - i] + prev[prevmid - i + 1]
+		#				current[currentmid + i] = current[currentmid - i]
+		#	return current
+
+	def getTrinomialRow(self, n):
+		if(len(n) == 1):
+			n.append(1)
+			return n
 		else:
-			current = np.ones((len(prev) + 2), dtype=np.uint)
-			currentmid = len(current) // 2
-			prevmid=len(prev) // 2
-			for i in range(kn):
-				pointer1 = prevmid - i
-				pointer2 = prevmid + i
-				if(pointer1 == pointer2):
-					current[currentmid] = prev[prevmid - 1] + prev[prevmid] + prev[prevmid + 1]
-				else:
-					if((pointer1 - 1) >= 0):
-						current[currentmid - i] = prev[prevmid - i - 1] + prev[prevmid - i] + prev[prevmid - i + 1]
-						current[currentmid + i] = current[currentmid - i]
-					else:
-						current[currentmid - i] = prev[prevmid - i] + prev[prevmid - i + 1]
-						current[currentmid + i] = current[currentmid - i]
-			return current
+			nt = []
+			nt.append((n[0] +  (n[1] * 2)))
+			print(len(n) - 1)
+			for i in range(1, (len(n) - 1)):
+				k = n[i - 1] + n[i] + n[i + 1]
+				nt.append(k)
+			k = n[len(n) - 1] + n[len(n)]
+			nt.append(k)
+			nt.append(1)
+
+			return nt
 
 	def getLyapunovExp(self, t):
 		for i in range(len(self.lyapExp)):
 			if(self.lyapExp[i] > 0):
 				self.lyapExp[i] = (1 / t) * (math.log(self.lyapExp[i]))
 
-	
+a = Analysis()
+n = [1]
+for i in range(4):
+	print(n)
+	n = copy.deepcopy(a.getTrinomialRow(n))
