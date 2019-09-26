@@ -23,13 +23,30 @@ class Analysis:
 	def simAnalysis(self, sim1=Simulation(), sim2=Simulation()):
 		totalStr = sim1.xn.length - self.strLength
 		entropy = np.zeros(sim1.steps, dtype=np.double)
+		
 		for i in range(sim1.steps):
-			entropy[i] = self.getEntropy(totalStr, sim1.xn)
+			self.ttrow = copy.deepcopy(self.getTrinomialRow(self.ttrow))
 			self.countDefects(sim1.xn, sim2.xn)
-			sim1.stepForward(i)
+			entropy[i] = self.getEntropy(totalStr, sim1.xn)
 			sim2.stepForward(i, sim1.xn)
+			sim1.stepForward(i)
+		
+		sim1.saveToPNG(fileName="SimAnalysis.png")
+		sim2.saveToPNG(fileName="SimDefects.png")
+		self.getLyapunovExp(sim2.steps)
 
-
+		plt.figure("Density")
+		plt.plot(self.dens, "m,-")
+		plt.savefig("../sim/SimDensity.png")
+		plt.clf()
+		plt.figure("Lyapunov exponents")
+		plt.plot(self.ttrow, "m,-")
+		plt.savefig("../sim/LyapunovExp.png")
+		plt.clf()
+		plt.figure("Entropy")
+		plt.plot(entropy, "m,-")
+		plt.savefig("../sim/Entropy.png")
+		plt.clf()
 
 	def ruleAnalysis(self):
 		pass
@@ -63,7 +80,7 @@ class Analysis:
 
 	def getDensity(self, xn):
 		n = 0
-		for i in range(xn.length)
+		for i in range(xn.length):
 			if(xn.bits[i]):
 				n += 1
 		
@@ -122,6 +139,7 @@ class Analysis:
 	def getTrinomialRow(self, n):
 		if(len(n) == 1):
 			n.append(1)
+			
 			return n
 		else:
 			nt = []

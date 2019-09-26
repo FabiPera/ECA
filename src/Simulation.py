@@ -175,7 +175,7 @@ class Simulation:
 						context.fill()
 			x += self.cellSize
 
-	def saveToPNG(self, path="../img/", fileName="simulation.png"):
+	def saveToPNG(self, path="../sim/", fileName="simulation.png"):
 		simpng = path + fileName
 		self.surface.write_to_png(simpng)
 		print("PNG written")

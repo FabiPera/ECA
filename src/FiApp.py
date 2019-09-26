@@ -112,7 +112,7 @@ class FiApp(Gtk.Application):
 
 	def onStrLenChange(self, widget):
 		val = self.mainWindow.tab2.adjStrLenght.get_value()
-		self.strLen = val
+		self.strLen = int(val)
 		if(val):
 			self.mainWindow.tab2.adjStrLenght.set_step_increment(val)
 		else:
@@ -145,7 +145,7 @@ class FiApp(Gtk.Application):
 		for i in range(self.steps):
 			sim.stepForward(i)
 		
-		sim.saveToPNG()
+		sim.saveToPNG("../sim/", "simulation.png")
 
 	def runAnalysis(self, button):
 		print("Runing analysis...")
@@ -162,6 +162,7 @@ class FiApp(Gtk.Application):
 			sim1 = Simulation(eca, self.steps)
 			sim2 = Simulation(eca, self.steps)
 			sim2.eca.x = analysis.setDefect()
+			print(sim2.eca.x.bits)
 			analysis.simAnalysis(sim1, sim2)
 
 		print("Rule: " + str(self.rule))
