@@ -157,7 +157,10 @@ class FiApp(Gtk.Application):
 		else:
 			print("Simulation analysis")
 			eca = ECA(self.rule, self.length)
-			eca.setConf(self.seed, self.switchConfValue)
+			if(self.switchRandValue):
+				eca.setRandConf(self.density)
+			else:
+				eca.setConf(self.seed, self.switchConfValue)
 			analysis = Analysis(self.dfctPos, self.strLen, eca)
 			sim1 = Simulation(eca, self.steps)
 			sim2 = Simulation(eca, self.steps)

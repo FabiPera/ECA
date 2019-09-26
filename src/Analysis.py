@@ -1,6 +1,7 @@
 import numpy as np, matplotlib.pyplot as plt, copy, math
 from Bitstring import *
 from Simulation import *
+from Plotter import *
 
 class Analysis:
 
@@ -36,17 +37,11 @@ class Analysis:
 		sim2.saveToPNG(fileName="SimDefects.png")
 		self.getLyapunovExp(sim2.steps)
 
-		plt.figure("Density")
-		plt.plot(dens, "m,-")
-		plt.savefig("../sim/SimDensity.png")
-		plt.clf()
+		plotDensity(dens, sim1.xn.length)
+		plotEntropy(entropy)
 		plt.figure("Lyapunov exponents")
-		plt.plot(self.ttrow, "m,-")
+		plt.plot(self.lyapExp, "m,-")
 		plt.savefig("../sim/LyapunovExp.png")
-		plt.clf()
-		plt.figure("Entropy")
-		plt.plot(entropy, "m,-")
-		plt.savefig("../sim/Entropy.png")
 		plt.clf()
 
 	def ruleAnalysis(self):
@@ -85,6 +80,9 @@ class Analysis:
 			if(xn.bits[i]):
 				n += 1
 		
+		n *= 100
+		n = int(n // xn.length)
+
 		return n
 
 	def countDefects(self, t, tp):
@@ -116,27 +114,6 @@ class Analysis:
 		
 		return entropy
 
-	#def getTrinomialRow(self, kn, prev=np.ones(1, dtype=np.uint)):
-		#if(len(prev) == 1):
-		#	return np.ones(3, dtype=np.uint)
-		#else:
-		#	current = np.ones((len(prev) + 2), dtype=np.uint)
-		#	currentmid = len(current) // 2
-		#	prevmid=len(prev) // 2
-		#	for i in range(kn):
-		#		pointer1 = prevmid - i
-		#		pointer2 = prevmid + i
-		#		if(pointer1 == pointer2):
-		#			current[currentmid] = prev[prevmid - 1] + prev[prevmid] + prev[prevmid + 1]
-		#		else:
-		#			if((pointer1 - 1) >= 0):
-		#				current[currentmid - i] = prev[prevmid - i - 1] + prev[prevmid - i] + prev[prevmid - i + 1]
-		#				current[currentmid + i] = current[currentmid - i]
-		#			else:
-		#				current[currentmid - i] = prev[prevmid - i] + prev[prevmid - i + 1]
-		#				current[currentmid + i] = current[currentmid - i]
-		#	return current
-
 	def getTrinomialRow(self, n):
 		if(len(n) == 1):
 			n.append(1)
@@ -159,11 +136,3 @@ class Analysis:
 		for i in range(len(self.lyapExp)):
 			if(self.lyapExp[i] > 0):
 				self.lyapExp[i] = (1 / t) * (math.log(self.lyapExp[i]))
-
-"""
-a = Analysis()
-n = [1]
-for i in range(256):
-	print(n)
-	n = copy.deepcopy(a.getTrinomialRow(n))
-"""
