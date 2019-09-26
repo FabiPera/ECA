@@ -7,7 +7,6 @@ class Analysis:
 	eca = ECA()
 	dfctPos = 0
 	strLength = 16
-	dens = np.zeros(8, dtype=np.uint)
 	dmgRad = np.zeros(2, dtype=np.uint)
 	ttrow = [1]
 	lyapExp = np.zeros(8, dtype=np.double)
@@ -17,16 +16,18 @@ class Analysis:
 		self.dfctPos = dfctPos
 		self.strLength = strLength
 		self.eca = copy.deepcopy(eca)
-		self.dens = np.zeros(eca.x.length, dtype=np.uint)
 		self.lyapExp = np.zeros(eca.x.length, dtype=np.double)
 
 	def simAnalysis(self, sim1=Simulation(), sim2=Simulation()):
 		totalStr = sim1.xn.length - self.strLength
 		entropy = np.zeros(sim1.steps, dtype=np.double)
+		dens = np.zeros(sim1.steps, dtype=np.uint)
 		
 		for i in range(sim1.steps):
 			self.ttrow = copy.deepcopy(self.getTrinomialRow(self.ttrow))
+			self.getConeRadius(i, sim1.xn, sim2.xn)
 			self.countDefects(sim1.xn, sim2.xn)
+			dens[i] = self.getDensity(sim1.xn)
 			entropy[i] = self.getEntropy(totalStr, sim1.xn)
 			sim2.stepForward(i, sim1.xn)
 			sim1.stepForward(i)
@@ -36,7 +37,7 @@ class Analysis:
 		self.getLyapunovExp(sim2.steps)
 
 		plt.figure("Density")
-		plt.plot(self.dens, "m,-")
+		plt.plot(dens, "m,-")
 		plt.savefig("../sim/SimDensity.png")
 		plt.clf()
 		plt.figure("Lyapunov exponents")
