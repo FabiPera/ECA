@@ -9,7 +9,7 @@ class Analysis:
 	strLength = 16
 	dens = np.zeros(8, dtype=np.uint)
 	dmgRad = np.zeros(2, dtype=np.uint)
-	ttrow = np.zeros(1, dtype=np.double)
+	ttrow = [1]
 	lyapExp = np.zeros(8, dtype=np.double)
 	strProb = np.zeros((2 ** strLength), dtype=float)
 
@@ -17,9 +17,19 @@ class Analysis:
 		self.dfctPos = dfctPos
 		self.strLength = strLength
 		self.eca = copy.deepcopy(eca)
+		self.dens = np.zeros(eca.x.length, dtype=np.uint)
+		self.lyapExp = np.zeros(eca.x.length, dtype=np.double)
 
 	def simAnalysis(self, sim1=Simulation(), sim2=Simulation()):
-		print("Simulation analysis starting...")
+		totalStr = sim1.xn.length - self.strLength
+		entropy = np.zeros(sim1.steps, dtype=np.double)
+		for i in range(sim1.steps):
+			entropy[i] = self.getEntropy(totalStr, sim1.xn)
+			self.countDefects(sim1.xn, sim2.xn)
+			sim1.stepForward(i)
+			sim2.stepForward(i, sim1.xn)
+
+
 
 	def ruleAnalysis(self):
 		pass
@@ -51,6 +61,14 @@ class Analysis:
 			if((self.dmgRad[1] - self.dmgRad[0]) > (2 * y)):
 				self.dmgRad[0] = self.dfctPos
 
+	def getDensity(self, xn):
+		n = 0
+		for i in range(xn.length)
+			if(xn.bits[i]):
+				n += 1
+		
+		return n
+
 	def countDefects(self, t, tp):
 		if (self.dmgRad[0] == self.dmgRad[1]):
 			self.lyapExp[self.dfctPos] += 1.0
@@ -58,6 +76,27 @@ class Analysis:
 			for x in range(self.dmgRad[0], int(self.dmgRad[1] + 1)):
 				if(t.bits[x] ^ tp.bits[x]):
 					self.lyapExp[x] += 1.0
+
+	def getEntropy(self, totalStr, xn):
+		string = Bitstring(self.strLength)
+		theta = 0.0
+		entropy = 0.0
+		for i in range(totalStr):
+			k = i
+			for j in range(self.strLength):
+				string.bits[j] = xn.bits[k]
+				k += 1
+			n = string.binToInt()
+			self.strProb[n] += 1.0
+		
+		for i in range(len(self.strProb)):
+			if(self.strProb[i]):
+				theta += 1.0
+			
+		if(theta):
+			entropy=((1.0 / self.strLength) * math.log(theta, 2))
+		
+		return entropy
 
 	#def getTrinomialRow(self, kn, prev=np.ones(1, dtype=np.uint)):
 		#if(len(prev) == 1):

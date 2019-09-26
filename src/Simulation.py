@@ -135,10 +135,9 @@ class Simulation:
 	def setXn(self, x):
 		self.xn = copy.deepcopy(x)
 
-	def run(self, steps=1, xp=None):
-		for i in range(steps):
-			self.draw(y=i, t=self.xn, tp=xp)
-			self.xn = copy.deepcopy(self.eca.evolve(self.xn))
+	def stepForward(self, i, xp=None):
+		self.draw(y=i, t=self.xn, tp=xp)
+		self.xn = copy.deepcopy(self.eca.evolve(self.xn))
 
 	def draw(self, y=0, xL=None, xR=None, t=None, tp=None):
 		context = cairo.Context(self.surface)

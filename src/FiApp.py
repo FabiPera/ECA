@@ -142,7 +142,9 @@ class FiApp(Gtk.Application):
 		print("String length: " + str(self.strLen))
 
 		sim = Simulation(eca, self.steps)
-		sim.run(sim.steps)
+		for i in range(self.steps):
+			sim.stepForward(i)
+		
 		sim.saveToPNG()
 
 	def runAnalysis(self, button):
