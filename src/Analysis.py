@@ -18,6 +18,7 @@ class Analysis:
 		self.strLength = strLength
 		self.eca = copy.deepcopy(eca)
 		self.lyapExp = np.zeros(eca.x.length, dtype=np.double)
+		strProb = np.zeros((2 ** strLength), dtype=float)
 
 	def simAnalysis(self, sim1=Simulation(), sim2=Simulation()):
 		totalStr = sim1.xn.length - self.strLength
