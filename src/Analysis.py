@@ -6,19 +6,17 @@ from Plotter import *
 class Analysis:
 
 	eca = ECA()
+	ttrow = [1]
 	dfctPos = 0
 	strLength = 16
 	dmgRad = np.zeros(2, dtype=np.uint)
-	ttrow = [1]
 	lyapExp = np.zeros(8, dtype=np.double)
-	strProb = np.zeros((2 ** strLength), dtype=float)
 
 	def __init__(self, dfctPos=0, strLength=16, eca=ECA()):
 		self.dfctPos = dfctPos
 		self.strLength = strLength
 		self.eca = copy.deepcopy(eca)
 		self.lyapExp = np.zeros(eca.x.length, dtype=np.double)
-		strProb = np.zeros((2 ** strLength), dtype=float)
 
 	def simAnalysis(self, sim1=Simulation(), sim2=Simulation()):
 		totalStr = sim1.xn.length - self.strLength
@@ -87,7 +85,7 @@ class Analysis:
 		return n
 
 	def countDefects(self, t, tp):
-		if (self.dmgRad[0] == self.dmgRad[1]):
+		if(self.dmgRad[0] == self.dmgRad[1]):
 			self.lyapExp[self.dfctPos] += 1.0
 		else:
 			for x in range(self.dmgRad[0], int(self.dmgRad[1] + 1)):
@@ -95,6 +93,7 @@ class Analysis:
 					self.lyapExp[x] += 1.0
 
 	def getEntropy(self, totalStr, xn):
+		strProb = np.zeros((2 ** self.strLength), dtype=np.double)
 		string = Bitstring(self.strLength)
 		theta = 0.0
 		entropy = 0.0
@@ -104,10 +103,10 @@ class Analysis:
 				string.bits[j] = xn.bits[k]
 				k += 1
 			n = string.binToInt()
-			self.strProb[n] += 1.0
+			strProb[n] += 1.0
 		
-		for i in range(len(self.strProb)):
-			if(self.strProb[i]):
+		for i in range(len(strProb)):
+			if(strProb[i]):
 				theta += 1.0
 			
 		if(theta):
