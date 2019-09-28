@@ -136,3 +136,19 @@ class Analysis:
 		for i in range(len(self.lyapExp)):
 			if(self.lyapExp[i] > 0):
 				self.lyapExp[i] = (1 / t) * (math.log(self.lyapExp[i]))
+
+	def getLyapExp(self, epsilon, n, t):
+		lyapExp = np.zeros(n, dtype=np.double)
+		if(len(epsilon) < n):
+			i = n - 1
+			j = 0
+			while(i):
+				lyapExp[j] = (1 / t) * (math.log(epsilon[i]))
+				j += 1
+			while(i < n):
+				lyapExp[j] = (1 / t) * (math.log(epsilon[i]))
+				j += 1
+		else:
+			for i in range(n):
+				if(epsilon[i] > 0):
+					lyapExp[i] = (1 / t) * (math.log(epsilon[i]))
