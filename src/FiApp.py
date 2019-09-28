@@ -34,6 +34,7 @@ class FiApp(Gtk.Application):
 		self.mainWindow.tab1.adjWidth.connect("value_changed", self.onWidthChange)
 		self.mainWindow.tab1.adjHeight.connect("value_changed", self.onHeightChange)
 		self.mainWindow.tab1.scaleRule.connect("value_changed", self.onRuleChange)
+		self.mainWindow.tab1.scaleDens.connect("value_changed", self.onDensChange)
 		self.mainWindow.tab2.adjStrLenght.connect("value_changed", self.onStrLenChange)
 		self.mainWindow.tab2.switchSrc.connect("notify::active", self.onAnalysisSwitch)
 
@@ -90,6 +91,10 @@ class FiApp(Gtk.Application):
 		self.rule = val
 		label.set_text("Rule "+str(val)+" icon")
 		self.mainWindow.tab1.ruleImage.set_from_file("../img/rule"+str(val)+".png")
+
+	def onDensChange(self, widget):
+		val = self.mainWindow.tab1.getDensValue()
+		self.density = int(val)
 
 	def onWidthChange(self, widget):
 		val = self.mainWindow.tab1.adjWidth.get_value()
@@ -152,8 +157,15 @@ class FiApp(Gtk.Application):
 		self.seed = self.mainWindow.tab1.getSeedValue()
 		if(self.switchAnalysisValue):
 			print("Rule analysis")
-			eca = ECA(self.rule, 5000)
+			eca = ECA(self.rule, 100001)
 			eca.setRandConf()
+			
+			analysis = Analysis(5000, 16, eca)
+			sim1 = Simulation(eca, 5000)
+			sim2 = Simulation(eca, 5000)
+			sim2.eca.x = analysis.setDefect()
+			sim2.xn = copy.deepcopy(sim2.eca.x)
+			analysis.simAnalysis(sim1, sim2)
 		else:
 			print("Simulation analysis")
 			eca = ECA(self.rule, self.length)
@@ -161,6 +173,7 @@ class FiApp(Gtk.Application):
 				eca.setRandConf(self.density)
 			else:
 				eca.setConf(self.seed, self.switchConfValue)
+			
 			analysis = Analysis(self.dfctPos, self.strLen, eca)
 			sim1 = Simulation(eca, self.steps)
 			sim2 = Simulation(eca, self.steps)
