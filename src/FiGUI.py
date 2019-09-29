@@ -65,10 +65,10 @@ class MainWindow(Gtk.ApplicationWindow):
 
 		self.tab1 = SimulationTab()
 		self.tab2 = AnalysisTab()
-		self.tab3Layout = SettingsTab()
+		self.tab3 = SettingsTab()
 		tabView.child_set_property(self.tab1, "tab-fill", True)
 		tabView.child_set_property(self.tab2, "tab-fill", True)
-		tabView.child_set_property(self.tab3Layout, "tab-fill", True)
+		tabView.child_set_property(self.tab3, "tab-fill", True)
 
 		tabLabel1 = Gtk.Label.new("Simulation Settings")
 		tabLabel2 = Gtk.Label.new("Analysis")
@@ -76,7 +76,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
 		tabView.append_page(self.tab1, tabLabel1)
 		tabView.append_page(self.tab2, tabLabel2)
-		tabView.append_page(self.tab3Layout, tabLabel3)
+		tabView.append_page(self.tab3, tabLabel3)
 		self.mainGrid.attach(tabView, 0, 1, 6, 1)
 		self.add(self.mainGrid)
 
@@ -201,10 +201,16 @@ class AnalysisTab(Gtk.Box):
 	adjStrLenght = Gtk.Adjustment.new(8, 0, 1024, 8, 1, 1)
 	scaleDfectPos = Gtk.Scale.new(0, adjDfctPos)
 	entryStrLength = Gtk.SpinButton.new(adjStrLenght, 8, 0)
+	lyapCheck = Gtk.CheckButton.new()
+	densCheck = Gtk.CheckButton.new()
+	entrCheck = Gtk.CheckButton.new()
 	switchSrc = Gtk.Switch.new()
 	labelDefect = Gtk.Label("Defect position: ", xalign=0)
 	labelStrLength = Gtk.Label("String length: ", xalign=0)
 	labelSrc = Gtk.Label("Simulation Analysis: ", xalign=0)
+	labelDens = Gtk.Label("Density: ", xalign=0)
+	labelEntr = Gtk.Label("Entropy : ", xalign=0)
+	labelLyap = Gtk.Label("Lyapunov Exp.: ", xalign=0)
 
 	def __init__(self):
 		super(AnalysisTab, self).__init__(orientation=1, spacing=30)
@@ -213,6 +219,7 @@ class AnalysisTab(Gtk.Box):
 		#Set the width in chars for the inputs
 		self.entryStrLength.set_width_chars(5)
 		self.scaleDfectPos.set_digits(0)
+		self.densCheck.set_active(True)
 
 		listbox = Gtk.ListBox()
 		listbox.set_selection_mode(0)
@@ -227,9 +234,15 @@ class AnalysisTab(Gtk.Box):
 		hbox1.pack_start(vbox1, 1, 1, 0)
 		hbox1.pack_start(vbox2, 1, 1, 0)
 		vbox1.pack_start(self.labelSrc, 1, 1, 0)
+		vbox1.pack_start(self.labelDens, 1, 1, 0)
+		vbox1.pack_start(self.labelEntr, 1, 1, 0)
+		vbox1.pack_start(self.labelLyap, 1, 1, 0)
 		vbox1.pack_start(self.labelDefect, 1, 1, 0)
 		vbox1.pack_start(self.labelStrLength, 1, 1, 0)
 		vbox2.pack_start(switchbox1, 1, 1, 0)
+		vbox2.pack_start(self.densCheck, 1, 1, 0)
+		vbox2.pack_start(self.entrCheck, 1, 1, 0)
+		vbox2.pack_start(self.lyapCheck, 1, 1, 0)
 		vbox2.pack_start(self.scaleDfectPos, 1, 1, 0)
 		vbox2.pack_start(self.entryStrLength, 1, 1, 0)
 		

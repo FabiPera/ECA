@@ -1,4 +1,4 @@
-import numpy as np, matplotlib.pyplot as plt, copy, math
+import numpy as np, matplotlib.pyplot as plt, copy, math, threading
 from Bitstring import *
 from Simulation import *
 from Plotter import *
@@ -9,42 +9,84 @@ class Analysis:
 	ttrow = [1]
 	dfctPos = 0
 	strLength = 16
+	analysisOp = [1, 0, 0]
+	dens = np.zeros(8, dtype=np.uint)
 	dmgRad = np.zeros(2, dtype=np.uint)
+	defects = np.zeros(8, dtype=np.uint)
+	entropy = np.zeros(8, dtype=np.double)
 	lyapExp = np.zeros(8, dtype=np.double)
+	lyapExpNorm = np.zeros(8, dtype=np.double)
 
-	def __init__(self, dfctPos=0, strLength=16, eca=ECA()):
+
+	def __init__(self, dfctPos=0, strLength=16, eca=ECA(), analysisOp=[1, 0, 0]):
 		self.dfctPos = dfctPos
 		self.strLength = strLength
 		self.eca = copy.deepcopy(eca)
+		self.analysisOp = copy.deepcopy(analysisOp)
+		self.defects = np.zeros(eca.x.length, dtype=np.uint)
 		self.lyapExp = np.zeros(eca.x.length, dtype=np.double)
+		self.lyapExpNorm = np.zeros(eca.x.length, dtype=np.double)
 
 	def simAnalysis(self, sim1=Simulation(), sim2=Simulation()):
+		threads = []
 		totalStr = sim1.xn.length - self.strLength
-		entropy = np.zeros(sim1.steps, dtype=np.double)
-		dens = np.zeros(sim1.steps, dtype=np.uint)
-		
+		self.dens = np.zeros(sim1.steps, dtype=np.uint)
+		self.entropy = np.zeros(sim1.steps, dtype=np.double)
+
 		for i in range(sim1.steps):
-			self.ttrow = copy.deepcopy(self.getTrinomialRow(self.ttrow))
-			self.getConeRadius(i, sim1.xn, sim2.xn)
+			if(self.analysisOp[0]):
+				x = threading.Thread(target=self.getDensity, args=(i, sim1.xn))
+				threads.append(x)
+				x.start()
+			if(self.analysisOp[1]):
+				x = threading.Thread(target=self.getEntropy, args=(i, totalStr, sim1.xn))
+				threads.append(x)
+				x.start()
+			if(self.analysisOp[2]):
+				x = threading.Thread(target=self.getTrinomialRow, args=(self.ttrow, ))
+				threads.append(x)
+				x.start()
+				x = threading.Thread(target=self.getConeRadius, args=(i, sim1.xn, sim2.xn))
+				threads.append(x)
+				x.start()
+
+			for x in threads:
+				x.join()
+			
 			self.countDefects(sim1.xn, sim2.xn)
-			dens[i] = self.getDensity(sim1.xn)
-			entropy[i] = self.getEntropy(totalStr, sim1.xn)
 			sim2.stepForward(i, sim1.xn)
 			sim1.stepForward(i)
 		
 		sim1.saveToPNG(fileName="SimAnalysis.png")
 		sim2.saveToPNG(fileName="SimDefects.png")
-		self.getLyapunovExp(sim2.steps)
+		threads = []
+		if(self.analysisOp[2]):
+			x = threading.Thread(target=self.getLyapExp, args=(self.ttrow, len(self.defects), sim1.steps))
+			threads.append(x)
+			x.start()
+			x = threading.Thread(target=self.getLyapExp, args=(self.defects, len(self.defects), sim1.steps))
+			threads.append(x)
+			x.start()
 
-		plotDensity(dens, sim1.xn.length)
-		plotEntropy(entropy)
-		plt.figure("Lyapunov exponents")
-		plt.plot(self.lyapExp, "m,-")
-		plt.savefig("../sim/LyapunovExp.png")
-		plt.clf()
+		for x in threads:
+			x.join()
+
+		if(self.analysisOp[0]):
+			plotDensity(self.dens, sim1.xn.length)
+		if(self.analysisOp[1]):
+			plotEntropy(self.entropy)
+		if(self.analysisOp[2]):
+			plt.figure("Lyapunov exponents")
+			plt.plot(self.lyapExp, "m,-")
+			plt.savefig("../sim/LyapunovExp.png")
+			plt.clf()
+			plt.figure("Lyapunov exponents Norm")
+			plt.plot(self.lyapExpNorm, "m,-")
+			plt.savefig("../sim/LyapunovExpNorm.png")
+			plt.clf()
 
 	def ruleAnalysis(self):
-		pass
+		print("Rule analysis")
 
 	def setDefect(self):
 		x = copy.deepcopy(self.eca.x)
@@ -73,7 +115,7 @@ class Analysis:
 			if((self.dmgRad[1] - self.dmgRad[0]) > (2 * y)):
 				self.dmgRad[0] = self.dfctPos
 
-	def getDensity(self, xn):
+	def getDensity(self, step, xn):
 		n = 0
 		for i in range(xn.length):
 			if(xn.bits[i]):
@@ -82,17 +124,18 @@ class Analysis:
 		n *= 100
 		n = int(n // xn.length)
 
-		return n
+		#return n
+		self.dens[step] = n
 
 	def countDefects(self, t, tp):
 		if(self.dmgRad[0] == self.dmgRad[1]):
-			self.lyapExp[self.dfctPos] += 1.0
+			self.defects[self.dfctPos] += 1.0
 		else:
 			for x in range(self.dmgRad[0], int(self.dmgRad[1] + 1)):
 				if(t.bits[x] ^ tp.bits[x]):
-					self.lyapExp[x] += 1.0
+					self.defects[x] += 1.0
 
-	def getEntropy(self, totalStr, xn):
+	def getEntropy(self, step, totalStr, xn):
 		strProb = np.zeros((2 ** self.strLength), dtype=np.double)
 		string = Bitstring(self.strLength)
 		theta = 0.0
@@ -112,7 +155,8 @@ class Analysis:
 		if(theta):
 			entropy=((1.0 / self.strLength) * math.log(theta, 2))
 		
-		return entropy
+		#return entropy
+		self.entropy[step] = entropy
 
 	def getTrinomialRow(self, n):
 		if(len(n) == 1):
@@ -130,25 +174,25 @@ class Analysis:
 				nt.append(k)
 			nt.append(1)
 
-			return nt
-
-	def getLyapunovExp(self, t):
-		for i in range(len(self.lyapExp)):
-			if(self.lyapExp[i] > 0):
-				self.lyapExp[i] = (1 / t) * (math.log(self.lyapExp[i]))
+			#return nt
+			self.ttrow = copy.deepcopy(nt)
 
 	def getLyapExp(self, epsilon, n, t):
-		lyapExp = np.zeros(n, dtype=np.double)
 		if(len(epsilon) < n):
-			i = n - 1
+			i = len(epsilon) - 1
 			j = 0
 			while(i):
-				lyapExp[j] = (1 / t) * (math.log(epsilon[i]))
+				print("j=" + str(j) + "i=" + str(i))
+				self.lyapExpNorm[j] = (1 / t) * (math.log(epsilon[i]))
 				j += 1
-			while(i < n):
-				lyapExp[j] = (1 / t) * (math.log(epsilon[i]))
+				i -= 1
+			print("------------")
+			while(i < len(epsilon) - 1):
+				print("j=" + str(j) + "i=" + str(i))
+				self.lyapExpNorm[j] = (1 / t) * (math.log(epsilon[i]))
 				j += 1
+				i += 1
 		else:
 			for i in range(n):
 				if(epsilon[i] > 0):
-					lyapExp[i] = (1 / t) * (math.log(epsilon[i]))
+					self.lyapExp[i] = (1 / t) * (math.log(epsilon[i]))

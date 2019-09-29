@@ -15,6 +15,7 @@ class FiApp(Gtk.Application):
 	switchRandValue = 0
 	switchConfValue = 0
 	switchAnalysisValue = 0
+	analysisOp = [1, 0, 0]
 	rule = 0
 	seed = ""
 	steps = 8
@@ -37,6 +38,9 @@ class FiApp(Gtk.Application):
 		self.mainWindow.tab1.scaleDens.connect("value_changed", self.onDensChange)
 		self.mainWindow.tab2.adjStrLenght.connect("value_changed", self.onStrLenChange)
 		self.mainWindow.tab2.switchSrc.connect("notify::active", self.onAnalysisSwitch)
+		self.mainWindow.tab2.densCheck.connect("notify::active", self.onDensCheck)
+		self.mainWindow.tab2.entrCheck.connect("notify::active", self.onEntrCheck)
+		self.mainWindow.tab2.lyapCheck.connect("notify::active", self.onLyapCheck)
 
 		run = self.mainWindow.toolbar.get_nth_item(0)
 		analysis = self.mainWindow.toolbar.get_nth_item(1)
@@ -79,11 +83,43 @@ class FiApp(Gtk.Application):
 		if(switchAnalysis.get_active()):
 			self.switchAnalysisValue = 1
 			label.set_text("Rule Analysis: ")
+			self.mainWindow.tab2.densCheck.set_active(True)
+			self.mainWindow.tab2.entrCheck.set_active(True)
+			self.mainWindow.tab2.lyapCheck.set_active(True)
 			self.mainWindow.tab2.scaleDfectPos.set_sensitive(False)
+			self.mainWindow.tab2.densCheck.set_sensitive(False)
+			self.mainWindow.tab2.entrCheck.set_sensitive(False)
+			self.mainWindow.tab2.lyapCheck.set_sensitive(False)
 		else:
 			self.switchAnalysisValue = 0
 			label.set_text("Simulation Analysis: ")
+			self.mainWindow.tab2.densCheck.set_active(False)
+			self.mainWindow.tab2.entrCheck.set_active(False)
+			self.mainWindow.tab2.lyapCheck.set_active(False)
 			self.mainWindow.tab2.scaleDfectPos.set_sensitive(True)
+			self.mainWindow.tab2.densCheck.set_sensitive(True)
+			self.mainWindow.tab2.entrCheck.set_sensitive(True)
+			self.mainWindow.tab2.lyapCheck.set_sensitive(True)
+
+		print(self.analysisOp)
+
+	def onDensCheck(self, check, active):
+		if(check.get_active()):
+			self.analysisOp[0] = 1
+		else:
+			self.analysisOp[0] = 0
+
+	def onEntrCheck(self, check, active):
+		if(check.get_active()):
+			self.analysisOp[1] = 1
+		else:
+			self.analysisOp[1] = 0
+
+	def onLyapCheck(self, check, active):
+		if(check.get_active()):
+			self.analysisOp[2] = 1
+		else:
+			self.analysisOp[2] = 0
 	
 	def onRuleChange(self, widget):
 		label = self.mainWindow.tab1.labelRuleIcon
@@ -131,12 +167,6 @@ class FiApp(Gtk.Application):
 			eca.setRandConf(self.density)
 		else:
 			eca.setConf(self.seed, self.switchConfValue)
-			print("Initial configuration")
-		
-		if(self.switchConfValue):
-			print("Fill with 1")
-		else:
-			print("Fill with 0")
 
 		print("Rule: " + str(self.rule))
 		print("Seed: " + self.seed)
@@ -159,13 +189,12 @@ class FiApp(Gtk.Application):
 			print("Rule analysis")
 			eca = ECA(self.rule, 100001)
 			eca.setRandConf()
-			
-			analysis = Analysis(5000, 16, eca)
+			analysis = Analysis(5000, 16, eca, self.analysisOp)
 			sim1 = Simulation(eca, 5000)
 			sim2 = Simulation(eca, 5000)
 			sim2.eca.x = analysis.setDefect()
 			sim2.xn = copy.deepcopy(sim2.eca.x)
-			analysis.simAnalysis(sim1, sim2)
+			analysis.ruleAnalysis()
 		else:
 			print("Simulation analysis")
 			eca = ECA(self.rule, self.length)
@@ -174,7 +203,7 @@ class FiApp(Gtk.Application):
 			else:
 				eca.setConf(self.seed, self.switchConfValue)
 			
-			analysis = Analysis(self.dfctPos, self.strLen, eca)
+			analysis = Analysis(self.dfctPos, self.strLen, eca, self.analysisOp)
 			sim1 = Simulation(eca, self.steps)
 			sim2 = Simulation(eca, self.steps)
 			sim2.eca.x = analysis.setDefect()
