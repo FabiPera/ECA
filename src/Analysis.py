@@ -54,12 +54,15 @@ class Analysis:
 			sim2.stepForward(i, sim1.xn)
 			sim1.stepForward(i)
 			if(self.analysisOp[2]):
-				self.getDefectSpreading(i, sim1.xn, sim2.xn)
+				self.getDefectSpreading((i + 1), sim1.xn, sim2.xn)
+
+		print(self.defects[self.dfctPos])
 		
 		sim1.saveToPNG(fileName="SimAnalysis.png")
 		sim2.saveToPNG(fileName="SimDefects.png")
 
 		self.getLyapExp(sim1.steps)
+		print(self.defects[self.dfctPos])
 		
 		# threads = []
 		# if(self.analysisOp[2]):
@@ -118,6 +121,12 @@ class Analysis:
 				self.dmgRad[0] = self.dfctPos
 
 		self.countDefects(t, tp)
+	
+	def countDefects(self, t, tp):
+		for c in range(self.dmgRad[0], int(self.dmgRad[1] + 1)):
+			self.defectsn[c] += 1
+			if(t.bits[c] ^ tp.bits[c]):
+				self.defects[c] += 1
 
 	def getDensity(self, step, xn):
 		n = 0
@@ -152,12 +161,6 @@ class Analysis:
 			entropy=((1.0 / self.strLength) * math.log(theta, 2))
 
 		self.entropy[step] = entropy
-	
-	def countDefects(self, t, tp):
-		for c in range(self.dmgRad[0], int(self.dmgRad[1] + 1)):
-			self.defectsn[c] += 1
-			if(t.bits[c] ^ tp.bits[c]):
-				self.defects[c] += 1
 
 	# def getTrinomialRow(self, n):
 	# 	if(len(n) == 1):
@@ -181,8 +184,8 @@ class Analysis:
 	def getLyapExp(self, t):
 		for i in range(len(self.defects)):
 			if(self.defects[i] > 0):
-				self.defects[i] = (1 / t) * (math.log(self.defects[i]))
+				self.defects[i] = (math.log(self.defects[i])) / t 
 
 		for i in range(len(self.defectsn)):
 			if(self.defectsn[i] > 0):
-				self.defectsn[i] = (1 / t) * (math.log(self.defectsn[i]))
+				self.defectsn[i] = (math.log(self.defectsn[i])) / t 
