@@ -281,8 +281,7 @@ class SettingsTab(Gtk.Box):
 		model = Gtk.ListStore(str, int)
 		model.append(["1 pixel", 1])
 		model.append(["2 pixels", 2])
-		model.append(["3 pixels", 5])
-		model.append(["5 pixels", 8])
+		model.append(["5 pixels", 5])
 		model.append(["10 pixels", 10])
 
 		self.comboCellSize = Gtk.ComboBox.new_with_model(model)

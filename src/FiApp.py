@@ -41,6 +41,7 @@ class FiApp(Gtk.Application):
 		self.mainWindow.tab2.densCheck.connect("notify::active", self.onDensCheck)
 		self.mainWindow.tab2.entrCheck.connect("notify::active", self.onEntrCheck)
 		self.mainWindow.tab2.lyapCheck.connect("notify::active", self.onLyapCheck)
+		self.mainWindow.tab3.comboCellSize.connect("changed", self.onCellSizeChange)
 
 		run = self.mainWindow.toolbar.get_nth_item(0)
 		analysis = self.mainWindow.toolbar.get_nth_item(1)
@@ -158,6 +159,12 @@ class FiApp(Gtk.Application):
 			self.mainWindow.tab2.adjStrLenght.set_step_increment(val)
 		else:
 			self.mainWindow.tab2.adjStrLenght.set_step_increment(8)
+
+	def onCellSizeChange(self, combo):
+		treeIter = combo.get_active_iter()
+		if(treeIter is not None):
+			model = combo.get_model()
+			self.cellSize = int(model[treeIter][1])
 
 	def runSimulation(self, button):
 		print("Runing simulation...")
