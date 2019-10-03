@@ -38,6 +38,7 @@ class FiApp(Gtk.Application):
 		self.mainWindow.tab1.scaleDens.connect("value_changed", self.onDensChange)
 		self.mainWindow.tab2.adjStrLenght.connect("value_changed", self.onStrLenChange)
 		self.mainWindow.tab2.switchSrc.connect("notify::active", self.onAnalysisSwitch)
+		self.mainWindow.tab2.scaleDfectPos.connect("value_changed", self.onDfctChange)
 		self.mainWindow.tab2.densCheck.connect("notify::active", self.onDensCheck)
 		self.mainWindow.tab2.entrCheck.connect("notify::active", self.onEntrCheck)
 		self.mainWindow.tab2.lyapCheck.connect("notify::active", self.onLyapCheck)
@@ -103,6 +104,10 @@ class FiApp(Gtk.Application):
 			self.mainWindow.tab2.lyapCheck.set_sensitive(True)
 
 		print(self.analysisOp)
+	
+	def onDfctChange(self, widget):
+		val = self.mainWindow.tab2.getDfctPos()
+		self.dfctPos0 = int(val)
 
 	def onDensCheck(self, check, active):
 		if(check.get_active()):
@@ -165,6 +170,8 @@ class FiApp(Gtk.Application):
 		if(treeIter is not None):
 			model = combo.get_model()
 			self.cellSize = int(model[treeIter][1])
+		
+		#print(self.cellSize)
 
 	def runSimulation(self, button):
 		print("Runing simulation...")
@@ -182,8 +189,10 @@ class FiApp(Gtk.Application):
 		print("Density: " + str(self.density))
 		print("Defect Position: " + str(self.dfctPos))
 		print("String length: " + str(self.strLen))
+		print("Cell size: " + str(self.cellSize))
 
-		sim = Simulation(eca, self.steps)
+		sim = Simulation(eca, self.steps, self.cellSize)
+		sim.setCellSize(self.cellSize)
 		for i in range(self.steps):
 			sim.stepForward(i)
 		
@@ -197,8 +206,8 @@ class FiApp(Gtk.Application):
 			eca = ECA(self.rule, 100001)
 			eca.setRandConf()
 			analysis = Analysis(5000, 16, eca, self.analysisOp)
-			sim1 = Simulation(eca, 5000)
-			sim2 = Simulation(eca, 5000)
+			sim1 = Simulation(eca, 5000, self.cellSize)
+			sim2 = Simulation(eca, 5000, self.cellSize)
 			sim2.eca.x = analysis.setDefect()
 			sim2.xn = copy.deepcopy(sim2.eca.x)
 			analysis.ruleAnalysis()
@@ -211,8 +220,8 @@ class FiApp(Gtk.Application):
 				eca.setConf(self.seed, self.switchConfValue)
 			
 			analysis = Analysis(self.dfctPos, self.strLen, eca, self.analysisOp)
-			sim1 = Simulation(eca, self.steps)
-			sim2 = Simulation(eca, self.steps)
+			sim1 = Simulation(eca, self.steps, self.cellSize)
+			sim2 = Simulation(eca, self.steps, self.cellSize)
 			sim2.eca.x = analysis.setDefect()
 			sim2.xn = copy.deepcopy(sim2.eca.x)
 			analysis.simAnalysis(sim1, sim2)
@@ -224,6 +233,7 @@ class FiApp(Gtk.Application):
 		print("Density: " + str(self.density))
 		print("Defect Position: " + str(self.dfctPos))
 		print("String length: " + str(self.strLen))
+		print("Cell size: " + str(self.cellSize))
 	
 	def saveSettings(self, button):
 		print("Saving setings...")

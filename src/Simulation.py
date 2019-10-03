@@ -101,13 +101,14 @@ class Simulation:
 	dfctColor = Gdk.RGBA(1, 0, 0, 1)
 	surface = cairo.ImageSurface(cairo.FORMAT_RGB24, 0, 0)
 
-	def __init__(self, eca=ECA(), steps=512):
+	def __init__(self, eca=ECA(), steps=512, cellSize=1):
 		self.eca = copy.deepcopy(eca)
 		self.steps = steps
 		self.xn = copy.deepcopy(eca.x)
-		self.surface = cairo.ImageSurface(cairo.FORMAT_RGB24, self.xn.length, self.steps)
+		self.cellSize = cellSize
+		self.surface = cairo.ImageSurface(cairo.FORMAT_RGB24, (self.xn.length * self.cellSize), (self.steps * self.cellSize))
 		context = cairo.Context(self.surface)
-		context.rectangle(0, 0, self.xn.length, self.steps)
+		context.rectangle(0, 0, (self.xn.length * self.cellSize), (self.steps * self.cellSize))
 		context.set_source_rgb(self.bckgColor.red, self.bckgColor.green, self.bckgColor.blue)
 		context.fill()
 
@@ -141,6 +142,7 @@ class Simulation:
 
 	def draw(self, y=0, xL=None, xR=None, t=None, tp=None):
 		context = cairo.Context(self.surface)
+		context.set_line_width(0.5)
 
 		if(xL == None and xR == None):
 			xL = 0
@@ -156,6 +158,7 @@ class Simulation:
 					context.set_source_rgb(self.state1Color.red, self.state1Color.green, self.state1Color.blue)
 					context.fill()
 				else:
+					context.set_source_rgb(self.state1Color.red, self.state1Color.green, self.state1Color.blue)
 					context.rectangle(x, y, self.cellSize, self.cellSize)
 					context.set_source_rgb(self.state0Color.red, self.state0Color.green, self.state0Color.blue)
 					context.fill()
@@ -170,6 +173,7 @@ class Simulation:
 						context.set_source_rgb(self.state1Color.red, self.state1Color.green, self.state1Color.blue)
 						context.fill()
 					else:
+						context.set_source_rgb(self.state1Color.red, self.state1Color.green, self.state1Color.blue)
 						context.rectangle(x, y, self.cellSize, self.cellSize)
 						context.set_source_rgb(self.state0Color.red, self.state0Color.green, self.state0Color.blue)
 						context.fill()
