@@ -25,7 +25,7 @@ class Analysis:
 		self.defects = np.zeros(eca.x.length, dtype=np.double)
 		self.defectsn = np.zeros(eca.x.length, dtype=np.double)
 
-	def simAnalysis(self, sim1=Simulation(), sim2=Simulation()):
+	def simAnalysis(self, sim1, sim2):
 		threads = []
 		totalStr = sim1.xn.length - self.strLength
 		self.dens = np.zeros(sim1.steps, dtype=np.uint)

@@ -8,10 +8,10 @@ from Analysis import *
 class FiApp(Gtk.Application):
 
 	cellSize = 1
-	cell1 = Gdk.RGBA(0, 0, 0, 1)
-	cell0 = Gdk.RGBA(1, 1, 1, 1)
-	bckg = Gdk.RGBA(0.62, 0.62, 0.62, 1)
-	dfct = Gdk.RGBA(1, 0, 0, 1)
+	dColor = Gdk.RGBA(1, 0, 0, 1)
+	s1Color = Gdk.RGBA(0, 0, 0, 1)
+	s0Color = Gdk.RGBA(1, 1, 1, 1)
+	bColor = Gdk.RGBA(0.62, 0.62, 0.62, 1)
 	switchRandValue = 0
 	switchConfValue = 0
 	switchAnalysisValue = 0
@@ -166,12 +166,8 @@ class FiApp(Gtk.Application):
 			self.mainWindow.tab2.adjStrLenght.set_step_increment(8)
 
 	def onCellSizeChange(self, combo):
-		treeIter = combo.get_active_iter()
-		if(treeIter is not None):
-			model = combo.get_model()
-			self.cellSize = int(model[treeIter][1])
-		
-		#print(self.cellSize)
+		self.cellSize = self.mainWindow.tab3.getSize()
+		print(self.cellSize)
 
 	def runSimulation(self, button):
 		print("Runing simulation...")
@@ -191,8 +187,8 @@ class FiApp(Gtk.Application):
 		print("String length: " + str(self.strLen))
 		print("Cell size: " + str(self.cellSize))
 
-		sim = Simulation(eca, self.steps, self.cellSize)
-		sim.setCellSize(self.cellSize)
+		sim = Simulation(self.steps, self.cellSize, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
+		# sim.setCellSize(self.cellSize)
 		for i in range(self.steps):
 			sim.stepForward(i)
 		
@@ -203,11 +199,11 @@ class FiApp(Gtk.Application):
 		self.seed = self.mainWindow.tab1.getSeedValue()
 		if(self.switchAnalysisValue):
 			print("Rule analysis")
-			eca = ECA(self.rule, 100001)
-			eca.setRandConf()
+			eca = ECA(self.rule, 10001)
+			eca.setRandConf(50)
 			analysis = Analysis(5000, 16, eca, self.analysisOp)
-			sim1 = Simulation(eca, 5000, self.cellSize)
-			sim2 = Simulation(eca, 5000, self.cellSize)
+			sim1 = Simulation(5000, 1, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
+			sim2 = Simulation(5000, 1, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
 			sim2.eca.x = analysis.setDefect()
 			sim2.xn = copy.deepcopy(sim2.eca.x)
 			analysis.ruleAnalysis()
@@ -220,8 +216,8 @@ class FiApp(Gtk.Application):
 				eca.setConf(self.seed, self.switchConfValue)
 			
 			analysis = Analysis(self.dfctPos, self.strLen, eca, self.analysisOp)
-			sim1 = Simulation(eca, self.steps, self.cellSize)
-			sim2 = Simulation(eca, self.steps, self.cellSize)
+			sim1 = Simulation(self.steps, self.cellSize, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
+			sim2 = Simulation(self.steps, self.cellSize, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
 			sim2.eca.x = analysis.setDefect()
 			sim2.xn = copy.deepcopy(sim2.eca.x)
 			analysis.simAnalysis(sim1, sim2)
