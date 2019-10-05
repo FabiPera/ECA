@@ -174,24 +174,20 @@ class FiApp(Gtk.Application):
 		print(self.cellSize)
 
 	def onColor1Change(self, widget):
-		self.cell1.red = widget.get_rgba().red
-		self.cell1.blue = widget.get_rgba().blue
-		self.cell1.green = widget.get_rgba().green
+		color = widget.get_rgba()
+		self.s1Color = Gdk.RGBA(color.red, color.green, color.blue, 1)
 
 	def onColor2Change(self, widget):
-		self.cell0.red = widget.get_rgba().red
-		self.cell0.blue = widget.get_rgba().blue
-		self.cell0.green = widget.get_rgba().green
+		color = widget.get_rgba()
+		self.s0Color = Gdk.RGBA(color.red, color.green, color.blue, 1)
 
 	def onColor3Change(self, widget):
-		self.bckg.red = widget.get_rgba().red
-		self.bckg.blue = widget.get_rgba().blue
-		self.bckg.green = widget.get_rgba().green
+		color = widget.get_rgba()
+		self.bColor = Gdk.RGBA(color.red, color.green, color.blue, 1)
 
 	def onColor4Change(self, widget):
-		self.dfct.red = widget.get_rgba().red
-		self.dfct.blue = widget.get_rgba().blue
-		self.dfct.green = widget.get_rgba().green
+		color = widget.get_rgba()
+		self.dColor = Gdk.RGBA(color.red, color.green, color.blue, 1)
 
 	def openFile(self, filePath="../img/", fileName="simulation.png"):
 		path = filePath + fileName
@@ -221,7 +217,6 @@ class FiApp(Gtk.Application):
 		print("Cell size: " + str(self.cellSize))
 
 		sim = Simulation(self.steps, self.cellSize, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
-		# sim.setCellSize(self.cellSize)
 		for i in range(self.steps):
 			sim.stepForward(i)
 		

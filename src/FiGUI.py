@@ -165,14 +165,6 @@ class SimulationTab(Gtk.Box):
 		self.tab1Box.pack_start(listbox, 1, 0, 0)
 		self.pack_start(self.tab1Box, 1, 0, 0)
 
-	"""
-	def getSwitchRandValue(self):
-		return self.switchRandValue
-
-	def getSwitchConfValue(self):
-		return self.switchConfValue
-	"""
-
 	def getRuleValue(self):
 		rule = int(self.scaleRule.get_value())
 		return rule
