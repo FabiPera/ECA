@@ -1,6 +1,7 @@
 import numpy as np, math, cairo, copy
 from Bitstring import Bitstring
 from Simulation import *
+from Analysis import *
 #from Plotter import *
 
 """
@@ -109,7 +110,7 @@ bs.bsFromInt(10)
 print(bs.binToInt())
 """
 
-
+"""
 pixels = 1
 width = 1001
 height = 500
@@ -119,6 +120,8 @@ eca.setConf("1", 0)
 xp = Bitstring(1001)
 sim = Simulation(eca, 500)
 sim.runSimulation(xp)
+"""
+
 """
 t = copy.deepcopy(eca.x)
 
@@ -209,3 +212,12 @@ simulation = Simulation(eca)
 
 simulation.runSimulation()
 """
+
+analysis = Analysis()
+for i in range(32):
+	print((len(analysis.ttrow) * 2) - 1)
+	analysis.getTrinomialRow(analysis.ttrow)
+
+analysis.getTrinomialRow(analysis.ttrow)
+x = (1 / 33) * (math.log(analysis.ttrow[0]))	
+print(x)

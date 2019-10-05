@@ -90,48 +90,41 @@ class ECA:
 
 class Simulation:
 
-	eca = ECA()
 	steps = 0
+	eca = ECA()
 	xn = Bitstring()
 	cellSize = 1
-	state0Color = Gdk.RGBA(1, 1, 1, 1)
-	state1Color = Gdk.RGBA(0, 0, 0, 1)
-	bckgColor = Gdk.RGBA(0.62, 0.62, 0.62, 1)
-	dfctColor = Gdk.RGBA(1, 0, 0, 1)
+	dColor = Gdk.RGBA(1, 0, 0, 1)
+	s0Color = Gdk.RGBA(1, 1, 1, 1)
+	s1Color = Gdk.RGBA(0, 0, 0, 1)
+	bColor = Gdk.RGBA(0.62, 0.62, 0.62, 1)
 	surface = cairo.ImageSurface(cairo.FORMAT_RGB24, 0, 0)
 
-	def __init__(self, eca=ECA(), steps=512):
-		self.eca = copy.deepcopy(eca)
-		self.steps = steps
-		self.xn = copy.deepcopy(eca.x)
-		self.surface = cairo.ImageSurface(cairo.FORMAT_RGB24, self.xn.length, self.steps)
+	def __init__(self, steps, size, s0Color, s1Color, bColor, dColor, eca=ECA()):
+		self.setECA(eca)
+		self.setSteps(steps)
+		self.setCellSize(size)
+		self.setXn(eca.x)
+		self.setSurface()
 		context = cairo.Context(self.surface)
-		context.rectangle(0, 0, self.xn.length, self.steps)
-		context.set_source_rgb(self.bckgColor.red, self.bckgColor.green, self.bckgColor.blue)
+		context.rectangle(0, 0, (self.xn.length * self.cellSize), (self.steps * self.cellSize))
+		context.set_source_rgb(self.bColor.red, self.bColor.green, self.bColor.blue)
 		context.fill()
 
 	def setCellSize(self, cellSize):
 		self.cellSize = cellSize
 
-	def setState0Color(self, color):
-		self.state0Color.red = color.red
-		self.state0Color.blue = color.blue
-		self.state0Color.green = color.green
+	def sets0Color(self, color):
+		self.s0Color = Gdk.RGBA(color.red, color.green, color.blue, 1)
 
-	def setState1Color(self, color):
-		self.state1Color.red = color.red
-		self.state1Color.blue = color.blue
-		self.state1Color.green = color.green
+	def sets1Color(self, color):
+		self.s1Color = Gdk.RGBA(color.red, color.green, color.blue, 1)
 
-	def setBckgColor(self, color):
-		self.bckgColor.red = color.red
-		self.bckgColor.blue = color.blue
-		self.bckgColor.green = color.green
+	def setbColor(self, color):
+		self.bColor = Gdk.RGBA(color.red, color.green, color.blue, 1)
 
-	def setDfctColor(self, color):
-		self.dfctColor.red = color.red
-		self.dfctColor.blue = color.blue
-		self.dfctColor.green = color.green
+	def setdColor(self, color):
+		self.dColor = Gdk.RGBA(color.red, color.green, color.blue, 1)
 
 	def setECA(self, eca):
 		self.eca = copy.deepcopy(eca)
@@ -142,26 +135,18 @@ class Simulation:
 	def setXn(self, x):
 		self.xn = copy.deepcopy(x)
 
-	def setSettings(self, cellSize, color1, color2, color3, color4):
-		self.cellSize = cellSize
-		self.setState0Color(color1)
-		self.setState1Color(color2) 
-		self.setBckgColor(color3) 
-		self.setDfctColor(color4)
+	def setSurface(self):
+		self.surface = cairo.ImageSurface(cairo.FORMAT_RGB24, (self.xn.length * self.cellSize), (self.steps * self.cellSize))
 
-	def run(self):
-		for i in range(self.steps):
-			self.stepForward(y=i)
-
-	def stepForward(self, y, xp=None):
-		self.draw(y=y, t=self.xn, tp=xp)
+	def stepForward(self, i, xp=None):
+		self.draw(y=i, t=self.xn, tp=xp)
 		self.xn = copy.deepcopy(self.eca.evolve(self.xn))
 
-	def draw(self, y=0, xL=None, xR=None, t=None, tp=None):
+	def draw(self, y=0, xL=0, xR=None, t=None, tp=None):
 		context = cairo.Context(self.surface)
+		context.set_line_width(0.5)
 
-		if(xL == None and xR == None):
-			xL = 0
+		if(xR == None):
 			xR = t.length
 
 		y *= self.cellSize
@@ -171,29 +156,31 @@ class Simulation:
 			if(tp == None):
 				if(t.bits[i]):
 					context.rectangle(x, y, self.cellSize, self.cellSize)
-					context.set_source_rgb(self.state1Color.red, self.state1Color.green, self.state1Color.blue)
+					context.set_source_rgb(self.s1Color.red, self.s1Color.green, self.s1Color.blue)
 					context.fill()
 				else:
+					context.set_source_rgb(self.s1Color.red, self.s1Color.green, self.s1Color.blue)
 					context.rectangle(x, y, self.cellSize, self.cellSize)
-					context.set_source_rgb(self.state0Color.red, self.state0Color.green, self.state0Color.blue)
+					context.set_source_rgb(self.s0Color.red, self.s0Color.green, self.s0Color.blue)
 					context.fill()
 			else:
 				if(t.bits[i] ^ tp.bits[i]):
 					context.rectangle(x, y, self.cellSize, self.cellSize)
-					context.set_source_rgb(self.dfctColor.red, self.dfctColor.green, self.dfctColor.blue)
+					context.set_source_rgb(self.dColor.red, self.dColor.green, self.dColor.blue)
 					context.fill()
 				else:
 					if(t.bits[i]):
 						context.rectangle(x, y, self.cellSize, self.cellSize)
-						context.set_source_rgb(self.state1Color.red, self.state1Color.green, self.state1Color.blue)
+						context.set_source_rgb(self.s1Color.red, self.s1Color.green, self.s1Color.blue)
 						context.fill()
 					else:
+						context.set_source_rgb(self.s1Color.red, self.s1Color.green, self.s1Color.blue)
 						context.rectangle(x, y, self.cellSize, self.cellSize)
-						context.set_source_rgb(self.state0Color.red, self.state0Color.green, self.state0Color.blue)
+						context.set_source_rgb(self.s0Color.red, self.s0Color.green, self.s0Color.blue)
 						context.fill()
 			x += self.cellSize
 
-	def saveToPNG(self, path="../img/", fileName="simulation.png"):
+	def saveToPNG(self, path="../sim/", fileName="simulation.png"):
 		simpng = path + fileName
 		self.surface.write_to_png(simpng)
 		print("PNG written")

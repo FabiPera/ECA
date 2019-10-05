@@ -8,13 +8,14 @@ from Analysis import *
 class FiApp(Gtk.Application):
 
 	cellSize = 1
-	cell1 = Gdk.RGBA(0, 0, 0, 1)
-	cell0 = Gdk.RGBA(1, 1, 1, 1)
-	bckg = Gdk.RGBA(0.62, 0.62, 0.62, 1)
-	dfct = Gdk.RGBA(1, 0, 0, 1)
+	dColor = Gdk.RGBA(1, 0, 0, 1)
+	s1Color = Gdk.RGBA(0, 0, 0, 1)
+	s0Color = Gdk.RGBA(1, 1, 1, 1)
+	bColor = Gdk.RGBA(0.62, 0.62, 0.62, 1)
 	switchRandValue = 0
 	switchConfValue = 0
 	switchAnalysisValue = 0
+	analysisOp = [1, 0, 0]
 	rule = 0
 	seed = ""
 	steps = 8
@@ -34,12 +35,18 @@ class FiApp(Gtk.Application):
 		self.mainWindow.tab1.adjWidth.connect("value_changed", self.onWidthChange)
 		self.mainWindow.tab1.adjHeight.connect("value_changed", self.onHeightChange)
 		self.mainWindow.tab1.scaleRule.connect("value_changed", self.onRuleChange)
+		self.mainWindow.tab1.scaleDens.connect("value_changed", self.onDensChange)
 		self.mainWindow.tab2.adjStrLenght.connect("value_changed", self.onStrLenChange)
 		self.mainWindow.tab2.switchSrc.connect("notify::active", self.onAnalysisSwitch)
-		self.mainWindow.tab3.state1Color.connect("color-set", self.onColor1Change)
-		self.mainWindow.tab3.state0Color.connect("color-set", self.onColor2Change)
-		self.mainWindow.tab3.bckgColor.connect("color-set", self.onColor3Change)
-		self.mainWindow.tab3.dfctColor.connect("color-set", self.onColor4Change)
+		self.mainWindow.tab2.scaleDfectPos.connect("value_changed", self.onDfctChange)
+		self.mainWindow.tab2.densCheck.connect("notify::active", self.onDensCheck)
+		self.mainWindow.tab2.entrCheck.connect("notify::active", self.onEntrCheck)
+		self.mainWindow.tab2.lyapCheck.connect("notify::active", self.onLyapCheck)
+		self.mainWindow.tab3.comboCellSize.connect("changed", self.onCellSizeChange)
+		self.mainWindow.tab3.s1Color.connect("color-set", self.onColor1Change)
+		self.mainWindow.tab3.s0Color.connect("color-set", self.onColor2Change)
+		self.mainWindow.tab3.bColor.connect("color-set", self.onColor3Change)
+		self.mainWindow.tab3.dColor.connect("color-set", self.onColor4Change)
 
 		run = self.mainWindow.toolbar.get_nth_item(0)
 		analysis = self.mainWindow.toolbar.get_nth_item(1)
@@ -82,11 +89,47 @@ class FiApp(Gtk.Application):
 		if(switchAnalysis.get_active()):
 			self.switchAnalysisValue = 1
 			label.set_text("Rule Analysis: ")
+			self.mainWindow.tab2.densCheck.set_active(True)
+			self.mainWindow.tab2.entrCheck.set_active(True)
+			self.mainWindow.tab2.lyapCheck.set_active(True)
 			self.mainWindow.tab2.scaleDfectPos.set_sensitive(False)
+			self.mainWindow.tab2.densCheck.set_sensitive(False)
+			self.mainWindow.tab2.entrCheck.set_sensitive(False)
+			self.mainWindow.tab2.lyapCheck.set_sensitive(False)
 		else:
 			self.switchAnalysisValue = 0
 			label.set_text("Simulation Analysis: ")
+			self.mainWindow.tab2.densCheck.set_active(False)
+			self.mainWindow.tab2.entrCheck.set_active(False)
+			self.mainWindow.tab2.lyapCheck.set_active(False)
 			self.mainWindow.tab2.scaleDfectPos.set_sensitive(True)
+			self.mainWindow.tab2.densCheck.set_sensitive(True)
+			self.mainWindow.tab2.entrCheck.set_sensitive(True)
+			self.mainWindow.tab2.lyapCheck.set_sensitive(True)
+
+		print(self.analysisOp)
+	
+	def onDfctChange(self, widget):
+		val = self.mainWindow.tab2.getDfctPos()
+		self.dfctPos0 = int(val)
+
+	def onDensCheck(self, check, active):
+		if(check.get_active()):
+			self.analysisOp[0] = 1
+		else:
+			self.analysisOp[0] = 0
+
+	def onEntrCheck(self, check, active):
+		if(check.get_active()):
+			self.analysisOp[1] = 1
+		else:
+			self.analysisOp[1] = 0
+
+	def onLyapCheck(self, check, active):
+		if(check.get_active()):
+			self.analysisOp[2] = 1
+		else:
+			self.analysisOp[2] = 0
 	
 	def onRuleChange(self, widget):
 		label = self.mainWindow.tab1.labelRuleIcon
@@ -94,6 +137,10 @@ class FiApp(Gtk.Application):
 		self.rule = val
 		label.set_text("Rule "+str(val)+" icon")
 		self.mainWindow.tab1.ruleImage.set_from_file("../img/rule"+str(val)+".png")
+
+	def onDensChange(self, widget):
+		val = self.mainWindow.tab1.getDensValue()
+		self.density = int(val)
 
 	def onWidthChange(self, widget):
 		val = self.mainWindow.tab1.adjWidth.get_value()
@@ -121,6 +168,10 @@ class FiApp(Gtk.Application):
 			self.mainWindow.tab2.adjStrLenght.set_step_increment(val)
 		else:
 			self.mainWindow.tab2.adjStrLenght.set_step_increment(8)
+
+	def onCellSizeChange(self, combo):
+		self.cellSize = self.mainWindow.tab3.getSize()
+		print(self.cellSize)
 
 	def onColor1Change(self, widget):
 		self.cell1.red = widget.get_rgba().red
@@ -159,47 +210,59 @@ class FiApp(Gtk.Application):
 			eca.setRandConf(self.density)
 		else:
 			eca.setConf(self.seed, self.switchConfValue)
-			print("Initial configuration")
-		
-		if(self.switchConfValue):
-			print("Fill with 1")
-		else:
-			print("Fill with 0")
 
 		print("Rule: " + str(self.rule))
 		print("Seed: " + self.seed)
 		print("Steps: " + str(self.steps))
 		print("Length: " + str(self.length))
 		print("Density: " + str(self.density))
+		print("Defect Position: " + str(self.dfctPos))
+		print("String length: " + str(self.strLen))
+		print("Cell size: " + str(self.cellSize))
 
-		sim = Simulation(eca, self.steps)
-		sim.setState0Color(self.cell0)
-		sim.setState1Color(self.cell1)
-		sim.setBckgColor(self.bckg)
-		sim.run()
-		sim.saveToPNG()
-		self.openFile()
+		sim = Simulation(self.steps, self.cellSize, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
+		# sim.setCellSize(self.cellSize)
+		for i in range(self.steps):
+			sim.stepForward(i)
+		
+		sim.saveToPNG("../sim/", "simulation.png")
 
 	def runAnalysis(self, button):
+		print("Runing analysis...")
 		self.seed = self.mainWindow.tab1.getSeedValue()
 		if(self.switchAnalysisValue):
-			print("Running rule analysis...")
-			eca = ECA(self.rule)
+			print("Rule analysis")
+			eca = ECA(self.rule, 10001)
 			eca.setRandConf(50)
-			analysis = Analysis(self.dfctPos, self.strLen, eca)
+			analysis = Analysis(5000, 16, eca, self.analysisOp)
+			sim1 = Simulation(5000, 1, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
+			sim2 = Simulation(5000, 1, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
+			sim2.eca.x = analysis.setDefect()
+			sim2.xn = copy.deepcopy(sim2.eca.x)
+			analysis.ruleAnalysis()
 		else:
-			print("Running simulation analysis...")
-			print("Rule: " + str(self.rule))
-			print("Seed: " + self.seed)
-			print("Steps: " + str(self.steps))
-			print("Length: " + str(self.length))
-			print("Defect Position: " + str(self.dfctPos))
-			print("String length: " + str(self.strLen))
+			print("Simulation analysis")
 			eca = ECA(self.rule, self.length)
-			eca.setConf(self.seed, self.switchConfValue)
-			sim = Simulation(eca, self.steps)
-			analysis = Analysis(self.dfctPos, self.strLen, sim)
-			analysis.simAnalysis()
+			if(self.switchRandValue):
+				eca.setRandConf(self.density)
+			else:
+				eca.setConf(self.seed, self.switchConfValue)
+			
+			analysis = Analysis(self.dfctPos, self.strLen, eca, self.analysisOp)
+			sim1 = Simulation(self.steps, self.cellSize, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
+			sim2 = Simulation(self.steps, self.cellSize, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
+			sim2.eca.x = analysis.setDefect()
+			sim2.xn = copy.deepcopy(sim2.eca.x)
+			analysis.simAnalysis(sim1, sim2)
+
+		print("Rule: " + str(self.rule))
+		print("Seed: " + self.seed)
+		print("Steps: " + str(self.steps))
+		print("Length: " + str(self.length))
+		print("Density: " + str(self.density))
+		print("Defect Position: " + str(self.dfctPos))
+		print("String length: " + str(self.strLen))
+		print("Cell size: " + str(self.cellSize))
 	
 	def saveSettings(self, button):
 		print("Saving setings...")

@@ -201,10 +201,16 @@ class AnalysisTab(Gtk.Box):
 	adjStrLenght = Gtk.Adjustment.new(8, 0, 1024, 8, 1, 1)
 	scaleDfectPos = Gtk.Scale.new(0, adjDfctPos)
 	entryStrLength = Gtk.SpinButton.new(adjStrLenght, 8, 0)
+	lyapCheck = Gtk.CheckButton.new()
+	densCheck = Gtk.CheckButton.new()
+	entrCheck = Gtk.CheckButton.new()
 	switchSrc = Gtk.Switch.new()
 	labelDefect = Gtk.Label("Defect position: ", xalign=0)
 	labelStrLength = Gtk.Label("String length: ", xalign=0)
 	labelSrc = Gtk.Label("Simulation Analysis: ", xalign=0)
+	labelDens = Gtk.Label("Density: ", xalign=0)
+	labelEntr = Gtk.Label("Entropy : ", xalign=0)
+	labelLyap = Gtk.Label("Lyapunov Exp.: ", xalign=0)
 
 	def __init__(self):
 		super(AnalysisTab, self).__init__(orientation=1, spacing=30)
@@ -213,6 +219,7 @@ class AnalysisTab(Gtk.Box):
 		#Set the width in chars for the inputs
 		self.entryStrLength.set_width_chars(5)
 		self.scaleDfectPos.set_digits(0)
+		self.densCheck.set_active(True)
 
 		listbox = Gtk.ListBox()
 		listbox.set_selection_mode(0)
@@ -227,9 +234,15 @@ class AnalysisTab(Gtk.Box):
 		hbox1.pack_start(vbox1, 1, 1, 0)
 		hbox1.pack_start(vbox2, 1, 1, 0)
 		vbox1.pack_start(self.labelSrc, 1, 1, 0)
+		vbox1.pack_start(self.labelDens, 1, 1, 0)
+		vbox1.pack_start(self.labelEntr, 1, 1, 0)
+		vbox1.pack_start(self.labelLyap, 1, 1, 0)
 		vbox1.pack_start(self.labelDefect, 1, 1, 0)
 		vbox1.pack_start(self.labelStrLength, 1, 1, 0)
 		vbox2.pack_start(switchbox1, 1, 1, 0)
+		vbox2.pack_start(self.densCheck, 1, 1, 0)
+		vbox2.pack_start(self.entrCheck, 1, 1, 0)
+		vbox2.pack_start(self.lyapCheck, 1, 1, 0)
 		vbox2.pack_start(self.scaleDfectPos, 1, 1, 0)
 		vbox2.pack_start(self.entryStrLength, 1, 1, 0)
 		
@@ -251,15 +264,15 @@ class SettingsTab(Gtk.Box):
 
 	tab3Box = Gtk.Box(orientation=0, spacing=30)
 	comboCellSize = Gtk.ComboBox.new()
-	state1Color = Gtk.ColorButton.new()
-	state0Color = Gtk.ColorButton.new()
-	bckgColor = Gtk.ColorButton.new()
-	dfctColor = Gtk.ColorButton.new()
+	s1Color = Gtk.ColorButton.new()
+	s0Color = Gtk.ColorButton.new()
+	bColor = Gtk.ColorButton.new()
+	dColor = Gtk.ColorButton.new()
 	labelCellSize = Gtk.Label("Cell size: ", xalign=0)
-	labelState1Color = Gtk.Label("State 1 color: ", xalign=0)
-	labelState0Color = Gtk.Label("State 0 color: ", xalign=0)
-	labelBckgColor = Gtk.Label("Background color: ", xalign=0)
-	labelDfctColor = Gtk.Label("Defect color: ", xalign=0)
+	labels1Color = Gtk.Label("State 1 color: ", xalign=0)
+	labels0Color = Gtk.Label("State 0 color: ", xalign=0)
+	labelbColor = Gtk.Label("Background color: ", xalign=0)
+	labeldColor = Gtk.Label("Defect color: ", xalign=0)
 
 	def __init__(self):
 		super(SettingsTab, self).__init__(orientation=1, spacing=30)
@@ -268,8 +281,7 @@ class SettingsTab(Gtk.Box):
 		model = Gtk.ListStore(str, int)
 		model.append(["1 pixel", 1])
 		model.append(["2 pixels", 2])
-		model.append(["3 pixels", 5])
-		model.append(["5 pixels", 8])
+		model.append(["5 pixels", 5])
 		model.append(["10 pixels", 10])
 
 		self.comboCellSize = Gtk.ComboBox.new_with_model(model)
@@ -278,15 +290,15 @@ class SettingsTab(Gtk.Box):
 		self.comboCellSize.add_attribute(renderer_text, "text", 0)
 		self.comboCellSize.set_active(0)
 
-		self.bckgColor.set_use_alpha(False)
-		self.state1Color.set_use_alpha(False)
-		self.state0Color.set_use_alpha(False)
-		self.dfctColor.set_use_alpha(False)
+		self.bColor.set_use_alpha(False)
+		self.s1Color.set_use_alpha(False)
+		self.s0Color.set_use_alpha(False)
+		self.dColor.set_use_alpha(False)
 
-		self.bckgColor.set_rgba(Gdk.RGBA(0.62, 0.62, 0.62, 1))
-		self.state0Color.set_rgba(Gdk.RGBA(1, 1, 1, 1))
-		self.state1Color.set_rgba(Gdk.RGBA(0, 0, 0, 1))
-		self.dfctColor.set_rgba(Gdk.RGBA(1, 0, 0, 1))
+		self.bColor.set_rgba(Gdk.RGBA(0.62, 0.62, 0.62, 1))
+		self.s0Color.set_rgba(Gdk.RGBA(1, 1, 1, 1))
+		self.s1Color.set_rgba(Gdk.RGBA(0, 0, 0, 1))
+		self.dColor.set_rgba(Gdk.RGBA(1, 0, 0, 1))
 
 		listbox = Gtk.ListBox()
 		listbox.set_selection_mode(0)
@@ -298,60 +310,42 @@ class SettingsTab(Gtk.Box):
 		hbox1.pack_start(vbox1, 1, 1, 0)
 		hbox1.pack_start(vbox2, 1, 1, 0)
 		vbox1.pack_start(self.labelCellSize, 1, 1, 0)
-		vbox1.pack_start(self.labelState1Color, 1, 1, 0)
-		vbox1.pack_start(self.labelState0Color, 1, 1, 0)
-		vbox1.pack_start(self.labelBckgColor, 1, 1, 0)
-		vbox1.pack_start(self.labelDfctColor, 1, 1, 0)
+		vbox1.pack_start(self.labels1Color, 1, 1, 0)
+		vbox1.pack_start(self.labels0Color, 1, 1, 0)
+		vbox1.pack_start(self.labelbColor, 1, 1, 0)
+		vbox1.pack_start(self.labeldColor, 1, 1, 0)
 		vbox2.pack_start(self.comboCellSize, 1, 1, 0)
-		vbox2.pack_start(self.state1Color, 1, 1, 0)
-		vbox2.pack_start(self.state0Color, 1, 1, 0)
-		vbox2.pack_start(self.bckgColor, 1, 1, 0)
-		vbox2.pack_start(self.dfctColor, 1, 1, 0)
+		vbox2.pack_start(self.s1Color, 1, 1, 0)
+		vbox2.pack_start(self.s0Color, 1, 1, 0)
+		vbox2.pack_start(self.bColor, 1, 1, 0)
+		vbox2.pack_start(self.dColor, 1, 1, 0)
 		
 		row1.add(hbox1)
 		listbox.add(row1)
 
 		self.tab3Box.pack_start(listbox, 1, 0, 0)
 		self.pack_start(self.tab3Box, 1, 0, 0)
-	
-	def draw(self):
-		surface = cairo.ImageSurface(cairo.FORMAT_RGB24, 50, 40)
-		context = cairo.Context(surface)
-		
-		context.rectangle(0, 0, 50, 40)
-		context.set_source_rgb(self.bckgColor.get_rgba().red, self.bckgColor.get_rgba().green, self.bckgColor.get_rgba().blue)
-		context.fill()
-
-		context.rectangle(10, 10, self.getSize(), self.getSize())
-		context.set_source_rgb(self.state1Color.get_rgba().red, self.state1Color.get_rgba().green, self.state1Color.get_rgba().blue)
-		context.fill()
-
-		context.rectangle(20, 10, self.getSize(), self.getSize())
-		context.set_source_rgb(self.state0Color.get_rgba().red, self.state0Color.get_rgba().green, self.state0Color.get_rgba().blue)
-		context.fill()
-
-		context.rectangle(30, 10, self.getSize(), self.getSize())
-		context.set_source_rgb(self.dfctColor.get_rgba().red, self.dfctColor.get_rgba().green, self.dfctColor.get_rgba().blue)
-		context.fill()
-
-		surface.write_to_png("../img/preview.png")
 
 	def getSize(self):
-		size = int(self.scaleCellSize.get_value())
-		return size
+		treeIter = self.comboCellSize.get_active_iter()
+		if(treeIter is not None):
+			model = self.comboCellSize.get_model()
+			return int(model[treeIter][1])
+		else:
+			return 1
 
-	def getBckgColor(self):
-		bckgColor = self.bckgColor.get_rgba
-		return bckgColor
+	def getbColor(self):
+		bColor = self.bColor.get_rgba
+		return bColor
 	
-	def getDfctColor(self):
-		dfctColor = self.dfctColor.get_rgba
-		return dfctColor
+	def getdColor(self):
+		dColor = self.dColor.get_rgba
+		return dColor
 
-	def getState1Color(self):
-		state1Color = self.state1Color.get_rgba
-		return state1Color
+	def gets1Color(self):
+		s1Color = self.s1Color.get_rgba
+		return s1Color
 
-	def getState0Color(self):
-		state0Color = self.state0Color.get_rgba
-		return state0Color 
+	def gets0Color(self):
+		s0Color = self.s0Color.get_rgba
+		return s0Color 
