@@ -18,24 +18,24 @@ class MainWindow(Gtk.ApplicationWindow):
 		self.header.props.title="φ( )"
 
 		#Create the buttons for the header bar
-		# settingsButton = Gtk.Button()
-		# settingsIcon = Gio.ThemedIcon(name="help-about")
-		# settings = Gtk.Image.new_from_gicon(settingsIcon, Gtk.IconSize.BUTTON)
-		# settingsButton.add(settings)
+		settingsButton = Gtk.Button()
+		settingsIcon = Gio.ThemedIcon(name="help-about")
+		settings = Gtk.Image.new_from_gicon(settingsIcon, Gtk.IconSize.BUTTON)
+		settingsButton.add(settings)
 
-		# aboutButton = Gtk.Button()
-		# aboutIcon = Gio.ThemedIcon(name="applications-graphics")
-		# about = Gtk.Image.new_from_gicon(aboutIcon, Gtk.IconSize.BUTTON)
-		# aboutButton.add(about)
+		aboutButton = Gtk.Button()
+		aboutIcon = Gio.ThemedIcon(name="applications-graphics")
+		about = Gtk.Image.new_from_gicon(aboutIcon, Gtk.IconSize.BUTTON)
+		aboutButton.add(about)
 
-		# scienceButton = Gtk.Button()
-		# scienceIcon = Gio.ThemedIcon(name="applications-science")
-		# science = Gtk.Image.new_from_gicon(scienceIcon, Gtk.IconSize.BUTTON)
-		# scienceButton.add(science)
+		scienceButton = Gtk.Button()
+		scienceIcon = Gio.ThemedIcon(name="applications-science")
+		science = Gtk.Image.new_from_gicon(scienceIcon, Gtk.IconSize.BUTTON)
+		scienceButton.add(science)
 
-		# self.header.pack_start(settingsButton)
-		# self.header.pack_start(aboutButton)
-		# self.header.pack_start(scienceButton)
+		self.header.pack_start(settingsButton)
+		self.header.pack_start(aboutButton)
+		self.header.pack_start(scienceButton)
 		self.set_titlebar(self.header)
 
 		#Create the toolbar and attach it to the main window
