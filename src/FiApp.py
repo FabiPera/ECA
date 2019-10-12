@@ -1,4 +1,4 @@
-import gi, sys, subprocess, os
+import gi, sys, subprocess, os, json, Files
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gio, Gdk
 from FiGUI import *
@@ -258,9 +258,27 @@ class FiApp(Gtk.Application):
 		print("Defect Position: " + str(self.dfctPos))
 		print("String length: " + str(self.strLen))
 		print("Cell size: " + str(self.cellSize))
-	
+
 	def saveSettings(self, button):
-		print("Saving setings...")
+		# dialog = Gtk.FileChooserDialog(title="Save settings", parent=None, action=Gtk.FileChooserAction.SAVE,  buttons=(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
+		dialog = Gtk.FileChooserDialog(title="Save settings", parent=None, action=Gtk.FileChooserAction.SAVE)
+		dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_SAVE, Gtk.ResponseType.OK)
+		response = dialog.run()
+		if(response == Gtk.ResponseType.OK):
+			fill = self.switchConfValue
+			rule = self.rule
+			steps = self.steps
+			cells = self.length
+			seed = self.seed
+
+			data = {"fill": fill, "rule": rule, "seed": seed, "steps": steps, "cells": cells}
+			fileName = dialog.get_filename()
+			print("File selected: " + dialog.get_filename())
+			Files.writeJSON(fileName, data)
+			print("Simulation Settings Saved")
+		elif(response == Gtk.ResponseType.CANCEL):
+			print("Saving canceled")
+		dialog.destroy()	
 
 app=FiApp()
 app.run(sys.argv)
