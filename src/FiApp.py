@@ -1,4 +1,4 @@
-import gi, sys, subprocess, os
+import gi, sys, subprocess, os, Files
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gio, Gdk
 from FiGUI import *
@@ -260,7 +260,23 @@ class FiApp(Gtk.Application):
 		print("Cell size: " + str(self.cellSize))
 	
 	def saveSettings(self, button):
-		print("Saving setings...")
+		dialog = Gtk.FileChooserDialog(title="Save settings", parent=None, action=Gtk.FileChooserAction.SAVE)
+		dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_SAVE, Gtk.ResponseType.OK)
+		response = dialog.run()
+		if(response == Gtk.ResponseType.OK):
+			fill = self.switchConfValue
+			rule = self.rule
+			steps = self.steps
+			cells = self.length
+			seed = self.seed
+
+			data = {"fill": fill, "rule": rule, "seed": seed, "steps": steps, "cells": cells}
+			Files.writeJSON(dialog.get_filename(), data)
+			print("Settings saved")
+			print("File selected: " + dialog.get_filename())
+		elif(response == Gtk.ResponseType.CANCEL):
+			print("Cancel clicked")
+		dialog.destroy()
 
 app=FiApp()
 app.run(sys.argv)
