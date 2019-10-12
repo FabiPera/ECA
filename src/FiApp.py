@@ -189,7 +189,7 @@ class FiApp(Gtk.Application):
 		color = widget.get_rgba()
 		self.dColor = Gdk.RGBA(color.red, color.green, color.blue, 1)
 
-	def runSimulation(self, button):
+	def runSimulation(self, button=None):
 		print("Runing simulation...")
 		self.seed = self.mainWindow.tab1.getSeedValue()
 		eca = ECA(self.rule, self.length)
@@ -260,8 +260,11 @@ class FiApp(Gtk.Application):
 			steps = self.steps
 			cells = self.length
 			seed = self.seed
+			self.runSimulation()
+			b64String = Files.imageToString("../sim/", "simulation.png")
+			print(b64String)
 
-			data = {"fill": fill, "rule": rule, "seed": seed, "steps": steps, "cells": cells}
+			data = {"fill": fill, "rule": rule, "seed": seed, "steps": steps, "cells": cells, "img": str(b64String)}
 			Files.writeJSON(dialog.get_filename(), data)
 			print("Settings saved")
 			print("File selected: " + dialog.get_filename())
