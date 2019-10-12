@@ -22,6 +22,3 @@ def plotEntropy(entropy):
 	plt.plot(entropy, "m,-")
 	plt.savefig("../sim/SimEntropy.png")
 	plt.clf()
-
-def plotExponents(exponents):
-	pass
