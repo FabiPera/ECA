@@ -189,15 +189,6 @@ class FiApp(Gtk.Application):
 		color = widget.get_rgba()
 		self.dColor = Gdk.RGBA(color.red, color.green, color.blue, 1)
 
-	def openFile(self, filePath="../img/", fileName="simulation.png"):
-		path = filePath + fileName
-		if sys.platform.startswith("darwin"):
-			subprocess.call(("open", path))
-		elif os.name == "nt":
-			os.startfile(path)
-		elif os.name == "posix":
-			subprocess.call(("xdg-open", path))
-
 	def runSimulation(self, button):
 		print("Runing simulation...")
 		self.seed = self.mainWindow.tab1.getSeedValue()

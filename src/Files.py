@@ -1,20 +1,13 @@
 import sys, pygame, subprocess, os, json
 
-def openFile(fileName):
-	"""
-		Opens a .png image.
-
-		Parameters
-		----------
-			fileName : string
-				Path of the file.
-	"""
+def openFile(self, filePath="../img/", fileName="simulation.png"):
+	path = filePath + fileName
 	if sys.platform.startswith("darwin"):
-		subprocess.call(("open", fileName))
+		subprocess.call(("open", path))
 	elif os.name == "nt":
-		os.startfile(fileName)
+		os.startfile(path)
 	elif os.name == "posix":
-		subprocess.call(("xdg-open", fileName))
+		subprocess.call(("xdg-open", path))
 
 def writeJSON(fileName, data):
 	filePath = fileName + ".json"
