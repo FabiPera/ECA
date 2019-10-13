@@ -190,7 +190,7 @@ class AnalysisTab(Gtk.Box):
 	#Widgets for analysis inputs
 	tab2Box = Gtk.Box(orientation=0, spacing=30)
 	adjDfctPos = Gtk.Adjustment.new(4, 0, 8, 1, 1, 1)
-	adjStrLenght = Gtk.Adjustment.new(8, 0, 1024, 8, 1, 1)
+	adjStrLenght = Gtk.Adjustment.new(3, 3, 16, 1, 1, 1)
 	scaleDfectPos = Gtk.Scale.new(0, adjDfctPos)
 	entryStrLength = Gtk.SpinButton.new(adjStrLenght, 8, 0)
 	lyapCheck = Gtk.CheckButton.new()

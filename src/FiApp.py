@@ -1,4 +1,4 @@
-import gi, sys, subprocess, os, Files
+import gi, sys, subprocess, os, math, Files
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gio, Gdk
 from FiGUI import *
@@ -149,6 +149,8 @@ class FiApp(Gtk.Application):
 		self.mainWindow.tab2.adjDfctPos.set_upper(val)
 		self.mainWindow.tab2.adjDfctPos.set_value((val // 2) - 1)
 		self.length = int(val)
+		self.strLen = int(math.log(self.length, 2) - 1)
+		self.mainWindow.tab2.entryStrLength.set_value(self.strLen)
 		self.dfctPos = int((val // 2) - 1)
 		if(val):
 			self.mainWindow.tab1.adjWidth.set_step_increment(val)
@@ -166,10 +168,6 @@ class FiApp(Gtk.Application):
 	def onStrLenChange(self, widget):
 		val = self.mainWindow.tab2.adjStrLenght.get_value()
 		self.strLen = int(val)
-		if(val):
-			self.mainWindow.tab2.adjStrLenght.set_step_increment(val)
-		else:
-			self.mainWindow.tab2.adjStrLenght.set_step_increment(8)
 
 	def onCellSizeChange(self, combo):
 		self.cellSize = self.mainWindow.tab3.getSize()
