@@ -104,7 +104,7 @@ for	i in range(1):
 	drawLattice()
 	eca=ECA(i, 3)
 	print(eca.rule.bits)
-	eca.setInitConf("000", 0)
+	eca.setConf("000", 0)
 	
 	k=0
 	if(eca.rule.bits[k]):
