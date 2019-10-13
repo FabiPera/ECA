@@ -51,10 +51,12 @@ class FiApp(Gtk.Application):
 		run = self.mainWindow.toolbar.get_nth_item(0)
 		analysis = self.mainWindow.toolbar.get_nth_item(1)
 		save = self.mainWindow.toolbar.get_nth_item(2)
+		load = self.mainWindow.toolbar.get_nth_item(3)
 
 		run.connect("clicked", self.runSimulation)
 		analysis.connect("clicked", self.runAnalysis)		
 		save.connect("clicked", self.saveSettings)
+		load.connect("clicked", self.loadSettings)
 		
 		self.mainWindow.show_all()
 
@@ -254,6 +256,7 @@ class FiApp(Gtk.Application):
 		dialog = Gtk.FileChooserDialog(title="Save settings", parent=None, action=Gtk.FileChooserAction.SAVE)
 		dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_SAVE, Gtk.ResponseType.OK)
 		response = dialog.run()
+
 		if(response == Gtk.ResponseType.OK):
 			fill = self.switchConfValue
 			rule = self.rule
@@ -261,16 +264,29 @@ class FiApp(Gtk.Application):
 			cells = self.length
 			seed = self.seed
 			self.runSimulation()
-			b64String = Files.imageToString("../sim/", "simulation.png")
-			print(b64String)
-
+			b64String = Files.imageToString("../sim/simulation.png")
 			data = {"fill": fill, "rule": rule, "seed": seed, "steps": steps, "cells": cells, "img": str(b64String)}
 			Files.writeJSON(dialog.get_filename(), data)
 			print("Settings saved")
 			print("File selected: " + dialog.get_filename())
 		elif(response == Gtk.ResponseType.CANCEL):
-			print("Cancel clicked")
+			print("Saving canceled")
+
 		dialog.destroy()
+
+	def loadSettings(self, button):
+		dialog = Gtk.FileChooserDialog(title="Load settings", parent=None, action=Gtk.FileChooserAction.OPEN)
+		dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
+		response = dialog.run()
+		if(response == Gtk.ResponseType.OK):
+			Files.loadSettings(dialog.get_filename())
+			Files.openFile(fileName=dialog.get_filename().split(".")[0] + ".png")
+			print("Settings loaded")
+			print("File selected: " + dialog.get_filename())
+		elif(response == Gtk.ResponseType.CANCEL):
+			print("Loading canceled")
+		dialog.destroy()
+
 
 app=FiApp()
 app.run(sys.argv)
