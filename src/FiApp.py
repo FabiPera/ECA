@@ -253,6 +253,7 @@ class FiApp(Gtk.Application):
 		print("Cell size: " + str(self.cellSize))
 	
 	def saveSettings(self, button):
+		self.seed = self.mainWindow.tab1.getSeedValue()
 		dialog = Gtk.FileChooserDialog(title="Save settings", parent=None, action=Gtk.FileChooserAction.SAVE)
 		dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_SAVE, Gtk.ResponseType.OK)
 		response = dialog.run()
@@ -278,13 +279,21 @@ class FiApp(Gtk.Application):
 		dialog = Gtk.FileChooserDialog(title="Load settings", parent=None, action=Gtk.FileChooserAction.OPEN)
 		dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
 		response = dialog.run()
+
 		if(response == Gtk.ResponseType.OK):
-			Files.loadSettings(dialog.get_filename())
+			data = Files.loadSettings(dialog.get_filename())
+			self.mainWindow.tab1.switchRandConf.set_active(False)
+			self.mainWindow.tab1.switchStr.set_active(bool(data["fill"]))
+			self.mainWindow.tab1.scaleRule.set_value(data["rule"])
+			self.mainWindow.tab1.entrySeed.set_text(data["seed"])
+			self.mainWindow.tab1.entrySteps.set_value(data["steps"])
+			self.mainWindow.tab1.entryCells.set_value(data["cells"])
 			Files.openFile(fileName=dialog.get_filename().split(".")[0] + ".png")
 			print("Settings loaded")
 			print("File selected: " + dialog.get_filename())
 		elif(response == Gtk.ResponseType.CANCEL):
 			print("Loading canceled")
+
 		dialog.destroy()
 
 

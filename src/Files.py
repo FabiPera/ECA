@@ -31,3 +31,5 @@ def loadSettings(fileName):
 
 	b = data["img"].split("'")
 	stringToImage(b[1], name)
+
+	return data
