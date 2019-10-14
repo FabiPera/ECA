@@ -260,11 +260,13 @@ class SettingsTab(Gtk.Box):
 	s0Color = Gtk.ColorButton.new()
 	bColor = Gtk.ColorButton.new()
 	dColor = Gtk.ColorButton.new()
+	folderButton = Gtk.FileChooserButton("Select a folder", 2)
 	labelCellSize = Gtk.Label("Cell size: ", xalign=0)
 	labels1Color = Gtk.Label("State 1 color: ", xalign=0)
 	labels0Color = Gtk.Label("State 0 color: ", xalign=0)
 	labelbColor = Gtk.Label("Background color: ", xalign=0)
 	labeldColor = Gtk.Label("Defect color: ", xalign=0)
+	labelFolder = Gtk.Label("Select simulation folder:", xalign=0)
 
 	def __init__(self):
 		super(SettingsTab, self).__init__(orientation=1, spacing=30)
@@ -306,11 +308,13 @@ class SettingsTab(Gtk.Box):
 		vbox1.pack_start(self.labels0Color, 1, 1, 0)
 		vbox1.pack_start(self.labelbColor, 1, 1, 0)
 		vbox1.pack_start(self.labeldColor, 1, 1, 0)
+		vbox1.pack_start(self.labelFolder, 1, 1, 0)
 		vbox2.pack_start(self.comboCellSize, 1, 1, 0)
 		vbox2.pack_start(self.s1Color, 1, 1, 0)
 		vbox2.pack_start(self.s0Color, 1, 1, 0)
 		vbox2.pack_start(self.bColor, 1, 1, 0)
 		vbox2.pack_start(self.dColor, 1, 1, 0)
+		vbox2.pack_start(self.folderButton, 1, 1, 0)
 		
 		row1.add(hbox1)
 		listbox.add(row1)

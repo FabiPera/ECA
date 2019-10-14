@@ -252,11 +252,11 @@ class FiApp(Gtk.Application):
 	
 	def saveSettings(self, button):
 		self.seed = self.mainWindow.tab1.getSeedValue()
-		dialog = Gtk.FileChooserDialog(title="Save settings", parent=None, action=Gtk.FileChooserAction.SAVE)
-		dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_SAVE, Gtk.ResponseType.OK)
+		dialog = Gtk.FileChooserNative.new(title="Save settings", parent=None, action=Gtk.FileChooserAction.SAVE)
+		#dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_SAVE, Gtk.ResponseType.OK)
 		response = dialog.run()
 
-		if(response == Gtk.ResponseType.OK):
+		if(response == Gtk.ResponseType.ACCEPT):
 			fill = self.switchConfValue
 			rule = self.rule
 			steps = self.steps
@@ -274,11 +274,11 @@ class FiApp(Gtk.Application):
 		dialog.destroy()
 
 	def loadSettings(self, button):
-		dialog = Gtk.FileChooserDialog(title="Load settings", parent=None, action=Gtk.FileChooserAction.OPEN)
-		dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
+		dialog = Gtk.FileChooserNative.new(title="Load settings", parent=None, action=Gtk.FileChooserAction.OPEN)
+		#dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
 		response = dialog.run()
 
-		if(response == Gtk.ResponseType.OK):
+		if(response == Gtk.ResponseType.ACCEPT):
 			data = Files.loadSettings(dialog.get_filename())
 			self.mainWindow.tab1.switchRandConf.set_active(False)
 			self.mainWindow.tab1.switchStr.set_active(bool(data["fill"]))
