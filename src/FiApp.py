@@ -12,6 +12,7 @@ class FiApp(Gtk.Application):
 	s1Color = Gdk.RGBA(0, 0, 0, 1)
 	s0Color = Gdk.RGBA(1, 1, 1, 1)
 	bColor = Gdk.RGBA(0.62, 0.62, 0.62, 1)
+	simPath = "../simulation/"
 	switchRandValue = 0
 	switchConfValue = 0
 	switchAnalysisValue = 0

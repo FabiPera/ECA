@@ -260,7 +260,7 @@ class SettingsTab(Gtk.Box):
 	s0Color = Gtk.ColorButton.new()
 	bColor = Gtk.ColorButton.new()
 	dColor = Gtk.ColorButton.new()
-	folderButton = Gtk.FileChooserButton("Select a folder", 2)
+	folderButton = Gtk.Button()
 	labelCellSize = Gtk.Label("Cell size: ", xalign=0)
 	labels1Color = Gtk.Label("State 1 color: ", xalign=0)
 	labels0Color = Gtk.Label("State 0 color: ", xalign=0)
@@ -278,6 +278,9 @@ class SettingsTab(Gtk.Box):
 		model.append(["5 pixels", 5])
 		model.append(["10 pixels", 10])
 
+		folderIcon = Gio.ThemedIcon(name="user-desktop")
+		folder = Gtk.Image.new_from_gicon(folderIcon, Gtk.IconSize.BUTTON)
+		self.folderButton.add(folder)
 		self.comboCellSize = Gtk.ComboBox.new_with_model(model)
 		renderer_text = Gtk.CellRendererText()
 		self.comboCellSize.pack_start(renderer_text, True)
@@ -288,7 +291,6 @@ class SettingsTab(Gtk.Box):
 		self.s1Color.set_use_alpha(False)
 		self.s0Color.set_use_alpha(False)
 		self.dColor.set_use_alpha(False)
-
 		self.bColor.set_rgba(Gdk.RGBA(0.62, 0.62, 0.62, 1))
 		self.s0Color.set_rgba(Gdk.RGBA(1, 1, 1, 1))
 		self.s1Color.set_rgba(Gdk.RGBA(0, 0, 0, 1))
