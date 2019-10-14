@@ -95,7 +95,7 @@ class SimulationTab(Gtk.Box):
 	entrySeed = Gtk.Entry.new()
 	entrySteps = Gtk.SpinButton.new(adjHeight, 8, 0)
 	entryCells = Gtk.SpinButton.new(adjWidth, 8, 0)
-	ruleImage = Gtk.Image.new_from_file("../img/rule0.png")
+	ruleImage = Gtk.Image.new_from_file("../img/rules/rule0.png")
 	imagebox = Gtk.Box(orientation=0, spacing=50)
 	labelRandConf = Gtk.Label("Random: ", xalign=0, yalign=0)
 	labelFill = Gtk.Label("Fill w/0: ", xalign=0, yalign=0)
@@ -267,6 +267,7 @@ class SettingsTab(Gtk.Box):
 	labelbColor = Gtk.Label("Background color: ", xalign=0)
 	labeldColor = Gtk.Label("Defect color: ", xalign=0)
 	labelFolder = Gtk.Label("Select simulation folder:", xalign=0)
+	labelSimPath = Gtk.Label("../img/simulation/", xalign=0)
 
 	def __init__(self):
 		super(SettingsTab, self).__init__(orientation=1, spacing=30)
@@ -311,6 +312,7 @@ class SettingsTab(Gtk.Box):
 		vbox1.pack_start(self.labelbColor, 1, 1, 0)
 		vbox1.pack_start(self.labeldColor, 1, 1, 0)
 		vbox1.pack_start(self.labelFolder, 1, 1, 0)
+		vbox1.pack_start(self.labelSimPath,1, 1, 0)
 		vbox2.pack_start(self.comboCellSize, 1, 1, 0)
 		vbox2.pack_start(self.s1Color, 1, 1, 0)
 		vbox2.pack_start(self.s0Color, 1, 1, 0)

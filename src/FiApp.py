@@ -12,7 +12,7 @@ class FiApp(Gtk.Application):
 	s1Color = Gdk.RGBA(0, 0, 0, 1)
 	s0Color = Gdk.RGBA(1, 1, 1, 1)
 	bColor = Gdk.RGBA(0.62, 0.62, 0.62, 1)
-	simPath = "../simulation/"
+	simPath = "../img/simulation/"
 	switchRandValue = 0
 	switchConfValue = 0
 	switchAnalysisValue = 0
@@ -139,7 +139,7 @@ class FiApp(Gtk.Application):
 		val = self.mainWindow.tab1.getRuleValue()
 		self.rule = val
 		label.set_text("Rule "+str(val)+" icon")
-		self.mainWindow.tab1.ruleImage.set_from_file("../img/rule"+str(val)+".png")
+		self.mainWindow.tab1.ruleImage.set_from_file("../img/rules/rule"+str(val)+".png")
 
 	def onDensChange(self, widget):
 		val = self.mainWindow.tab1.getDensValue()
@@ -212,7 +212,7 @@ class FiApp(Gtk.Application):
 		for i in range(self.steps):
 			sim.stepForward(i)
 		
-		sim.saveToPNG("../sim/", "simulation.png")
+		sim.saveToPNG(self.simPath, "simulation.png")
 
 	def runAnalysis(self, button):
 		print("Runing analysis...")
@@ -264,7 +264,7 @@ class FiApp(Gtk.Application):
 			cells = self.length
 			seed = self.seed
 			self.runSimulation()
-			b64String = Files.imageToString("../sim/simulation.png")
+			b64String = Files.imageToString("../img/simulation/simulation.png")
 			data = {"fill": fill, "rule": rule, "seed": seed, "steps": steps, "cells": cells, "img": str(b64String)}
 			Files.writeJSON(dialog.get_filename(), data)
 			print("Settings saved")
