@@ -24,7 +24,7 @@ class Analysis:
 		self.defects = np.zeros(eca.x.length, dtype=np.double)
 		self.defectsn = np.zeros(eca.x.length, dtype=np.double)
 
-	def simAnalysis(self, sim1, sim2):
+	def simAnalysis(self, sim1, sim2, path):
 		threads = []
 		totalStr = sim1.xn.length - self.strLength
 		self.dens = np.zeros(sim1.steps, dtype=np.uint)
@@ -57,8 +57,8 @@ class Analysis:
 
 		print(self.defects[self.dfctPos])
 		
-		sim1.saveToPNG(fileName="SimAnalysis.png")
-		sim2.saveToPNG(fileName="SimDefects.png")
+		sim1.saveToPNG(path, "SimAnalysis.png")
+		sim2.saveToPNG(path, "SimDefects.png")
 
 		self.getLyapExp(sim1.steps)
 		print(self.defects[self.dfctPos])
