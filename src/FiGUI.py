@@ -326,9 +326,11 @@ class SettingsTab(Gtk.Box):
 
 	def getSize(self):
 		treeIter = self.comboCellSize.get_active_iter()
+
 		if(treeIter is not None):
 			model = self.comboCellSize.get_model()
 			return int(model[treeIter][1])
+			
 		else:
 			return 1
 

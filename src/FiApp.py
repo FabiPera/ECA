@@ -1,9 +1,9 @@
-import gi, sys, subprocess, os, math, Files
+import gi, sys, subprocess, os, math, copy, Files
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gio, Gdk
-from FiGUI import *
-from Simulation import *
-from Analysis import *
+from Analysis import Analysis
+from Simulation import ECA, Simulation
+from FiGUI import MainWindow, SimulationTab, AnalysisTab, SettingsTab
 
 class FiApp(Gtk.Application):
 
@@ -72,6 +72,7 @@ class FiApp(Gtk.Application):
 			self.mainWindow.tab1.scaleDens.set_sensitive(True)
 			self.density = 50
 			self.switchRandValue = 1
+
 		else:
 			self.mainWindow.tab1.entrySeed.set_sensitive(True)
 			self.mainWindow.tab1.switchStr.set_sensitive(True)
@@ -81,15 +82,18 @@ class FiApp(Gtk.Application):
 		
 	def onFillSwitch(self, switchStr, active):
 		label = self.mainWindow.tab1.labelFill
+
 		if(switchStr.get_active()):
 			self.switchConfValue = 1
 			label.set_text("Fill w/1: ")
+
 		else:
 			self.switchConfValue = 0
 			label.set_text("Fill w/0: ")
 
 	def onAnalysisSwitch(self, switchAnalysis, active):
 		label = self.mainWindow.tab2.labelSrc
+
 		if(switchAnalysis.get_active()):
 			self.switchAnalysisValue = 1
 			label.set_text("Rule Analysis: ")
@@ -100,6 +104,7 @@ class FiApp(Gtk.Application):
 			self.mainWindow.tab2.densCheck.set_sensitive(False)
 			self.mainWindow.tab2.entrCheck.set_sensitive(False)
 			self.mainWindow.tab2.lyapCheck.set_sensitive(False)
+
 		else:
 			self.switchAnalysisValue = 0
 			label.set_text("Simulation Analysis: ")
@@ -120,18 +125,21 @@ class FiApp(Gtk.Application):
 	def onDensCheck(self, check, active):
 		if(check.get_active()):
 			self.analysisOp[0] = 1
+
 		else:
 			self.analysisOp[0] = 0
 
 	def onEntrCheck(self, check, active):
 		if(check.get_active()):
 			self.analysisOp[1] = 1
+
 		else:
 			self.analysisOp[1] = 0
 
 	def onLyapCheck(self, check, active):
 		if(check.get_active()):
 			self.analysisOp[2] = 1
+
 		else:
 			self.analysisOp[2] = 0
 	
@@ -154,16 +162,20 @@ class FiApp(Gtk.Application):
 		self.strLen = int(math.log(self.length, 2) - 1)
 		self.mainWindow.tab2.entryStrLength.set_value(self.strLen)
 		self.dfctPos = int((val // 2) - 1)
+
 		if(val):
 			self.mainWindow.tab1.adjWidth.set_step_increment(val)
+
 		else:
 			self.mainWindow.tab1.adjWidth.set_step_increment(8)
 
 	def onHeightChange(self, widget):
 		val = self.mainWindow.tab1.adjHeight.get_value()
 		self.steps = int(val)
+
 		if(val):
 			self.mainWindow.tab1.adjHeight.set_step_increment(val)
+
 		else:
 			self.mainWindow.tab1.adjHeight.set_step_increment(8)
 
@@ -173,7 +185,6 @@ class FiApp(Gtk.Application):
 
 	def onCellSizeChange(self, combo):
 		self.cellSize = self.mainWindow.tab3.getSize()
-		print(self.cellSize)
 
 	def onColor1Change(self, widget):
 		color = widget.get_rgba()
@@ -196,29 +207,32 @@ class FiApp(Gtk.Application):
 		response = dialog.run()
 
 		if(response == Gtk.ResponseType.ACCEPT):
-			self.mainWindow.tab3.labelFolderPath.set_text(dialog.get_filename())
-			self.simPath = dialog.get_filename()
-			print("Folder selected: " + dialog.get_filename())
+			self.mainWindow.tab3.labelFolderPath.set_text(dialog.get_filename() + "/")
+			self.simPath = dialog.get_filename() + "/"
+			# print("Folder selected: " + dialog.get_filename())
+
 		elif(response == Gtk.ResponseType.CANCEL):
 			print("Folder selection canceled")	
+		
+		dialog.destroy()
 
 
 	def runSimulation(self, button=None):
 		print("Runing simulation...")
 		self.seed = self.mainWindow.tab1.getSeedValue()
 		eca = ECA(self.rule, self.length)
+		
+		print("Rule: " + str(self.rule))
 		if(self.switchRandValue):
 			eca.setRandConf(self.density)
+			print("Density: " + str(self.density))
+
 		else:
 			eca.setConf(self.seed, self.switchConfValue)
+			print("Seed: " + self.seed)
 
-		print("Rule: " + str(self.rule))
-		print("Seed: " + self.seed)
 		print("Steps: " + str(self.steps))
 		print("Length: " + str(self.length))
-		print("Density: " + str(self.density))
-		print("Defect Position: " + str(self.dfctPos))
-		print("String length: " + str(self.strLen))
 		print("Cell size: " + str(self.cellSize))
 
 		sim = Simulation(self.steps, self.cellSize, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
@@ -240,13 +254,18 @@ class FiApp(Gtk.Application):
 			sim2.eca.x = analysis.setDefect()
 			sim2.xn = copy.deepcopy(sim2.eca.x)
 			analysis.ruleAnalysis()
+
 		else:
 			print("Simulation analysis")
 			eca = ECA(self.rule, self.length)
+			print("Rule: " + str(self.rule))
 			if(self.switchRandValue):
 				eca.setRandConf(self.density)
+				print("Density: " + str(self.density))
+
 			else:
 				eca.setConf(self.seed, self.switchConfValue)
+				print("Seed: " + self.seed)
 			
 			analysis = Analysis(self.dfctPos, self.strLen, eca, self.analysisOp)
 			sim1 = Simulation(self.steps, self.cellSize, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
@@ -255,19 +274,15 @@ class FiApp(Gtk.Application):
 			sim2.xn = copy.deepcopy(sim2.eca.x)
 			analysis.simAnalysis(sim1, sim2, self.simPath)
 
-		print("Rule: " + str(self.rule))
-		print("Seed: " + self.seed)
-		print("Steps: " + str(self.steps))
-		print("Length: " + str(self.length))
-		print("Density: " + str(self.density))
-		print("Defect Position: " + str(self.dfctPos))
-		print("String length: " + str(self.strLen))
-		print("Cell size: " + str(self.cellSize))
+			print("Steps: " + str(self.steps))
+			print("Length: " + str(self.length))
+			print("Defect Position: " + str(self.dfctPos))
+			print("String length: " + str(self.strLen))
+			print("Cell size: " + str(self.cellSize))
 	
 	def saveSettings(self, button):
 		self.seed = self.mainWindow.tab1.getSeedValue()
 		dialog = Gtk.FileChooserNative.new(title="Save settings", parent=None, action=Gtk.FileChooserAction.SAVE)
-		#dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_SAVE, Gtk.ResponseType.OK)
 		response = dialog.run()
 
 		if(response == Gtk.ResponseType.ACCEPT):
@@ -282,6 +297,7 @@ class FiApp(Gtk.Application):
 			Files.writeJSON(dialog.get_filename(), data)
 			print("Settings saved")
 			print("File selected: " + dialog.get_filename())
+
 		elif(response == Gtk.ResponseType.CANCEL):
 			print("Saving canceled")
 
@@ -289,7 +305,6 @@ class FiApp(Gtk.Application):
 
 	def loadSettings(self, button):
 		dialog = Gtk.FileChooserNative.new(title="Load settings", parent=None, action=Gtk.FileChooserAction.OPEN)
-		#dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
 		response = dialog.run()
 
 		if(response == Gtk.ResponseType.ACCEPT):
@@ -303,6 +318,7 @@ class FiApp(Gtk.Application):
 			Files.openFile(fileName=dialog.get_filename().split(".")[0] + ".png")
 			print("Settings loaded")
 			print("File selected: " + dialog.get_filename())
+
 		elif(response == Gtk.ResponseType.CANCEL):
 			print("Loading canceled")
 

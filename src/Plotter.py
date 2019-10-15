@@ -1,7 +1,7 @@
 import numpy as np, matplotlib.pyplot as plt, copy, math
 
 
-def plotDensity(dens, strLength):
+def plotDensity(dens, strLength, path):
 	plt.figure("Density")
 	plt.title("Density")
 	plt.ylabel("% of cells with state 1")
@@ -9,10 +9,10 @@ def plotDensity(dens, strLength):
 	plt.axis([0, len(dens), 0, 100])
 	plt.yticks(np.arange(0, 110, 10))
 	plt.plot(dens, "m,-")
-	plt.savefig("../sim/SimDensity.png")
+	plt.savefig(path + "SimDensity.png")
 	plt.clf()
 
-def plotEntropy(entropy):
+def plotEntropy(entropy, path):
 	plt.figure("Entropy")
 	plt.title("Entropy")
 	plt.ylabel("Topological Entropy")
@@ -20,5 +20,5 @@ def plotEntropy(entropy):
 	plt.axis([0, len(entropy), 0, 1])
 	plt.yticks(np.arange(0, 1.1, 0.1))
 	plt.plot(entropy, "m,-")
-	plt.savefig("../sim/SimEntropy.png")
+	plt.savefig(path + "SimEntropy.png")
 	plt.clf()

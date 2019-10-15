@@ -35,10 +35,12 @@ class Analysis:
 				x = threading.Thread(target=self.getDensity, args=(i, sim1.xn))
 				threads.append(x)
 				x.start()
+
 			if(self.analysisOp[1]):
 				x = threading.Thread(target=self.getEntropy, args=(i, totalStr, sim1.xn))
 				threads.append(x)
 				x.start()
+
 			# if(self.analysisOp[2]):
 				# x = threading.Thread(target=self.getTrinomialRow, args=(self.ttrow, ))
 				# threads.append(x)
@@ -52,6 +54,7 @@ class Analysis:
 			
 			sim2.stepForward(i, sim1.xn)
 			sim1.stepForward(i)
+
 			if(self.analysisOp[2]):
 				self.getDefectSpreading((i + 1), sim1.xn, sim2.xn)
 
@@ -76,17 +79,19 @@ class Analysis:
 		# 	x.join()
 
 		if(self.analysisOp[0]):
-			plotDensity(self.dens, sim1.xn.length)
+			plotDensity(self.dens, sim1.xn.length, path)
+
 		if(self.analysisOp[1]):
-			plotEntropy(self.entropy)
+			plotEntropy(self.entropy, path)
+
 		if(self.analysisOp[2]):
 			plt.figure("Lyapunov exponents")
 			plt.plot(self.defects, "m,-")
-			plt.savefig("../sim/LyapunovExp.png")
+			plt.savefig(path + "SimLyapunovExp.png")
 			plt.clf()
 			plt.figure("Lyapunov exponents Norm")
 			plt.plot(self.defectsn, "m,-")
-			plt.savefig("../sim/LyapunovExpNorm.png")
+			plt.savefig(path + "SimLyapunovExpNorm.png")
 			plt.clf()
 
 	def ruleAnalysis(self):
@@ -101,12 +106,14 @@ class Analysis:
 	def getDefectSpreading(self, step, t, tp):
 		self.dmgRad[0] = self.dfctPos
 		self.dmgRad[1] = self.dfctPos
+
 		if(step > 0):
 			i = 0
 			while(i < self.dfctPos):
 				if(t.bits[i] ^ tp.bits[i]):
 					self.dmgRad[0] = i
 					break
+
 				else:
 					i += 1
 			i = t.length - 1
@@ -114,8 +121,10 @@ class Analysis:
 				if(t.bits[i] ^ tp.bits[i]):
 					self.dmgRad[1] = i
 					break
+
 				else:
 					i -= 1
+
 			if((self.dmgRad[1] - self.dmgRad[0]) > (2 * step)):
 				self.dmgRad[0] = self.dfctPos
 
@@ -124,6 +133,7 @@ class Analysis:
 	def countDefects(self, t, tp):
 		for c in range(self.dmgRad[0], int(self.dmgRad[1] + 1)):
 			self.defectsn[c] += 1
+
 			if(t.bits[c] ^ tp.bits[c]):
 				self.defects[c] += 1
 

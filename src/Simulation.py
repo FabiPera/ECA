@@ -81,8 +81,10 @@ class ECA:
 			neighb.bits[1] = x.getValue(i)
 			neighb.bits[0] = x.getValue(i + 1)
 			n = neighb.binToInt()
+
 			if(self.rule.bits[n]):
 				xn.bits[i] = 1
+
 			else:
 				xn.bits[i] = 0
 
@@ -162,26 +164,31 @@ class Simulation:
 					context.rectangle(x, y, self.cellSize, self.cellSize)
 					context.set_source_rgb(self.s1Color.red, self.s1Color.green, self.s1Color.blue)
 					context.fill()
+
 				else:
 					context.set_source_rgb(self.s1Color.red, self.s1Color.green, self.s1Color.blue)
 					context.rectangle(x, y, self.cellSize, self.cellSize)
 					context.set_source_rgb(self.s0Color.red, self.s0Color.green, self.s0Color.blue)
 					context.fill()
+
 			else:
 				if(t.bits[i] ^ tp.bits[i]):
 					context.rectangle(x, y, self.cellSize, self.cellSize)
 					context.set_source_rgb(self.dColor.red, self.dColor.green, self.dColor.blue)
 					context.fill()
+
 				else:
 					if(t.bits[i]):
 						context.rectangle(x, y, self.cellSize, self.cellSize)
 						context.set_source_rgb(self.s1Color.red, self.s1Color.green, self.s1Color.blue)
 						context.fill()
+
 					else:
 						context.set_source_rgb(self.s1Color.red, self.s1Color.green, self.s1Color.blue)
 						context.rectangle(x, y, self.cellSize, self.cellSize)
 						context.set_source_rgb(self.s0Color.red, self.s0Color.green, self.s0Color.blue)
 						context.fill()
+						
 			x += self.cellSize
 
 	def saveToPNG(self, path="../img/simulation/", fileName="simulation.png"):
