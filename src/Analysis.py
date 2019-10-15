@@ -18,6 +18,8 @@ class Analysis:
 
 	def __init__(self, dfctPos=0, strLength=16, eca=ECA(), analysisOp=[1, 0, 0]):
 		self.dfctPos = dfctPos
+		self.dmgRad[0] = dfctPos
+		self.dmgRad[1] = dfctPos
 		self.strLength = strLength
 		self.eca = copy.deepcopy(eca)
 		self.analysisOp = copy.deepcopy(analysisOp)
@@ -26,6 +28,7 @@ class Analysis:
 
 	def simAnalysis(self, sim1, sim2, path):
 		threads = []
+		simComparison = Simulation(sim2.steps, sim2.cellSize, sim2.s0Color, sim2.s1Color, sim2.bColor, sim2.dColor, sim2.eca)
 		totalStr = sim1.xn.length - self.strLength
 		self.dens = np.zeros(sim1.steps, dtype=np.uint)
 		self.entropy = np.zeros(sim1.steps, dtype=np.double)
@@ -52,6 +55,8 @@ class Analysis:
 			for x in threads:
 				x.join()
 			
+			simComparison.draw(i, int(self.dmgRad[0]), int(self.dmgRad[1] + 1), simComparison.xn)
+			simComparison.xn = copy.deepcopy(simComparison.eca.evolve(simComparison.xn))
 			sim2.stepForward(i, sim1.xn)
 			sim1.stepForward(i)
 
@@ -62,6 +67,7 @@ class Analysis:
 		
 		sim1.saveToPNG(path, "SimAnalysis.png")
 		sim2.saveToPNG(path, "SimDefects.png")
+		simComparison.saveToPNG(path, "SimComparison.png")
 
 		self.getLyapExp(sim1.steps)
 		print(self.defects[self.dfctPos])

@@ -196,6 +196,7 @@ class AnalysisTab(Gtk.Box):
 	lyapCheck = Gtk.CheckButton.new()
 	densCheck = Gtk.CheckButton.new()
 	entrCheck = Gtk.CheckButton.new()
+	compCheck = Gtk.CheckButton.new()
 	switchSrc = Gtk.Switch.new()
 	labelDefect = Gtk.Label("Defect position: ", xalign=0)
 	labelStrLength = Gtk.Label("String length: ", xalign=0)
@@ -203,6 +204,7 @@ class AnalysisTab(Gtk.Box):
 	labelDens = Gtk.Label("Density: ", xalign=0)
 	labelEntr = Gtk.Label("Entropy : ", xalign=0)
 	labelLyap = Gtk.Label("Lyapunov Exp.: ", xalign=0)
+	labelComp = Gtk.Label("Comparison: ", xalign=0)
 
 	def __init__(self):
 		super(AnalysisTab, self).__init__(orientation=1, spacing=30)
@@ -229,12 +231,14 @@ class AnalysisTab(Gtk.Box):
 		vbox1.pack_start(self.labelDens, 1, 1, 0)
 		vbox1.pack_start(self.labelEntr, 1, 1, 0)
 		vbox1.pack_start(self.labelLyap, 1, 1, 0)
+		vbox1.pack_start(self.labelComp, 1, 1, 0)
 		vbox1.pack_start(self.labelDefect, 1, 1, 0)
 		vbox1.pack_start(self.labelStrLength, 1, 1, 0)
 		vbox2.pack_start(switchbox1, 1, 1, 0)
 		vbox2.pack_start(self.densCheck, 1, 1, 0)
 		vbox2.pack_start(self.entrCheck, 1, 1, 0)
 		vbox2.pack_start(self.lyapCheck, 1, 1, 0)
+		vbox2.pack_start(self.compCheck, 1, 1, 0)
 		vbox2.pack_start(self.scaleDfectPos, 1, 1, 0)
 		vbox2.pack_start(self.entryStrLength, 1, 1, 0)
 		
