@@ -266,8 +266,7 @@ class SettingsTab(Gtk.Box):
 	labels0Color = Gtk.Label("State 0 color: ", xalign=0)
 	labelbColor = Gtk.Label("Background color: ", xalign=0)
 	labeldColor = Gtk.Label("Defect color: ", xalign=0)
-	labelFolder = Gtk.Label("Select simulation folder:", xalign=0)
-	labelSimPath = Gtk.Label("../img/simulation/", xalign=0)
+	labelFolderPath = Gtk.Label("../img/simulation/", xalign=0)
 
 	def __init__(self):
 		super(SettingsTab, self).__init__(orientation=1, spacing=30)
@@ -311,8 +310,7 @@ class SettingsTab(Gtk.Box):
 		vbox1.pack_start(self.labels0Color, 1, 1, 0)
 		vbox1.pack_start(self.labelbColor, 1, 1, 0)
 		vbox1.pack_start(self.labeldColor, 1, 1, 0)
-		vbox1.pack_start(self.labelFolder, 1, 1, 0)
-		vbox1.pack_start(self.labelSimPath,1, 1, 0)
+		vbox1.pack_start(self.labelFolderPath, 1, 1, 0)
 		vbox2.pack_start(self.comboCellSize, 1, 1, 0)
 		vbox2.pack_start(self.s1Color, 1, 1, 0)
 		vbox2.pack_start(self.s0Color, 1, 1, 0)

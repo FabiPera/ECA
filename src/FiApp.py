@@ -48,6 +48,7 @@ class FiApp(Gtk.Application):
 		self.mainWindow.tab3.s0Color.connect("color-set", self.onColor2Change)
 		self.mainWindow.tab3.bColor.connect("color-set", self.onColor3Change)
 		self.mainWindow.tab3.dColor.connect("color-set", self.onColor4Change)
+		self.mainWindow.tab3.folderButton.connect("clicked", self.selectFolder)
 
 		run = self.mainWindow.toolbar.get_nth_item(0)
 		analysis = self.mainWindow.toolbar.get_nth_item(1)
@@ -190,6 +191,18 @@ class FiApp(Gtk.Application):
 		color = widget.get_rgba()
 		self.dColor = Gdk.RGBA(color.red, color.green, color.blue, 1)
 
+	def selectFolder(self, button):
+		dialog = Gtk.FileChooserNative.new(title="Select folder", parent=None, action=Gtk.FileChooserAction.SELECT_FOLDER)
+		response = dialog.run()
+
+		if(response == Gtk.ResponseType.ACCEPT):
+			self.mainWindow.tab3.labelFolderPath.set_text(dialog.get_filename())
+			self.simPath = dialog.get_filename()
+			print("Folder selected: " + dialog.get_filename())
+		elif(response == Gtk.ResponseType.CANCEL):
+			print("Folder selection canceled")	
+
+
 	def runSimulation(self, button=None):
 		print("Runing simulation...")
 		self.seed = self.mainWindow.tab1.getSeedValue()
@@ -240,7 +253,7 @@ class FiApp(Gtk.Application):
 			sim2 = Simulation(self.steps, self.cellSize, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
 			sim2.eca.x = analysis.setDefect()
 			sim2.xn = copy.deepcopy(sim2.eca.x)
-			analysis.simAnalysis(sim1, sim2)
+			analysis.simAnalysis(sim1, sim2, self.simPath)
 
 		print("Rule: " + str(self.rule))
 		print("Seed: " + self.seed)

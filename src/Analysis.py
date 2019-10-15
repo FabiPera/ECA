@@ -1,6 +1,6 @@
 import numpy as np, matplotlib.pyplot as plt, copy, math, threading
-from Bitstring import *
-from Simulation import *
+from Bitstring import Bitstring
+from Simulation import ECA, Simulation
 from Plotter import *
 
 class Analysis:
