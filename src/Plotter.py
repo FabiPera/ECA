@@ -22,3 +22,6 @@ def plotEntropy(entropy, path):
 	plt.plot(entropy, "m,-")
 	plt.savefig(path + "SimEntropy.png")
 	plt.clf()
+
+def plotLyap(exp, path):
+	pass 

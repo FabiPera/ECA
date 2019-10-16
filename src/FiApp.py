@@ -90,7 +90,44 @@ class FiApp(Gtk.Application):
 		else:
 			self.switchConfValue = 0
 			label.set_text("Fill w/0: ")
+	
+	def onRuleChange(self, widget):
+		label = self.mainWindow.tab1.labelRuleIcon
+		val = self.mainWindow.tab1.getRuleValue()
+		self.rule = val
+		label.set_text("Rule "+str(val)+" icon")
+		self.mainWindow.tab1.ruleImage.set_from_file("../img/rules/rule"+str(val)+".png")
 
+	def onDensChange(self, widget):
+		val = self.mainWindow.tab1.getDensValue()
+		self.density = int(val)
+
+	def onWidthChange(self, widget):
+		val = self.mainWindow.tab1.adjWidth.get_value()
+		self.mainWindow.tab2.adjDfctPos.set_upper(val)
+		self.mainWindow.tab2.adjDfctPos.set_value((val // 2) - 1)
+		self.length = int(val)
+		self.strLen = int(math.log(self.length, 2) - 1)
+		self.mainWindow.tab2.entryStrLength.set_value(self.strLen)
+		self.dfctPos = int((val // 2) - 1)
+
+		if(val):
+			self.mainWindow.tab1.adjWidth.set_step_increment(val)
+
+		else:
+			self.mainWindow.tab1.adjWidth.set_step_increment(8)
+
+	def onHeightChange(self, widget):
+		val = self.mainWindow.tab1.adjHeight.get_value()
+		self.steps = int(val)
+
+		if(val):
+			self.mainWindow.tab1.adjHeight.set_step_increment(val)
+
+		else:
+			self.mainWindow.tab1.adjHeight.set_step_increment(8)
+
+	
 	def onAnalysisSwitch(self, switchAnalysis, active):
 		label = self.mainWindow.tab2.labelSrc
 
@@ -142,42 +179,6 @@ class FiApp(Gtk.Application):
 
 		else:
 			self.analysisOp[2] = 0
-	
-	def onRuleChange(self, widget):
-		label = self.mainWindow.tab1.labelRuleIcon
-		val = self.mainWindow.tab1.getRuleValue()
-		self.rule = val
-		label.set_text("Rule "+str(val)+" icon")
-		self.mainWindow.tab1.ruleImage.set_from_file("../img/rules/rule"+str(val)+".png")
-
-	def onDensChange(self, widget):
-		val = self.mainWindow.tab1.getDensValue()
-		self.density = int(val)
-
-	def onWidthChange(self, widget):
-		val = self.mainWindow.tab1.adjWidth.get_value()
-		self.mainWindow.tab2.adjDfctPos.set_upper(val)
-		self.mainWindow.tab2.adjDfctPos.set_value((val // 2) - 1)
-		self.length = int(val)
-		self.strLen = int(math.log(self.length, 2) - 1)
-		self.mainWindow.tab2.entryStrLength.set_value(self.strLen)
-		self.dfctPos = int((val // 2) - 1)
-
-		if(val):
-			self.mainWindow.tab1.adjWidth.set_step_increment(val)
-
-		else:
-			self.mainWindow.tab1.adjWidth.set_step_increment(8)
-
-	def onHeightChange(self, widget):
-		val = self.mainWindow.tab1.adjHeight.get_value()
-		self.steps = int(val)
-
-		if(val):
-			self.mainWindow.tab1.adjHeight.set_step_increment(val)
-
-		else:
-			self.mainWindow.tab1.adjHeight.set_step_increment(8)
 
 	def onStrLenChange(self, widget):
 		val = self.mainWindow.tab2.adjStrLenght.get_value()

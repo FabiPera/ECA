@@ -67,7 +67,7 @@ class Analysis:
 			if(self.analysisOp[2]):
 				self.getDefectSpreading((i + 1), sim1.xn, sim2.xn)
 
-		print(self.defects[self.dfctPos])
+		# print(self.defects[self.dfctPos])
 		
 		sim1.saveToPNG(path, "SimAnalysis.png")
 		sim2.saveToPNG(path, "SimDefects.png")
