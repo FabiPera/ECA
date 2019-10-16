@@ -185,6 +185,9 @@ class FiApp(Gtk.Application):
 
 	def onCellSizeChange(self, combo):
 		self.cellSize = self.mainWindow.tab3.getSize()
+		upper = 16385 // self.cellSize
+		self.mainWindow.tab1.adjHeight.set_upper(upper)
+		self.mainWindow.tab1.adjWidth.set_upper(upper)
 
 	def onColor1Change(self, widget):
 		color = widget.get_rgba()
