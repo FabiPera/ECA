@@ -45,21 +45,14 @@ class Analysis:
 				threads.append(x)
 				x.start()
 
-			# if(self.analysisOp[2]):
-				# x = threading.Thread(target=self.getTrinomialRow, args=(self.ttrow, ))
-				# threads.append(x)
-				# x.start()
-				# x = threading.Thread(target=self.getDefectSpreading, args=(i, sim1.xn, sim2.xn))
-				# threads.append(x)
-				# x.start()
+			if(self.analysisOp[2]):
+				simComparison1.draw(i, int(self.dmgRad[0]), int(self.dmgRad[1] + 1), simComparison1.xn)
+				simComparison1.xn = copy.deepcopy(simComparison1.eca.evolve(simComparison1.xn))
+				simComparison2.draw(i, int(self.dmgRad[0]), int(self.dmgRad[1] + 1), simComparison2.xn)
+				simComparison2.xn = copy.deepcopy(simComparison2.eca.evolve(simComparison2.xn))
 
 			for x in threads:
 				x.join()
-
-			simComparison1.draw(i, int(self.dmgRad[0]), int(self.dmgRad[1] + 1), simComparison1.xn)
-			simComparison1.xn = copy.deepcopy(simComparison1.eca.evolve(simComparison1.xn))
-			simComparison2.draw(i, int(self.dmgRad[0]), int(self.dmgRad[1] + 1), simComparison2.xn)
-			simComparison2.xn = copy.deepcopy(simComparison2.eca.evolve(simComparison2.xn))
 
 			sim2.stepForward(i, sim1.xn)
 			sim1.stepForward(i)
@@ -71,23 +64,6 @@ class Analysis:
 		
 		sim1.saveToPNG(path, "SimAnalysis.png")
 		sim2.saveToPNG(path, "SimDefects.png")
-		simComparison1.saveToPNG(path, "SimOriginal.png")
-		simComparison2.saveToPNG(path, "SimAlter.png")
-
-		self.getLyapExp(sim1.steps)
-		print(self.defects[self.dfctPos])
-		
-		# threads = []
-		# if(self.analysisOp[2]):
-		# 	x = threading.Thread(target=self.getLyapExp, args=(self.defectsn, len(self.defectsn), sim1.steps))
-		# 	threads.append(x)
-		# 	x.start()
-		# 	x = threading.Thread(target=self.getLyapExp, args=(self.defects, len(self.defects), sim1.steps))
-		# 	threads.append(x)
-		# 	x.start()
-
-		# for x in threads:
-		# 	x.join()
 
 		if(self.analysisOp[0]):
 			plotDensity(self.dens, sim1.xn.length, path)
@@ -96,6 +72,9 @@ class Analysis:
 			plotEntropy(self.entropy, path)
 
 		if(self.analysisOp[2]):
+			self.getLyapExp(sim1.steps)
+			simComparison1.saveToPNG(path, "SimOriginal.png")
+			simComparison2.saveToPNG(path, "SimAlter.png")
 			plt.figure("Lyapunov exponents")
 			plt.plot(self.defects, "m,-")
 			plt.savefig(path + "SimLyapunovExp.png")
@@ -127,6 +106,7 @@ class Analysis:
 
 				else:
 					i += 1
+
 			i = t.length - 1
 			while(i > self.dfctPos):
 				if(t.bits[i] ^ tp.bits[i]):
