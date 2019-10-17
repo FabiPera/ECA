@@ -1,4 +1,4 @@
-import gi, sys, subprocess, os, math, copy, Files
+import gi, sys, subprocess, os, math, copy, re, Files
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gio, Gdk
 from Analysis import Analysis
@@ -220,30 +220,42 @@ class FiApp(Gtk.Application):
 		
 		dialog.destroy()
 
+	def checkSeedEntry(self):
+		self.seed = self.mainWindow.tab1.getSeedValue()
+		match = re.search(r"[^01]", self.seed)
+		if(self.seed == "" or match):
+			return False
+		else:
+			return True
 
 	def runSimulation(self, button=None):
-		print("Runing simulation...")
-		self.seed = self.mainWindow.tab1.getSeedValue()
-		eca = ECA(self.rule, self.length)
-		
-		print("Rule: " + str(self.rule))
-		if(self.switchRandValue):
-			eca.setRandConf(self.density)
-			print("Density: " + str(self.density))
+		if(self.checkSeedEntry()):
+			print("Runing simulation...")
+			self.seed = self.mainWindow.tab1.getSeedValue()
+			eca = ECA(self.rule, self.length)
+			
+			print("Rule: " + str(self.rule))
+			if(self.switchRandValue):
+				eca.setRandConf(self.density)
+				print("Density: " + str(self.density))
 
+			else:
+				eca.setConf(self.seed, self.switchConfValue)
+				print("Seed: " + self.seed)
+
+			print("Steps: " + str(self.steps))
+			print("Length: " + str(self.length))
+			print("Cell size: " + str(self.cellSize))
+
+			sim = Simulation(self.steps, self.cellSize, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
+			for i in range(self.steps):
+				sim.stepForward(i)
+			
+			sim.saveToPNG(self.simPath, "simulation.png")
+		
 		else:
-			eca.setConf(self.seed, self.switchConfValue)
-			print("Seed: " + self.seed)
+			print("Intoduce a correct seed")
 
-		print("Steps: " + str(self.steps))
-		print("Length: " + str(self.length))
-		print("Cell size: " + str(self.cellSize))
-
-		sim = Simulation(self.steps, self.cellSize, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
-		for i in range(self.steps):
-			sim.stepForward(i)
-		
-		sim.saveToPNG(self.simPath, "simulation.png")
 
 	def runAnalysis(self, button):
 		print("Runing analysis...")
@@ -261,28 +273,32 @@ class FiApp(Gtk.Application):
 
 		else:
 			print("Simulation analysis")
-			eca = ECA(self.rule, self.length)
-			print("Rule: " + str(self.rule))
-			if(self.switchRandValue):
-				eca.setRandConf(self.density)
-				print("Density: " + str(self.density))
+			if(self.checkSeedEntry()):
+				eca = ECA(self.rule, self.length)
+				print("Rule: " + str(self.rule))
+				if(self.switchRandValue):
+					eca.setRandConf(self.density)
+					print("Density: " + str(self.density))
+
+				else:
+					eca.setConf(self.seed, self.switchConfValue)
+					print("Seed: " + self.seed)
+				
+				analysis = Analysis(self.dfctPos, self.strLen, eca, self.analysisOp)
+				sim1 = Simulation(self.steps, self.cellSize, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
+				sim2 = Simulation(self.steps, self.cellSize, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
+				sim2.eca.x = analysis.setDefect()
+				sim2.xn = copy.deepcopy(sim2.eca.x)
+				analysis.simAnalysis(sim1, sim2, self.simPath)
+
+				print("Steps: " + str(self.steps))
+				print("Length: " + str(self.length))
+				print("Defect Position: " + str(self.dfctPos))
+				print("String length: " + str(self.strLen))
+				print("Cell size: " + str(self.cellSize))
 
 			else:
-				eca.setConf(self.seed, self.switchConfValue)
-				print("Seed: " + self.seed)
-			
-			analysis = Analysis(self.dfctPos, self.strLen, eca, self.analysisOp)
-			sim1 = Simulation(self.steps, self.cellSize, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
-			sim2 = Simulation(self.steps, self.cellSize, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
-			sim2.eca.x = analysis.setDefect()
-			sim2.xn = copy.deepcopy(sim2.eca.x)
-			analysis.simAnalysis(sim1, sim2, self.simPath)
-
-			print("Steps: " + str(self.steps))
-			print("Length: " + str(self.length))
-			print("Defect Position: " + str(self.dfctPos))
-			print("String length: " + str(self.strLen))
-			print("Cell size: " + str(self.cellSize))
+				print("Intoduce a correct seed")
 	
 	def saveSettings(self, button):
 		self.seed = self.mainWindow.tab1.getSeedValue()
