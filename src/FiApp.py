@@ -223,7 +223,7 @@ class FiApp(Gtk.Application):
 	def checkSeedEntry(self):
 		self.seed = self.mainWindow.tab1.getSeedValue()
 		match = re.search(r"[^01]", self.seed)
-		if(self.seed == "" or match):
+		if(self.seed == "" or match or len(self.seed) > self.length):
 			return False
 		else:
 			return True
@@ -273,24 +273,17 @@ class FiApp(Gtk.Application):
 
 		else:
 			print("Simulation analysis")
-			if(self.checkSeedEntry()):
-				eca = ECA(self.rule, self.length)
-				print("Rule: " + str(self.rule))
-				if(self.switchRandValue):
-					eca.setRandConf(self.density)
-					print("Density: " + str(self.density))
-
-				else:
-					eca.setConf(self.seed, self.switchConfValue)
-					print("Seed: " + self.seed)
-				
+			eca = ECA(self.rule, self.length)
+			print("Rule: " + str(self.rule))
+			if(self.switchRandValue):
+				eca.setRandConf(self.density)
+				print("Density: " + str(self.density))
 				analysis = Analysis(self.dfctPos, self.strLen, eca, self.analysisOp)
 				sim1 = Simulation(self.steps, self.cellSize, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
 				sim2 = Simulation(self.steps, self.cellSize, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
 				sim2.eca.x = analysis.setDefect()
 				sim2.xn = copy.deepcopy(sim2.eca.x)
 				analysis.simAnalysis(sim1, sim2, self.simPath)
-
 				print("Steps: " + str(self.steps))
 				print("Length: " + str(self.length))
 				print("Defect Position: " + str(self.dfctPos))
@@ -298,7 +291,23 @@ class FiApp(Gtk.Application):
 				print("Cell size: " + str(self.cellSize))
 
 			else:
-				print("Intoduce a correct seed")
+				if(self.checkSeedEntry()):
+					eca.setConf(self.seed, self.switchConfValue)
+					print("Seed: " + self.seed)
+					analysis = Analysis(self.dfctPos, self.strLen, eca, self.analysisOp)
+					sim1 = Simulation(self.steps, self.cellSize, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
+					sim2 = Simulation(self.steps, self.cellSize, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
+					sim2.eca.x = analysis.setDefect()
+					sim2.xn = copy.deepcopy(sim2.eca.x)
+					analysis.simAnalysis(sim1, sim2, self.simPath)
+					print("Steps: " + str(self.steps))
+					print("Length: " + str(self.length))
+					print("Defect Position: " + str(self.dfctPos))
+					print("String length: " + str(self.strLen))
+					print("Cell size: " + str(self.cellSize))
+
+				else:
+					print("Intoduce a correct seed")
 	
 	def saveSettings(self, button):
 		self.seed = self.mainWindow.tab1.getSeedValue()

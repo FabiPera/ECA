@@ -183,8 +183,8 @@ class Analysis:
 	def getLyapExp(self, t):
 		for i in range(len(self.defects)):
 			if(self.defects[i] > 0):
-				self.defects[i] = (math.log(self.defects[i])) / t 
+				self.defects[i] = (math.log(self.defects[i])) / t
 
 		for i in range(len(self.defectsn)):
 			if(self.defectsn[i] > 0):
-				self.defectsn[i] = (math.log(self.defectsn[i])) / t 
+				self.defectsn[i] = (math.log(self.defectsn[i])) / t
