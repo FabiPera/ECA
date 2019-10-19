@@ -86,6 +86,62 @@ class Analysis:
 
 	def ruleAnalysis(self):
 		print("Rule analysis")
+		threads = []
+		simComparison1 = Simulation(sim1.steps, sim1.cellSize, sim1.s0Color, sim1.s1Color, sim1.bColor, sim1.dColor, sim1.eca)
+		simComparison2 = Simulation(sim2.steps, sim2.cellSize, sim2.s0Color, sim2.s1Color, sim2.bColor, sim2.dColor, sim2.eca)
+		totalStr = sim1.xn.length - self.strLength
+		self.dens = np.zeros(sim1.steps, dtype=np.uint)
+		self.entropy = np.zeros(sim1.steps, dtype=np.double)
+
+		for i in range(sim1.steps):
+			if(self.analysisOp[0]):
+				x = threading.Thread(target=self.getDensity, args=(i, sim1.xn))
+				threads.append(x)
+				x.start()
+
+			if(self.analysisOp[1]):
+				x = threading.Thread(target=self.getEntropy, args=(i, totalStr, sim1.xn))
+				threads.append(x)
+				x.start()
+
+			if(self.analysisOp[2]):
+				simComparison1.draw(i, int(self.dmgRad[0]), int(self.dmgRad[1] + 1), simComparison1.xn)
+				simComparison1.xn = copy.deepcopy(simComparison1.eca.evolve(simComparison1.xn))
+				simComparison2.draw(i, int(self.dmgRad[0]), int(self.dmgRad[1] + 1), simComparison2.xn)
+				simComparison2.xn = copy.deepcopy(simComparison2.eca.evolve(simComparison2.xn))
+
+			for x in threads:
+				x.join()
+
+			sim2.stepForward(i, sim1.xn)
+			sim1.stepForward(i)
+
+			if(self.analysisOp[2]):
+				self.getDefectSpreading((i + 1), sim1.xn, sim2.xn)
+
+		# print(self.defects[self.dfctPos])
+		
+		sim1.saveToPNG(path, "SimAnalysis.png")
+		sim2.saveToPNG(path, "SimDefects.png")
+
+		if(self.analysisOp[0]):
+			plotDensity(self.dens, sim1.xn.length, path)
+
+		if(self.analysisOp[1]):
+			plotEntropy(self.entropy, path)
+
+		if(self.analysisOp[2]):
+			self.getLyapExp(sim1.steps)
+			simComparison1.saveToPNG(path, "SimOriginal.png")
+			simComparison2.saveToPNG(path, "SimAlter.png")
+			plt.figure("Lyapunov exponents")
+			plt.plot(self.defects, "m,-")
+			plt.savefig(path + "SimLyapunovExp.png")
+			plt.clf()
+			plt.figure("Lyapunov exponents Norm")
+			plt.plot(self.defectsn, "m,-")
+			plt.savefig(path + "SimLyapunovExpNorm.png")
+			plt.clf()
 
 	def setDefect(self):
 		x = copy.deepcopy(self.eca.x)

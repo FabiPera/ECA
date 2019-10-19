@@ -1,6 +1,7 @@
 import numpy as np, copy, random
 
 class Bitstring:
+
 	"""
 	The Bitstring object contains the representation in base 2 of a base 10 number.
 
@@ -16,6 +17,7 @@ class Bitstring:
 	length : int 
 		Length of the Bitstring.
 	"""
+
 	bits = np.zeros(8, dtype=np.uint8)
 	length = 8
 
@@ -24,6 +26,7 @@ class Bitstring:
 		self.length = length
 
 	def bsFromInt(self, n):
+
 		"""
 		Initializes the Bitstring from a base 10 number.
 
@@ -32,9 +35,11 @@ class Bitstring:
 		n : int
 			Base 10 number to convert.
 		"""
+
 		self.bits = self.intToBin(n, self.length)
 
 	def bsFromString(self, str):
+
 		"""
 		Initializes the Bitstring from a string.
 
@@ -43,6 +48,7 @@ class Bitstring:
 		str : string
 			String with the values for the Bitstring.
 		"""
+
 		x = self.length - len(str)
 		x = x // 2
 		for i in range(len(str)):
@@ -52,6 +58,7 @@ class Bitstring:
 				self.bits[x + i] = 0
 
 	def bsFromRandomVal(self, dens):
+
 		"""
 		Initializes the Bitstring with a random configuration.
 
@@ -60,6 +67,7 @@ class Bitstring:
 		dens : int
 			Density of cells with value 1 in the Bitstring.
 		"""
+
 		self.bits = np.ones(self.length, dtype=np.uint8)
 		freq = self.length
 		while(freq > dens):
@@ -69,6 +77,7 @@ class Bitstring:
 				freq -= 1
 
 	def getValue(self, i):
+
 		"""
 		Gets the value of the element in the given position.
 
@@ -82,11 +91,13 @@ class Bitstring:
 		bits[mod(i)]
 			The element in the position mod(i) (gets the module of i due to ring condition).
 		"""
+
 		n = self.mod(i)
 		return self.bits[n]
 
 
 	def mod(self, n):
+
 		"""
 		Gets the module of a number based in the length of the Bitstring.
 
@@ -95,20 +106,23 @@ class Bitstring:
 		n : int
 			Number to get the module.
 		"""
+
 		if(n < 0):
 			return self.length + n
 		else:
 			return n % self.length
 
 	def binToInt(self):
+
 		"""
-		Gets the base 10 value of the Bitstring.
+		Gets a base 10 int value from a Bitstring.
 
 		Returns
 		-------
 		n : int
 			Base 10 value of the Bitstring.
 		"""
+
 		n = 0
 		for i in range(self.length):
 			if self.bits[i]:
@@ -117,6 +131,7 @@ class Bitstring:
 		return n
 
 	def intToBin(self, n, size):
+
 		"""
 		Gets a Bitstring from a int.
 
@@ -131,6 +146,7 @@ class Bitstring:
 		bits :
 			Base 2 value of the base 10 number n.
 		"""
+
 		if(n):
 			binstr = np.base_repr(n, base=2)
 			binstr = np.base_repr(n, base=2, padding=(size - len(binstr)))

@@ -24,6 +24,7 @@ class ECA:
 		initConf : Bitstring 
 			Initial configuration of the ECA.
 	"""
+
 	rule = Bitstring(8)
 	x = Bitstring()
 
@@ -32,6 +33,7 @@ class ECA:
 		self.x = Bitstring(length)
 
 	def setConf(self, seed, oz):
+
 		"""
 		Initializes the configuration from a string.
 
@@ -42,12 +44,14 @@ class ECA:
 			oz : int
 				Value to fill the remaining cells (0 or 1).
 		"""
+
 		if(oz):
 			self.x.bits = np.ones(self.x.length, dtype=np.uint8)
 
 		self.x.bsFromString(seed)
 
 	def setRandConf(self, denPer=50):
+
 		"""
 		Initializes a random configuration.
 
@@ -56,6 +60,7 @@ class ECA:
 			denPer: int
 				Percentage of cells with value equals to 1.
 		"""
+		
 		dens = ((denPer * self.x.length) // 100)
 		self.x.bsFromRandomVal(dens)
 

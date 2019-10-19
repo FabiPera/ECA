@@ -264,7 +264,7 @@ class FiApp(Gtk.Application):
 			print("Rule analysis")
 			eca = ECA(self.rule, 10001)
 			eca.setRandConf(50)
-			analysis = Analysis(5000, 16, eca, self.analysisOp)
+			analysis = Analysis(5000, int(math.log(10000, 2)), eca, [1, 1, 1])
 			sim1 = Simulation(5000, 1, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
 			sim2 = Simulation(5000, 1, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
 			sim2.eca.x = analysis.setDefect()
