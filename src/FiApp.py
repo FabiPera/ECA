@@ -157,7 +157,8 @@ class FiApp(Gtk.Application):
 	
 	def onDfctChange(self, widget):
 		val = self.mainWindow.tab2.getDfctPos()
-		self.dfctPos0 = int(val)
+		self.dfctPos = int(val)
+		# print(self.dfctPos)
 
 	def onDensCheck(self, check, active):
 		if(check.get_active()):
@@ -269,7 +270,7 @@ class FiApp(Gtk.Application):
 			sim2 = Simulation(5000, 1, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
 			sim2.eca.x = analysis.setDefect()
 			sim2.xn = copy.deepcopy(sim2.eca.x)
-			analysis.ruleAnalysis()
+			analysis.ruleAnalysis(sim1, sim2, self.simPath)
 
 		else:
 			print("Simulation analysis")

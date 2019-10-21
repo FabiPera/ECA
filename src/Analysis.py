@@ -84,8 +84,7 @@ class Analysis:
 			plt.savefig(path + "SimLyapunovExpNorm.png")
 			plt.clf()
 
-	def ruleAnalysis(self):
-		print("Rule analysis")
+	def ruleAnalysis(self, sim1, sim2, path):
 		threads = []
 		simComparison1 = Simulation(sim1.steps, sim1.cellSize, sim1.s0Color, sim1.s1Color, sim1.bColor, sim1.dColor, sim1.eca)
 		simComparison2 = Simulation(sim2.steps, sim2.cellSize, sim2.s0Color, sim2.s1Color, sim2.bColor, sim2.dColor, sim2.eca)
