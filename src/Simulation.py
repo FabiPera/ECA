@@ -65,6 +65,7 @@ class ECA:
 		self.x.bsFromRandomVal(dens)
 
 	def evolve(self, x):
+
 		"""
 		Evolves a configuration with the ECA rule.
 		
@@ -78,6 +79,7 @@ class ECA:
 			xn : Bitstring
 				Configuration evolved.
 		"""
+
 		neighb = Bitstring(3)
 		xn = Bitstring(x.length)
 		n = 0
@@ -96,6 +98,48 @@ class ECA:
 		return xn
 
 class Simulation:
+	
+	"""
+	Simulation object containst the representation of a ECA evolution.
+
+	Parameters
+	----------
+	steps : int
+		Value of steps for the evolution.
+	size : int 
+		Value of the cell's size 
+	s0Color : Gdk.RGBA
+		Color for the cells in state 0.
+	s1Color : Gdk.RGBA
+		Color for the cells in state 1.
+	bColor : Gdk.RGBA
+		Color for the background.
+	dColor : Gdk.RGBA
+		Color for the cells with a defect.
+	eca : ECA
+		ECA which going to evolve in the simulation.
+
+	Attributes
+	----------
+	steps : int
+		Value of steps for the evolution.
+	eca : ECA
+		ECA which going to evolve in the simulation.
+	xn : Bitstring
+		Current configuration in the evolution.
+	cellSize: int
+		Value of the cell's size.
+	dColor : Gdk.RGBA
+		Color for the cells with a defect.
+	s0Color : Gdk.RGBA
+		Color for the cells in state 0.
+	s1Color : Gdk.RGBA
+		Color for the cells in state 1.
+	bColor: Gdk.RGBA
+		Color for the background.
+	surface : cairo.ImageSurface
+		Surface in which the simulation will be drawn
+	"""
 
 	steps = 0
 	eca = ECA()
@@ -123,33 +167,130 @@ class Simulation:
 		context.fill()
 
 	def setCellSize(self, cellSize):
+
+		"""
+		Sets the size of the cells in the simulation.
+
+		Parameters
+		----------
+		cellSize : int
+			Value for the cell's size
+		"""
+
 		self.cellSize = cellSize
 
 	def sets0Color(self, color):
+
+		"""
+		Sets the color for the cells with state 0.
+
+		Parameters
+		----------
+		color : Gdk.RGBA
+			RGBA object that contains the color to draw cells with state 0.
+		"""
+
 		self.s0Color = Gdk.RGBA(color.red, color.green, color.blue, 1)
 
 	def sets1Color(self, color):
+
+		"""
+		Sets the color for the cells with state 1.
+
+		Parameters
+		----------
+		color : Gdk.RGBA
+			RGBA object that contains the color to draw cells with state 1.
+		"""
+
 		self.s1Color = Gdk.RGBA(color.red, color.green, color.blue, 1)
 
 	def setbColor(self, color):
+
+		"""
+		Sets the color for the background.
+
+		Parameters
+		----------
+		color : Gdk.RGBA
+			RGBA object that contains the color to draw the background.
+		"""
+
 		self.bColor = Gdk.RGBA(color.red, color.green, color.blue, 1)
 
 	def setdColor(self, color):
+
+		"""
+		Sets the color for the cells with a defect.
+
+		Parameters
+		----------
+		color : Gdk.RGBA
+			RGBA object that contains the color to draw the cells with a defect.
+		"""
+
 		self.dColor = Gdk.RGBA(color.red, color.green, color.blue, 1)
 
 	def setECA(self, eca):
+		
+		"""
+		Sets ECA which going to evolve.
+
+		Parameters
+		---------
+		eca : ECA
+			ECA object that contains the rule and initial configuration for the simulation.
+		"""
+
 		self.eca = copy.deepcopy(eca)
 
 	def setSteps(self, steps):
+
+		"""
+		Sets the time steps for the simulation.
+
+		Parameters
+		----------
+		steps : int
+			Number of time steps the initial configuration is going to evolve.
+		"""
+
 		self.steps = steps
 
 	def setXn(self, x):
+
+		"""
+		Sets the configuration in the n-th time step.
+
+		Parameters
+		----------
+		x : Bitstring
+			Bitstring that contains the configuration value in the n-th time step.
+		"""
+
 		self.xn = copy.deepcopy(x)
 
 	def setSurface(self):
+
+		"""
+		Sets the surface configuration in which the simulation will be drawn.
+		"""
+
 		self.surface = cairo.ImageSurface(cairo.FORMAT_RGB24, (self.xn.length * self.cellSize), (self.steps * self.cellSize))
 
 	def stepForward(self, i, xp=None):
+
+		"""
+		Evolves the current configuration one time step.
+
+		Parameters
+		----------
+			i : int
+				Current time step of the simulation.
+			xp : Bitstring
+				Cnofiguration 
+		"""
+
 		self.draw(y=i, t=self.xn, tp=xp)
 		self.xn = copy.deepcopy(self.eca.evolve(self.xn))
 
