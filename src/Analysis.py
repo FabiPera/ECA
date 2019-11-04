@@ -69,20 +69,22 @@ class Analysis:
 			plotDensity(self.dens, sim1.xn.length, path)
 
 		if(self.analysisOp[1]):
+			print("average entropy" + str(np.average(self.entropy)))
 			plotEntropy(self.entropy, path)
 
 		if(self.analysisOp[2]):
 			self.getLyapExp(sim1.steps)
 			simComparison1.saveToPNG(path, "SimOriginal.png")
 			simComparison2.saveToPNG(path, "SimAlter.png")
-			plt.figure("Lyapunov exponents")
-			plt.plot(self.defects, "m,-")
-			plt.savefig(path + "SimLyapunovExp.png")
-			plt.clf()
-			plt.figure("Lyapunov exponents Norm")
-			plt.plot(self.defectsn, "m,-")
-			plt.savefig(path + "SimLyapunovExpNorm.png")
-			plt.clf()
+			plotLyap(self.defects, self.defectsn, path)
+			# plt.figure("Lyapunov exponents")
+			# plt.plot(self.defects, "m,-")
+			# plt.savefig(path + "SimLyapunovExp.png")
+			# plt.clf()
+			# plt.figure("Lyapunov exponents Norm")
+			# plt.plot(self.defectsn, "m,-")
+			# plt.savefig(path + "SimLyapunovExpNorm.png")
+			# plt.clf()
 
 	def ruleAnalysis(self, sim1, sim2, path):
 		threads = []

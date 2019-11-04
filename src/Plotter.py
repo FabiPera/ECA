@@ -23,5 +23,18 @@ def plotEntropy(entropy, path):
 	plt.savefig(path + "SimEntropy.png")
 	plt.clf()
 
-def plotLyap(exp, path):
-	pass 
+def plotLyap(exp, expn, path):
+	plt.figure("Lyapunov exponents")
+	plt.ylabel("Lyapunov exponent")
+	plt.xlabel("Cell position")
+	# plt.axis([0, len(exp), 0, 1])
+	plt.plot(exp, "m,-")
+	plt.savefig(path + "SimLyapunovExp.png")
+	plt.clf()
+	plt.figure("Lyapunov exponents Norm")
+	plt.ylabel("Lyapunov exponent")
+	plt.xlabel("Cell position")
+	# plt.axis([0, len(expn), 0, 1])
+	plt.plot(expn, "m,-")
+	plt.savefig(path + "SimLyapunovExpNorm.png")
+	plt.clf()

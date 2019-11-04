@@ -1,7 +1,7 @@
 import numpy as np, math, cairo, copy
 from Bitstring import Bitstring
-from Simulation import *
-from Analysis import *
+from Simulation import ECA, Simulation
+from Analysis import Analysis
 #from Plotter import *
 
 """
