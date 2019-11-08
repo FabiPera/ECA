@@ -196,7 +196,6 @@ class AnalysisTab(Gtk.Box):
 	lyapCheck = Gtk.CheckButton.new()
 	densCheck = Gtk.CheckButton.new()
 	entrCheck = Gtk.CheckButton.new()
-	compCheck = Gtk.CheckButton.new()
 	switchSrc = Gtk.Switch.new()
 	labelDefect = Gtk.Label("Defect position: ", xalign=0)
 	labelStrLength = Gtk.Label("String length: ", xalign=0)
@@ -204,7 +203,6 @@ class AnalysisTab(Gtk.Box):
 	labelDens = Gtk.Label("Density: ", xalign=0)
 	labelEntr = Gtk.Label("Entropy : ", xalign=0)
 	labelLyap = Gtk.Label("Lyapunov Exp.: ", xalign=0)
-	labelComp = Gtk.Label("Comparison: ", xalign=0)
 
 	def __init__(self):
 		super(AnalysisTab, self).__init__(orientation=1, spacing=30)
