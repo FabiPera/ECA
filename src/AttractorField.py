@@ -99,12 +99,13 @@ class basin :
         Objeto eca que nos permite evolucionar las configuraciones
     
     """
-    def __init__ (self, eca):
+    def __init__ (self, eca, r):
         self.eca = eca
         #self.rule = rule
-        self.anillo = eca.l 
+        self.anillo = eca.x.length
         self.evoluciones = {}
         self.field = []
+        self.r=r
         #Genera todas las evoluciones a -> b [b, a]
         
         #self.obtener_conjunto_arboles()
@@ -355,7 +356,7 @@ class basin :
     "Metodo que guarda el arbol en archivo dot"
     def save_dot (self, arbol):
         data = arbol.arbol
-        name = str(self.eca.r)+"_"+str(self.anillo)+"_"+str(arbol)+".dot"
+        name = "../img/simulation/"+str(self.r)+"_"+str(self.anillo)+"_"+str(arbol)+".dot"
         tf = open(name, 'w')
         tf.write("graph G {\n")
         for e in data:
@@ -388,12 +389,12 @@ def Atractor_all(eca):
         json_name = file_name[:-3]+"json"
 
 
-def AtractorFromSeed(eca, seed = None ):
+def AtractorFromSeed(eca, r, seed = None ):
     
     jsons = []
     graph = []
     hist = []
-    b = basin (eca)
+    b = basin (eca,r)
     
     if seed == None :
         arboles, files = b.obtener_arbol_conjunto()
@@ -411,7 +412,7 @@ def AtractorFromSeed(eca, seed = None ):
         g2 = gt.load_graph(file_name)
         graph_name = file_name[:-3]+"png"
         json_name = file_name[:-3]+"json"
-        hist_name = file_name[:-4]+"-histograma.png"
+        #hist_name = file_name[:-4]+"-histograma.png"
         #make graph
         if arbol_aux.size_ring <= 3:
             vertex_basin = g2.vertex(0)
@@ -428,19 +429,22 @@ def AtractorFromSeed(eca, seed = None ):
         f.close()
 
         #Make Histograma
-        fig, ax = plt.subplots()
-        keys = list(map (int, arbol_aux.frecuency.keys() ))
-        ax.bar(keys, list(arbol_aux.frecuency.values()) )
-        fig.savefig(hist_name)
+        
+        #fig, ax = plt.subplots()
+        #keys = list(map (int, arbol_aux.frecuency.keys() ))
+        #ax.bar(keys, list(arbol_aux.frecuency.values()) )
+        #fig.savefig(hist_name)
+        
         jsons.append(json_name)
         graph.append(graph_name)
-        hist.append(hist_name)
+        #hist.append(hist_name)
 
         
-    return jsons, graph, hist
-fractales = [26,94,154,164, 18,22,60,90, 122, 126, 105, 146, 150,106]
+    return jsons, graph
+fractales =[105]    
 for f in fractales:
     eca = None
-    eca = ECA(f, l = 16)
-    jsons, graph, hist = AtractorFromSeed(eca,1)
-    print(jsons, graph, hist)
+    eca = ECA(f, length = 8)
+    #jsons, graph = AtractorFromSeed(eca,f,1 )
+    jsons, graph = AtractorFromSeed(eca, f)
+    print(jsons, graph)

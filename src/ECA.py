@@ -30,6 +30,7 @@ class ECA:
 	def __init__(self, rule=0, length=8):
 		self.rule.bsFromInt(rule)
 		self.x = Bitstring(length)
+	
 
 	def setConf(self, seed, oz):
 		"""
