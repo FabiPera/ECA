@@ -19,9 +19,7 @@ class ECA:
 	----------
 		rule : Bitstring
 			Base 2 representation of the rule.
-		neighb : Bitstring
-			Bitstring to compute the neighborhood of the current cell.
-		initConf : Bitstring 
+		x : Bitstring 
 			Initial configuration of the ECA.
 	"""
 

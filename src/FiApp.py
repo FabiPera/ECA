@@ -230,7 +230,7 @@ class FiApp(Gtk.Application):
 			return True
 
 	def runSimulation(self, button=None):
-		if(self.checkSeedEntry()):
+		if(self.checkSeedEntry() or self.switchRandValue):
 			print("Runing simulation...")
 			self.seed = self.mainWindow.tab1.getSeedValue()
 			eca = ECA(self.rule, self.length)
@@ -253,10 +253,10 @@ class FiApp(Gtk.Application):
 				sim.stepForward(i)
 			
 			sim.saveToPNG(self.simPath, "simulation.png")
+			Files.openFile(self.simPath + "simulation.png")
 		
 		else:
 			print("Intoduce a correct seed")
-
 
 	def runAnalysis(self, button):
 		print("Runing analysis...")
@@ -271,6 +271,7 @@ class FiApp(Gtk.Application):
 			sim2.eca.x = analysis.setDefect()
 			sim2.xn = copy.deepcopy(sim2.eca.x)
 			analysis.ruleAnalysis(sim1, sim2, self.simPath)
+			Files.generateReport(self.simPath, 0, self.rule, self.analysisOp)
 
 		else:
 			print("Simulation analysis")
@@ -309,6 +310,9 @@ class FiApp(Gtk.Application):
 
 				else:
 					print("Intoduce a correct seed")
+
+			Files.generateReport(self.simPath, 1, self.rule, self.analysisOp)
+			Files.openFile(self.simPath + "Reporte.pdf")
 	
 	def saveSettings(self, button):
 		self.seed = self.mainWindow.tab1.getSeedValue()
