@@ -1,8 +1,4 @@
 import sys, subprocess, os, json, base64
-from pylatex import Document, Section, Subsection, Command
-from pylatex.utils import italic, NoEscape
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
 
 def openFile(fileName="../sim/simulation.png"):
 	if(sys.platform.startswith("darwin")):
@@ -39,20 +35,4 @@ def loadSettings(fileName):
 	return data
 
 def generateReport(path, sr, rule, analysisOp):
-	# c = canvas.Canvas(path + "Report.pdf", pagesize=letter)
-	# if(sr):
-	# 	c.drawString(205, 750, "Rule " + str(rule) + " simulation analysis")
-	# else:
-	# 	c.drawString(205, 750, "Rule " + str(rule) + " analysis")
-
-	
-
-	# c.save()
-
-	latex_document = path + "Reporte.tex"
-	with open(latex_document) as file:
-			tex = file.read()
-
-	doc = Document('basic')
-	doc.append(NoEscape(tex))
-	doc.generate_pdf(clean_tex=False)
+	pass
