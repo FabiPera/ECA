@@ -271,7 +271,7 @@ class FiApp(Gtk.Application):
 			sim2.eca.x = analysis.setDefect()
 			sim2.xn = copy.deepcopy(sim2.eca.x)
 			analysis.ruleAnalysis(sim1, sim2, self.simPath)
-			Files.generateReport(self.simPath, 0, self.rule, self.analysisOp)
+			#Files.generateReport(self.simPath, 0, self.rule, self.analysisOp)
 
 		else:
 			print("Simulation analysis")
