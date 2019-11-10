@@ -44,6 +44,7 @@ class FiApp(Gtk.Application):
 		self.mainWindow.tab2.densCheck.connect("notify::active", self.onDensCheck)
 		self.mainWindow.tab2.entrCheck.connect("notify::active", self.onEntrCheck)
 		self.mainWindow.tab2.lyapCheck.connect("notify::active", self.onLyapCheck)
+		self.mainWindow.tab2.meanCheck.connect("notify::active", self.onMeanCheck)
 		self.mainWindow.tab3.comboCellSize.connect("changed", self.onCellSizeChange)
 		self.mainWindow.tab3.s1Color.connect("color-set", self.onColor1Change)
 		self.mainWindow.tab3.s0Color.connect("color-set", self.onColor2Change)
@@ -127,34 +128,37 @@ class FiApp(Gtk.Application):
 
 		else:
 			self.mainWindow.tab1.adjHeight.set_step_increment(8)
-
 	
 	def onAnalysisSwitch(self, switchAnalysis, active):
 		label = self.mainWindow.tab2.labelSrc
 
 		if(switchAnalysis.get_active()):
 			self.switchAnalysisValue = 1
+			self.analysisOp["attractor"] = True
 			label.set_text("Rule Analysis: ")
 			self.mainWindow.tab2.densCheck.set_active(True)
 			self.mainWindow.tab2.entrCheck.set_active(True)
 			self.mainWindow.tab2.lyapCheck.set_active(True)
+			self.mainWindow.tab2.meanCheck.set_active(True)
 			self.mainWindow.tab2.scaleDfectPos.set_sensitive(False)
 			self.mainWindow.tab2.densCheck.set_sensitive(False)
 			self.mainWindow.tab2.entrCheck.set_sensitive(False)
 			self.mainWindow.tab2.lyapCheck.set_sensitive(False)
+			self.mainWindow.tab2.meanCheck.set_sensitive(False)
 
 		else:
 			self.switchAnalysisValue = 0
+			self.analysisOp["attractor"] = False
 			label.set_text("Simulation Analysis: ")
 			self.mainWindow.tab2.densCheck.set_active(False)
 			self.mainWindow.tab2.entrCheck.set_active(False)
 			self.mainWindow.tab2.lyapCheck.set_active(False)
+			self.mainWindow.tab2.meanCheck.set_active(False)
 			self.mainWindow.tab2.scaleDfectPos.set_sensitive(True)
 			self.mainWindow.tab2.densCheck.set_sensitive(True)
 			self.mainWindow.tab2.entrCheck.set_sensitive(True)
 			self.mainWindow.tab2.lyapCheck.set_sensitive(True)
-
-		# print(self.analysisOp)
+			self.mainWindow.tab2.meanCheck.set_sensitive(True)
 	
 	def onDfctChange(self, widget):
 		val = self.mainWindow.tab2.getDfctPos()
@@ -177,10 +181,17 @@ class FiApp(Gtk.Application):
 
 	def onLyapCheck(self, check, active):
 		if(check.get_active()):
-			self.analysisOp["lyap"] = 1
+			self.analysisOp["lyapunov"] = 1
 
 		else:
-			self.analysisOp["lyap"] = 0
+			self.analysisOp["lyapunov"] = 0
+
+	def onMeanCheck(self, check, active):
+		if(check.get_active()):
+			self.analysisOp["meanfield"] = 1
+
+		else:
+			self.analysisOp["meanfield"] = 0
 
 	def onStrLenChange(self, widget):
 		val = self.mainWindow.tab2.adjStrLenght.get_value()

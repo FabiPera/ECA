@@ -127,14 +127,7 @@ class Analysis:
 			self.getLyapExp(sim1.steps)
 			simComparison1.saveToPNG(path, "SimOriginal.png")
 			simComparison2.saveToPNG(path, "SimAlter.png")
-			plt.figure("Lyapunov exponents")
-			plt.plot(self.defects, "m,-")
-			plt.savefig(path + "SimLyapunovExp.png")
-			plt.clf()
-			plt.figure("Lyapunov exponents Norm")
-			plt.plot(self.defectsn, "m,-")
-			plt.savefig(path + "SimLyapunovExpNorm.png")
-			plt.clf()
+			plotLyap(self.defects, self.defectsn, path)
 
 	def setDefect(self):
 		x = copy.deepcopy(self.eca.x)
@@ -172,7 +165,7 @@ class Analysis:
 	
 	def countDefects(self, t, tp):
 		for c in range(self.dmgRad[0], int(self.dmgRad[1] + 1)):
-			self.defectsn[c] += 1
+			# self.defectsn[c] += 1
 
 			if(t.bits[c] ^ tp.bits[c]):
 				self.defects[c] += 1
@@ -230,10 +223,10 @@ class Analysis:
 	# 		self.ttrow = copy.deepcopy(nt)
 
 	def getLyapExp(self, t):
-		# for i in range(len(self.defects)):
-		# 	if(self.defects[i] > 0):
-		# 		self.defects[i] = (math.log(self.defects[i])) / t
+		for i in range(len(self.defects)):
+			if(self.defects[i] > 0):
+				self.defects[i] = (math.log(self.defects[i])) / t
 
-		for i in range(len(self.defectsn)):
-			if(self.defectsn[i] > 0):
-				self.defectsn[i] = (math.log(self.defectsn[i])) / t
+		# for i in range(len(self.defectsn)):
+		# 	if(self.defectsn[i] > 0):
+		# 		self.defectsn[i] = (math.log(self.defectsn[i])) / t
