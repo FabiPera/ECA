@@ -37,7 +37,7 @@ def loadSettings(fileName):
 def writeGenAnalysis(tf, optDict, evolDict):
 	if(optDict["meanfield"]):
 		tf.write("	\\begin{section}{Genotypic Analysis} \n")
-		with open("../img/meanfield/Regla" + evolDict["rule"] + ".json", 'r') as f:
+		with open("../img/meanfield/Rule" + evolDict["rule"] + ".json", 'r') as f:
 			datos = json.load(f)
 		f.close()
 		tf.write("	\\begin{subsection}{Mean Field Theory}\n")
