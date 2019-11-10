@@ -16,7 +16,8 @@ class FiApp(Gtk.Application):
 	switchRandValue = 0
 	switchConfValue = 0
 	switchAnalysisValue = 0
-	analysisOp = [1, 0, 0]
+	# analysisOp = [1, 0, 0]
+	analysisOp = {"density":True, "entropy":False, "lyapunov":False, "meanfield":False, "attractor":False}
 	rule = 0
 	seed = ""
 	steps = 8
@@ -153,7 +154,7 @@ class FiApp(Gtk.Application):
 			self.mainWindow.tab2.entrCheck.set_sensitive(True)
 			self.mainWindow.tab2.lyapCheck.set_sensitive(True)
 
-		print(self.analysisOp)
+		# print(self.analysisOp)
 	
 	def onDfctChange(self, widget):
 		val = self.mainWindow.tab2.getDfctPos()
@@ -162,24 +163,24 @@ class FiApp(Gtk.Application):
 
 	def onDensCheck(self, check, active):
 		if(check.get_active()):
-			self.analysisOp[0] = 1
+			self.analysisOp["density"] = 1
 
 		else:
-			self.analysisOp[0] = 0
+			self.analysisOp["density"] = 0
 
 	def onEntrCheck(self, check, active):
 		if(check.get_active()):
-			self.analysisOp[1] = 1
+			self.analysisOp["entropy"] = 1
 
 		else:
-			self.analysisOp[1] = 0
+			self.analysisOp["entropy"] = 0
 
 	def onLyapCheck(self, check, active):
 		if(check.get_active()):
-			self.analysisOp[2] = 1
+			self.analysisOp["lyap"] = 1
 
 		else:
-			self.analysisOp[2] = 0
+			self.analysisOp["lyap"] = 0
 
 	def onStrLenChange(self, widget):
 		val = self.mainWindow.tab2.adjStrLenght.get_value()
@@ -278,6 +279,7 @@ class FiApp(Gtk.Application):
 			eca = ECA(self.rule, self.length)
 			print("Rule: " + str(self.rule))
 			if(self.switchRandValue):
+				simData = {"rule":str(self.rule), "seed":str(self.density) , "fill":"", "length":str(self.length), "steps":str(self.steps), "attractor_json": ['22_16_s_t_11721s_r_1m_l_42atractor_0_.json', '22_16_s_t_550s_r_14m_l_12atractor_3_.json', '22_16_s_t_1510s_r_12m_l_29atractor_5_.json', '22_16_s_t_98s_r_12m_l_11atractor_32784_.json', '22_16_s_t_28s_r_6m_l_5atractor_33153_.json', '22_16_s_t_16s_r_4m_l_3atractor_1285_.json', '22_16_s_t_2s_r_2m_l_1atractor_13107_.json', '22_16_s_t_1s_r_1m_l_1atractor_21845_.json'], "attractor_png":['22_16_s_t_11721s_r_1m_l_42atractor_0_.png', '22_16_s_t_550s_r_14m_l_12atractor_3_.png', '22_16_s_t_1510s_r_12m_l_29atractor_5_.png', '22_16_s_t_98s_r_12m_l_11atractor_32784_.png', '22_16_s_t_28s_r_6m_l_5atractor_33153_.png', '22_16_s_t_16s_r_4m_l_3atractor_1285_.png', '22_16_s_t_2s_r_2m_l_1atractor_13107_.png', '22_16_s_t_1s_r_1m_l_1atractor_21845_.png']}
 				eca.setRandConf(self.density)
 				print("Density: " + str(self.density))
 				analysis = Analysis(self.dfctPos, self.strLen, eca, self.analysisOp)
@@ -293,6 +295,7 @@ class FiApp(Gtk.Application):
 				print("Cell size: " + str(self.cellSize))
 
 			else:
+				simData = {"rule":str(self.rule), "seed":self.seed, "fill":str(self.switchConfValue), "length":str(self.length), "steps":str(self.steps), "attractor_json": ['22_16_s_t_11721s_r_1m_l_42atractor_0_.json', '22_16_s_t_550s_r_14m_l_12atractor_3_.json', '22_16_s_t_1510s_r_12m_l_29atractor_5_.json', '22_16_s_t_98s_r_12m_l_11atractor_32784_.json', '22_16_s_t_28s_r_6m_l_5atractor_33153_.json', '22_16_s_t_16s_r_4m_l_3atractor_1285_.json', '22_16_s_t_2s_r_2m_l_1atractor_13107_.json', '22_16_s_t_1s_r_1m_l_1atractor_21845_.json'], "attractor_png":['22_16_s_t_11721s_r_1m_l_42atractor_0_.png', '22_16_s_t_550s_r_14m_l_12atractor_3_.png', '22_16_s_t_1510s_r_12m_l_29atractor_5_.png', '22_16_s_t_98s_r_12m_l_11atractor_32784_.png', '22_16_s_t_28s_r_6m_l_5atractor_33153_.png', '22_16_s_t_16s_r_4m_l_3atractor_1285_.png', '22_16_s_t_2s_r_2m_l_1atractor_13107_.png', '22_16_s_t_1s_r_1m_l_1atractor_21845_.png']}
 				if(self.checkSeedEntry()):
 					eca.setConf(self.seed, self.switchConfValue)
 					print("Seed: " + self.seed)
@@ -311,10 +314,7 @@ class FiApp(Gtk.Application):
 				else:
 					print("Intoduce a correct seed")
 
-			opt = {"density": True , "entropy": True , "lyapunov":True , "meanfield":False, "attractor":False}
-			dict_evolucion = {"rule":str(self.rule), "seed":self.seed , "fill":str(self.switchConfValue), "length":str(self.length), "steps":str(self.steps),
-    "attractor_json": ['22_16_s_t_11721s_r_1m_l_42atractor_0_.json', '22_16_s_t_550s_r_14m_l_12atractor_3_.json', '22_16_s_t_1510s_r_12m_l_29atractor_5_.json', '22_16_s_t_98s_r_12m_l_11atractor_32784_.json', '22_16_s_t_28s_r_6m_l_5atractor_33153_.json', '22_16_s_t_16s_r_4m_l_3atractor_1285_.json', '22_16_s_t_2s_r_2m_l_1atractor_13107_.json', '22_16_s_t_1s_r_1m_l_1atractor_21845_.json'], "attractor_png":['22_16_s_t_11721s_r_1m_l_42atractor_0_.png', '22_16_s_t_550s_r_14m_l_12atractor_3_.png', '22_16_s_t_1510s_r_12m_l_29atractor_5_.png', '22_16_s_t_98s_r_12m_l_11atractor_32784_.png', '22_16_s_t_28s_r_6m_l_5atractor_33153_.png', '22_16_s_t_16s_r_4m_l_3atractor_1285_.png', '22_16_s_t_2s_r_2m_l_1atractor_13107_.png', '22_16_s_t_1s_r_1m_l_1atractor_21845_.png']}
-			Files.generateReport(self.simPath, opt, dict_evolucion)
+			Files.generateReport(self.simPath, self.analysisOp, simData)
 			Files.openFile(self.simPath + "Report.pdf")
 	
 	def saveSettings(self, button):

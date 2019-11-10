@@ -9,14 +9,14 @@ class Analysis:
 	#ttrow = [1]
 	dfctPos = 0
 	strLength = 16
-	analysisOp = [1, 0, 0]
+	analysisOp = {"density":True, "entropy":False, "lyapunov":False, "meanfield":False, "attractor":False}
 	dens = np.zeros(8, dtype=np.uint)
 	dmgRad = np.zeros(2, dtype=np.uint)
 	defects = np.zeros(8, dtype=np.double)
 	defectsn = np.zeros(8, dtype=np.double)
 	entropy = np.zeros(8, dtype=np.double)
 
-	def __init__(self, dfctPos=0, strLength=16, eca=ECA(), analysisOp=[1, 0, 0]):
+	def __init__(self, dfctPos=0, strLength=16, eca=ECA(), analysisOp={"density":True, "entropy":False, "lyapunov":False, "meanfield":False, "attractor":False}):
 		self.dfctPos = dfctPos
 		self.dmgRad[0] = dfctPos
 		self.dmgRad[1] = dfctPos
@@ -35,17 +35,17 @@ class Analysis:
 		self.entropy = np.zeros(sim1.steps, dtype=np.double)
 
 		for i in range(sim1.steps):
-			if(self.analysisOp[0]):
+			if(self.analysisOp["density"]):
 				x = threading.Thread(target=self.getDensity, args=(i, sim1.xn))
 				threads.append(x)
 				x.start()
 
-			if(self.analysisOp[1]):
+			if(self.analysisOp["entropy"]):
 				x = threading.Thread(target=self.getEntropy, args=(i, totalStr, sim1.xn))
 				threads.append(x)
 				x.start()
 
-			if(self.analysisOp[2]):
+			if(self.analysisOp["lyapunov"]):
 				simComparison1.draw(i, int(self.dmgRad[0]), int(self.dmgRad[1] + 1), simComparison1.xn)
 				simComparison1.xn = copy.deepcopy(simComparison1.eca.evolve(simComparison1.xn))
 				simComparison2.draw(i, int(self.dmgRad[0]), int(self.dmgRad[1] + 1), simComparison2.xn)
@@ -57,7 +57,7 @@ class Analysis:
 			sim2.stepForward(i, sim1.xn)
 			sim1.stepForward(i)
 
-			if(self.analysisOp[2]):
+			if(self.analysisOp["lyapunov"]):
 				self.getDefectSpreading((i + 1), sim1.xn, sim2.xn)
 
 		# print(self.defects[self.dfctPos])
@@ -65,26 +65,18 @@ class Analysis:
 		sim1.saveToPNG(path, "SimAnalysis.png")
 		sim2.saveToPNG(path, "SimDefects.png")
 
-		if(self.analysisOp[0]):
+		if(self.analysisOp["density"]):
 			plotDensity(self.dens, sim1.xn.length, path)
 
-		if(self.analysisOp[1]):
-			print("average entropy" + str(np.average(self.entropy)))
+		if(self.analysisOp["entropy"]):
+			# print("average entropy" + str(np.average(self.entropy)))
 			plotEntropy(self.entropy, path)
 
-		if(self.analysisOp[2]):
+		if(self.analysisOp["lyapunov"]):
 			self.getLyapExp(sim1.steps)
 			simComparison1.saveToPNG(path, "SimOriginal.png")
 			simComparison2.saveToPNG(path, "SimAlter.png")
 			plotLyap(self.defects, self.defectsn, path)
-			# plt.figure("Lyapunov exponents")
-			# plt.plot(self.defects, "m,-")
-			# plt.savefig(path + "SimLyapunovExp.png")
-			# plt.clf()
-			# plt.figure("Lyapunov exponents Norm")
-			# plt.plot(self.defectsn, "m,-")
-			# plt.savefig(path + "SimLyapunovExpNorm.png")
-			# plt.clf()
 
 	def ruleAnalysis(self, sim1, sim2, path):
 		threads = []
@@ -95,17 +87,17 @@ class Analysis:
 		self.entropy = np.zeros(sim1.steps, dtype=np.double)
 
 		for i in range(sim1.steps):
-			if(self.analysisOp[0]):
+			if(self.analysisOp["density"]):
 				x = threading.Thread(target=self.getDensity, args=(i, sim1.xn))
 				threads.append(x)
 				x.start()
 
-			if(self.analysisOp[1]):
+			if(self.analysisOp["entropy"]):
 				x = threading.Thread(target=self.getEntropy, args=(i, totalStr, sim1.xn))
 				threads.append(x)
 				x.start()
 
-			if(self.analysisOp[2]):
+			if(self.analysisOp["lyapunov"]):
 				simComparison1.draw(i, int(self.dmgRad[0]), int(self.dmgRad[1] + 1), simComparison1.xn)
 				simComparison1.xn = copy.deepcopy(simComparison1.eca.evolve(simComparison1.xn))
 				simComparison2.draw(i, int(self.dmgRad[0]), int(self.dmgRad[1] + 1), simComparison2.xn)
@@ -117,7 +109,7 @@ class Analysis:
 			sim2.stepForward(i, sim1.xn)
 			sim1.stepForward(i)
 
-			if(self.analysisOp[2]):
+			if(self.analysisOp["lyapunov"]):
 				self.getDefectSpreading((i + 1), sim1.xn, sim2.xn)
 
 		# print(self.defects[self.dfctPos])
@@ -125,13 +117,13 @@ class Analysis:
 		sim1.saveToPNG(path, "SimAnalysis.png")
 		sim2.saveToPNG(path, "SimDefects.png")
 
-		if(self.analysisOp[0]):
+		if(self.analysisOp["density"]):
 			plotDensity(self.dens, sim1.xn.length, path)
 
-		if(self.analysisOp[1]):
+		if(self.analysisOp["entropy"]):
 			plotEntropy(self.entropy, path)
 
-		if(self.analysisOp[2]):
+		if(self.analysisOp["lyapunov"]):
 			self.getLyapExp(sim1.steps)
 			simComparison1.saveToPNG(path, "SimOriginal.png")
 			simComparison2.saveToPNG(path, "SimAlter.png")

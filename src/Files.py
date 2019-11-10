@@ -34,55 +34,16 @@ def loadSettings(fileName):
 
 	return data
 
-def writePrintable(tf, project, evolDict):
-	tf.write("\\documentclass[12pt, letterpaper]{article} \n")
-	tf.write("\\usepackage{graphicx} \n")
-	tf.write("\\usepackage{hyperref} \n")
-	tf.write("\\usepackage[utf8]{inputenc} \n")
-	tf.write("\\usepackage{float} \n")
-	tf.write("\\usepackage{geometry} \n")
-	tf.write("\\usepackage{enumitem, array} \n")
-	tf.write("\\usepackage{longtable} \n")
-	tf.write("\\usepackage{lscape} \n")
-	tf.write("\\usepackage[export]{adjustbox} \n")
-	tf.write("\\geometry{letterpaper, left=10mm, right=10mm, bottom=20mm, top=20mm} \n")
-	# tf.write("\\graphicspath{ {./" + project + "/} } \n")
-	tf.write("\\graphicspath{ {" + project + "} } \n")
-	tf.write("\\renewcommand{\\rule}{Rule " + evolDict["rule"] + "} \n")
-	tf.write("\\renewcommand{\\r}{" + evolDict["rule"] + "} \n")
-	tf.write("\\title{ \\rule report} \n")
-	tf.write("\\author{Fi } \n")
-	tf.write("\\begin{document} \n")
-	tf.write("\\begin{titlepage} \n")
-	tf.write("\\maketitle \n")
-	tf.write("\\tableofcontents \n")
-	tf.write("\\end{titlepage} \n")
-	tf.write("\\clearpage \n")
-	tf.write("\\begin{figure}[H]\n")
-	tf.write("  \\centering\n")
-	tf.write("  \\includegraphics[height=200mm, width=200mm, keepaspectratio]{simAnalysis.png} \n")
-	tf.write("   \\caption{\\rule evolution} \n")
-	tf.write("\\end{figure}\n")
-	tf.write("\\begin{table}[H]\n")
-	tf.write("  \\centering\n")
-	tf.write("  \\begin{tabular}{|c|c|c|c| }\n")
-	tf.write("     \\hline Seed-Density & Fill & Length & Steps \\\\ \n")
-	tf.write("      \\hline " + evolDict["seed"] + " & " + evolDict["fill"] + " & " + evolDict["length"] + " & " + evolDict["steps"] + " \\\\ \n")
-	tf.write("      \\hline \n")
-	tf.write("       \\end{tabular} \n")
-	tf.write("      \\caption{Simulation data} \n")
-	tf.write("    \\end{table} \n")
-
-def writeGenotipico(tf, project, optDict, evolDict):
+def writeGenAnalysis(tf, optDict, evolDict):
 	tf.write("	\\begin{section}{Genotypic Analysis} \n")
-	if optDict["meanfield"]:
-		with open("../img/MeanField/Regla" + evolDict["rule"] + ".json", 'r') as f:
+	if(optDict["meanfield"]):
+		with open("../img/meanfield/Regla" + evolDict["rule"] + ".json", 'r') as f:
 			datos = json.load(f)
 		f.close()
 		tf.write("	\\begin{subsection}{Mean Field Theory}\n")
 		tf.write("	\\begin{figure}[H]\n")
 		tf.write("	\\centering\n")
-		tf.write("	\\includegraphics[max width=200mm ,max height=200 mm , keepaspectratio]{../img/MeanField/Plot\\r.png}\n")
+		tf.write("	\\includegraphics[max width=200mm ,max height=200 mm , keepaspectratio]{../img/meanfield/Plot\\r.png}\n")
 		tf.write("  \\caption{\\rule Mean Field Plot}\n")
 		tf.write("  \\end{figure}\n")
 		tf.write("  \\begin{table}[H]\n")
@@ -92,10 +53,10 @@ def writeGenotipico(tf, project, optDict, evolDict):
 		#', '.join(a)
 		tf.write("  \\hline $\\r$ & $" + datos["Pol0"] + "$  &  $" + datos["Punto"] + "$  & $" + datos["Derivada"] + "$ \\\\  \\hline \n")
 
-def writeFenotipico(tf ,optDict, evolDict, ):
+def writePhenAnalysis(tf, optDict, evolDict):
 	tf.write("\\begin{section}{Phenotypic Analysis} \n")
   ###### Density
-	if optDict["density"]: 
+	if(optDict["density"]): 
 		tf.write("  \\begin{subsection}{Density} \n")
 		tf.write("    \\begin{figure}[H] \n")
 		tf.write("      \\centering \n")
@@ -104,7 +65,7 @@ def writeFenotipico(tf ,optDict, evolDict, ):
 		tf.write("    \\end{figure} \n")
 		tf.write("  \\end{subsection} \n")
   ###### Entropy
-	if optDict["entropy"]:
+	if(optDict["entropy"]):
 		tf.write("  \\begin{subsection}{Entropy} \n")
 		tf.write("    \\begin{figure}[H] \n")
 		tf.write("    \\centering \n")
@@ -113,7 +74,7 @@ def writeFenotipico(tf ,optDict, evolDict, ):
 		tf.write("    \\end{figure} \n")
 		tf.write("    \\end{subsection}\n")
   ###### Exponente de Lyapunov
-	if optDict["lyapunov"]:
+	if(optDict["lyapunov"]):
 		tf.write("    \\begin{subsection}{Lyapunov exponents} \n")
 		tf.write("    \\begin{figure}[H] \n")
 		tf.write("    \\centering \n")
@@ -140,17 +101,6 @@ def writeFenotipico(tf ,optDict, evolDict, ):
 	tf.write("    \\end{section} \n")
 	tf.write("    \\clearpage \n")
 
-def write(project, optDict, evolDict):
-	tf = open(project + ".tex", 'w')
-
-	writePrintable(tf , project, evolDict)
-	writeFenotipico(tf, optDict, evolDict)
-	writeGenotipico(tf, project, optDict, evolDict)
-	tf.write("\\end{document}")
-	tf.close()
-	os.system('lualatex ' + project + ".tex")
-	os.system("rm *.aux *.log *.out *.toc")
-
 def generateReport(path, optDict, evolDict):
 	tf = open(path + "Report.tex", 'w')
 	tf.write("\\documentclass[12pt, letterpaper]{article} \n")
@@ -164,7 +114,7 @@ def generateReport(path, optDict, evolDict):
 	tf.write("\\usepackage{lscape} \n")
 	tf.write("\\usepackage[export]{adjustbox} \n")
 	tf.write("\\geometry{letterpaper, left=10mm, right=10mm, bottom=20mm, top=20mm} \n")
-	# tf.write("\\graphicspath{ {./" + project + "/} } \n")
+	# tf.write("\\graphicspath{ {./" + path + "/} } \n")
 	tf.write("\\graphicspath{ {" + path + "} } \n")
 	tf.write("\\renewcommand{\\rule}{Rule " + evolDict["rule"] + "} \n")
 	tf.write("\\renewcommand{\\r}{" + evolDict["rule"] + "} \n")
@@ -190,6 +140,9 @@ def generateReport(path, optDict, evolDict):
 	tf.write("       \\end{tabular} \n")
 	tf.write("      \\caption{Simulation data} \n")
 	tf.write("    \\end{table} \n")
+
+	writePhenAnalysis(tf, optDict, evolDict)
+	writeGenAnalysis(tf, optDict, evolDict)
 
 	tf.write("\\end{document}")
 	tf.close()
