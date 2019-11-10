@@ -36,22 +36,25 @@ def loadSettings(fileName):
 
 def writeGenAnalysis(tf, optDict, evolDict):
 	if(optDict["meanfield"]):
-		tf.write("	\\begin{section}{Genotypic Analysis} \n")
+		tf.write("\\begin{section}{Genotypic Analysis} \n")
 		with open("../img/meanfield/Rule" + evolDict["rule"] + ".json", 'r') as f:
 			datos = json.load(f)
 		f.close()
 		tf.write("	\\begin{subsection}{Mean Field Theory}\n")
-		tf.write("	\\begin{figure}[H]\n")
-		tf.write("	\\centering\n")
-		tf.write("	\\includegraphics[max width=200mm ,max height=200 mm , keepaspectratio]{../img/meanfield/Plot\\r.png}\n")
-		tf.write("  \\caption{Mean Field Plot}\n")
-		tf.write("  \\end{figure}\n")
-		tf.write("  \\begin{table}[H]\n")
-		tf.write("  \\centering\n")
-		tf.write("  \\begin{tabular}{|c|c|c|c|}\n")
-		tf.write("  \\hline Rule & Polynomial  & Fixed point & Derivative \\\\ \n")
-		#', '.join(a)
-		tf.write("  \\hline $\\r$ & $" + datos["Pol0"] + "$  &  $" + datos["Punto"] + "$  & $" + datos["Derivada"] + "$ \\\\  \\hline \n")
+		tf.write("		\\begin{figure}[H]\n")
+		tf.write("			\\centering\n")
+		tf.write("			\\includegraphics[max width=200mm ,max height=200 mm , keepaspectratio]{../img/meanfield/Plot\\r.png} \n")
+		tf.write("			\\caption{Mean Field Plot}\n")
+		tf.write("		\\end{figure} \n")
+		tf.write("	\\end{subsection} \n")
+		tf.write("		\\begin{table}[H] \n")
+		tf.write("			\\centering \n")
+		tf.write("			\\begin{tabular}{|c|c|c|c|} \n")
+		tf.write("			\\hline Rule & Polynomial  & Fixed point & Derivative \\\\ \n")
+		tf.write("			\\hline $\\r$ & $" + datos["Pol0"] + "$  &  $" + datos["Punto"] + "$  & $" + datos["Derivada"] + "$ \\\\  \\hline \n")
+		tf.write("			\\end{tabular}")
+		tf.write("		\\end{table} \n")
+		tf.write("\\end{section} \n")
 
 def writePhenAnalysis(tf, optDict, evolDict):
 	tf.write("\\begin{section}{Phenotypic Analysis} \n")
@@ -64,7 +67,7 @@ def writePhenAnalysis(tf, optDict, evolDict):
 		tf.write("			\\caption{Density plot} \n")
 		tf.write("		\\end{figure} \n")
 		tf.write("	\\end{subsection} \n")
-		tf.write("Density plot shows the percentage of cells with state 1 along every step of time in the simulation")
+		tf.write("Density plot shows the percentage of cells with state 1 along every step of time in the simulation \n")
   ###### Entropy
 	if(optDict["entropy"]):
 		tf.write("	\\begin{subsection}{Entropy} \n")
@@ -74,7 +77,7 @@ def writePhenAnalysis(tf, optDict, evolDict):
 		tf.write("		\\caption{Entropy plot} \n")
 		tf.write("		\\end{figure} \n")
 		tf.write("	\\end{subsection}\n")
-		tf.write("Entropy plot shows the information in the system along every step of time in the simulation, the more information higher the entropy and the system can be considered more chaotic")
+		tf.write("Entropy plot shows the information in the system along every step of time in the simulation, the more information higher the entropy and the system can be considered more chaotic \n")
   ###### Exponente de Lyapunov
 	if(optDict["lyapunov"]):
 		tf.write("	\\begin{subsection}{Lyapunov exponents} \n")
@@ -96,7 +99,7 @@ def writePhenAnalysis(tf, optDict, evolDict):
 		tf.write("			\\includegraphics[max width=200mm, max height=200mm, keepaspectratio]{SimLyapunovExp.png} \n")
 		tf.write("		\\caption{Lyapunov profile} \n")
 		tf.write("		\\end{figure} \n")
-		tf.write("The Lyapunov analysis shows the time-averaged expansions rates in each possible direction of a single defect introduced in the initial configuration.")
+		tf.write("The Lyapunov analysis shows the time-averaged expansions rates in each possible direction of a single defect introduced in the initial configuration. \n")
 		#tf.write("    \\end{subsection} \n")
   
 	tf.write("    \\end{section} \n")

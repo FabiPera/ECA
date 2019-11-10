@@ -167,31 +167,31 @@ class FiApp(Gtk.Application):
 
 	def onDensCheck(self, check, active):
 		if(check.get_active()):
-			self.analysisOp["density"] = 1
+			self.analysisOp["density"] = True
 
 		else:
-			self.analysisOp["density"] = 0
+			self.analysisOp["density"] = False
 
 	def onEntrCheck(self, check, active):
 		if(check.get_active()):
-			self.analysisOp["entropy"] = 1
+			self.analysisOp["entropy"] = True
 
 		else:
-			self.analysisOp["entropy"] = 0
+			self.analysisOp["entropy"] = False
 
 	def onLyapCheck(self, check, active):
 		if(check.get_active()):
-			self.analysisOp["lyapunov"] = 1
+			self.analysisOp["lyapunov"] = True
 
 		else:
-			self.analysisOp["lyapunov"] = 0
+			self.analysisOp["lyapunov"] = False
 
 	def onMeanCheck(self, check, active):
 		if(check.get_active()):
-			self.analysisOp["meanfield"] = 1
+			self.analysisOp["meanfield"] = True
 
 		else:
-			self.analysisOp["meanfield"] = 0
+			self.analysisOp["meanfield"] = False
 
 	def onStrLenChange(self, widget):
 		val = self.mainWindow.tab2.adjStrLenght.get_value()
@@ -325,6 +325,7 @@ class FiApp(Gtk.Application):
 				else:
 					print("Intoduce a correct seed")
 
+			print(self.analysisOp)
 			Files.generateReport(self.simPath, self.analysisOp, simData)
 			Files.openFile(self.simPath + "Report.pdf")
 	
