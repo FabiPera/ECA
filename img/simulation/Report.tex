@@ -9,11 +9,11 @@
 \usepackage{lscape} 
 \usepackage[export]{adjustbox} 
 \geometry{letterpaper, left=10mm, right=10mm, bottom=20mm, top=20mm} 
-\graphicspath{ {../img/simulation/} } 
-\renewcommand{\rule}{Rule 30} 
-\renewcommand{\r}{30} 
-\title{ \rule report} 
-\author{Fi } 
+\graphicspath{{../img/simulation/}} 
+\renewcommand{\rule}{Rule 150} 
+\renewcommand{\r}{150} 
+\title{Rule150 report} 
+\author{Fi Simulator} 
 \begin{document} 
 \begin{titlepage} 
 \maketitle 
@@ -21,17 +21,53 @@
 \end{titlepage} 
 \clearpage 
 \begin{figure}[H]
-  \centering
-  \includegraphics[height=200mm, width=200mm, keepaspectratio]{simAnalysis.png} 
-   \caption{\rule evolution} 
+	\centering
+	\includegraphics[height=200mm, width=200mm, keepaspectratio]{simAnalysis.png} 
+	\caption{Rule 150 evolution} 
 \end{figure}
 \begin{table}[H]
-  \centering
-  \begin{tabular}{|c|c|c|c| }
-     \hline Seed-Density & Fill & Length & Steps \\ 
-      \hline 11111 & 0 & 256 & 128 \\ 
-      \hline 
-       \end{tabular} 
-      \caption{Simulation data} 
-    \end{table} 
+	\centering
+	\begin{tabular}{|c|c|c|c| }
+		\hline Seed-Density & Fill & Length & Steps \\ 
+			\hline 50 &  & 512 & 256 \\ 
+			\hline 
+	\end{tabular} 
+	\caption{Simulation data} 
+\end{table} 
+\begin{section}{Phenotypic Analysis} 
+	\begin{subsection}{Density} 
+		\begin{figure}[H] 
+		\centering 
+				\includegraphics[max width=200mm, max height=200mm, keepaspectratio]{SimDensity.png} 
+			\caption{Density plot} 
+		\end{figure} 
+	\end{subsection} 
+	\begin{subsection}{Entropy} 
+		\begin{figure}[H] 
+		\centering 
+			\includegraphics[max width=200mm, max height=200mm, keepaspectratio]{SimEntropy.png} 
+		\caption{Entropy plot} 
+		\end{figure} 
+	\end{subsection}
+	\begin{subsection}{Lyapunov exponents} 
+		\begin{figure}[H] 
+		\centering 
+			\includegraphics[max width=200mm, max height=200mm, keepaspectratio]{SimDefects.png} 
+		\caption{Damage spreading} 
+		\end{figure} 
+	\end{subsection} 
+	\begin{table}[H] 
+	\centering 
+		\begin{tabular}{cc} 
+			\includegraphics[width=70mm, max height=70mm, keepaspectratio]{SimOriginal.png} & \includegraphics[width=70mm, max height=70mm, keepaspectratio]{SimAlter.png} \ 
+		\end{tabular} 
+		\caption{Original simulation and Altered simulation comparison} 
+	\end{table} 
+	\begin{figure}[H] 
+		\centering 
+			\includegraphics[max width=200mm, max height=200mm, keepaspectratio]{SimLyapunovExp.png} 
+		\caption{Lyapunov profile} 
+		\end{figure} 
+    \end{section} 
+    \clearpage 
 \end{document}
