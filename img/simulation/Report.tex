@@ -1,0 +1,37 @@
+\documentclass[12pt, letterpaper]{article} 
+\usepackage{graphicx} 
+\usepackage{hyperref} 
+\usepackage[utf8]{inputenc} 
+\usepackage{float} 
+\usepackage{geometry} 
+\usepackage{enumitem, array} 
+\usepackage{longtable} 
+\usepackage{lscape} 
+\usepackage[export]{adjustbox} 
+\geometry{letterpaper, left=10mm, right=10mm, bottom=20mm, top=20mm} 
+\graphicspath{ {../img/simulation/} } 
+\renewcommand{\rule}{Rule 30} 
+\renewcommand{\r}{30} 
+\title{ \rule report} 
+\author{Fi } 
+\begin{document} 
+\begin{titlepage} 
+\maketitle 
+\tableofcontents 
+\end{titlepage} 
+\clearpage 
+\begin{figure}[H]
+  \centering
+  \includegraphics[height=200mm, width=200mm, keepaspectratio]{simAnalysis.png} 
+   \caption{\rule evolution} 
+\end{figure}
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|c|c|c|c| }
+     \hline Seed-Density & Fill & Length & Steps \\ 
+      \hline 111 & 0 & 256 & 128 \\ 
+      \hline 
+       \end{tabular} 
+      \caption{Simulation data} 
+    \end{table} 
+\end{document}
