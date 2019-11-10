@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  9 NOV 2019 23:45
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  10 NOV 2019 00:50
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -678,20 +678,20 @@ Package pdftex.def Info: SimDensity.png used on input line 41.
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.45 	\begin{subsection}
-                        {Entropy} [1
+l.45 D
+      ensity plot shows the percentage of cells with state 1 along every ste... [1
 
 pdfTeX warning (ext4): destination with the same identifier (name{figure.1}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.45 	\begin{subsection}
-                        {Entropy}pdfTeX warning (ext4): destination with the same identifier (name{table.1}) has been already used, duplicate ignored
+l.45 D
+      ensity plot shows the percentage of cells with state 1 along every ste...pdfTeX warning (ext4): destination with the same identifier (name{table.1}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.45 	\begin{subsection}
-                        {Entropy} </Users/Fabi/Documents/TT/ECA/img/simulation/simAnalysis.png>] <SimEntropy.png, id=41, 462.528pt x 346.896pt>
+l.45 D
+      ensity plot shows the percentage of cells with state 1 along every ste... </Users/Fabi/Documents/TT/ECA/img/simulation/simAnalysis.png>] <SimEntropy.png, id=41, 462.528pt x 346.896pt>
 File: SimEntropy.png Graphic file (type png)
  <use SimEntropy.png>
 Package pdftex.def Info: SimEntropy.png used on input line 48.
@@ -700,8 +700,8 @@ Package pdftex.def Info: SimEntropy.png used on input line 48.
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.52 	\begin{subsection}
-                        {Lyapunov exponents} </Users/Fabi/Documents/TT/ECA/img/simulation/SimDensity.png>] <SimDefects.png, id=48, 513.92pt x 256.96pt>
+l.52 E
+      ntropy plot shows the information in the system along every step of ti... </Users/Fabi/Documents/TT/ECA/img/simulation/SimDensity.png>] <SimDefects.png, id=48, 513.92pt x 256.96pt>
 File: SimDefects.png Graphic file (type png)
  <use SimDefects.png>
 Package pdftex.def Info: SimDefects.png used on input line 55.
@@ -730,13 +730,13 @@ Package pdftex.def Info: SimLyapunovExp.png used on input line 68.
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.72     \clearpage
-                   pdfTeX warning (ext4): destination with the same identifier (name{table.2}) has been already used, duplicate ignored
+l.71 T
+      he Lyapunov analysis shows the time-averaged expansions rates in each ...pdfTeX warning (ext4): destination with the same identifier (name{table.2}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.72     \clearpage
-                    </Users/Fabi/Documents/TT/ECA/img/simulation/SimDefects.png> </Users/Fabi/Documents/TT/ECA/img/simulation/SimOriginal.png> </Users/Fabi/Documents/TT/ECA/img/simulation/SimAlter.png>] [5pdfTeX warning (ext4): destination with the same identifier (name{figure.5}) has been already used, duplicate ignored
+l.71 T
+      he Lyapunov analysis shows the time-averaged expansions rates in each ... </Users/Fabi/Documents/TT/ECA/img/simulation/SimDefects.png> </Users/Fabi/Documents/TT/ECA/img/simulation/SimOriginal.png> </Users/Fabi/Documents/TT/ECA/img/simulation/SimAlter.png>] [5pdfTeX warning (ext4): destination with the same identifier (name{figure.5}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
@@ -754,13 +754,13 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 73.
 Here is how much of TeX's memory you used:
  7053 strings out of 493014
  104779 string characters out of 6133351
- 196645 words of memory out of 5000000
+ 197643 words of memory out of 5000000
  10482 multiletter control sequences out of 15000+600000
  8808 words of font info for 31 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 30i,13n,35p,318b,411s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 30i,13n,35p,318b,413s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb>
-Output written on /Users/Fabi/Documents/TT/ECA/img/simulation/Report.pdf (6 pages, 201472 bytes).
+Output written on /Users/Fabi/Documents/TT/ECA/img/simulation/Report.pdf (6 pages, 186559 bytes).
 PDF statistics:
  87 PDF objects out of 1000 (max. 8388607)
  65 compressed objects within 1 object stream

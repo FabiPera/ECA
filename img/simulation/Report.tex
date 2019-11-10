@@ -10,9 +10,9 @@
 \usepackage[export]{adjustbox} 
 \geometry{letterpaper, left=10mm, right=10mm, bottom=20mm, top=20mm} 
 \graphicspath{{../img/simulation/}} 
-\renewcommand{\rule}{Rule 150} 
-\renewcommand{\r}{150} 
-\title{Rule150 report} 
+\renewcommand{\rule}{Rule 30} 
+\renewcommand{\r}{30} 
+\title{Rule 30 report} 
 \author{Fi Simulator} 
 \begin{document} 
 \begin{titlepage} 
@@ -23,7 +23,7 @@
 \begin{figure}[H]
 	\centering
 	\includegraphics[height=200mm, width=200mm, keepaspectratio]{simAnalysis.png} 
-	\caption{Rule 150 evolution} 
+	\caption{Rule 30 evolution} 
 \end{figure}
 \begin{table}[H]
 	\centering
@@ -42,14 +42,14 @@
 			\caption{Density plot} 
 		\end{figure} 
 	\end{subsection} 
-	\begin{subsection}{Entropy} 
+Density plot shows the percentage of cells with state 1 along every step of time in the simulation	\begin{subsection}{Entropy} 
 		\begin{figure}[H] 
 		\centering 
 			\includegraphics[max width=200mm, max height=200mm, keepaspectratio]{SimEntropy.png} 
 		\caption{Entropy plot} 
 		\end{figure} 
 	\end{subsection}
-	\begin{subsection}{Lyapunov exponents} 
+Entropy plot shows the information in the system along every step of time in the simulation, the more information higher the entropy and the system can be considered more chaotic	\begin{subsection}{Lyapunov exponents} 
 		\begin{figure}[H] 
 		\centering 
 			\includegraphics[max width=200mm, max height=200mm, keepaspectratio]{SimDefects.png} 
@@ -68,6 +68,6 @@
 			\includegraphics[max width=200mm, max height=200mm, keepaspectratio]{SimLyapunovExp.png} 
 		\caption{Lyapunov profile} 
 		\end{figure} 
-    \end{section} 
+The Lyapunov analysis shows the time-averaged expansions rates in each possible direction of a single defect introduced in the initial configuration.    \end{section} 
     \clearpage 
 \end{document}
