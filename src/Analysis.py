@@ -238,9 +238,9 @@ class Analysis:
 	# 		self.ttrow = copy.deepcopy(nt)
 
 	def getLyapExp(self, t):
-		for i in range(len(self.defects)):
-			if(self.defects[i] > 0):
-				self.defects[i] = (math.log(self.defects[i])) / t
+		# for i in range(len(self.defects)):
+		# 	if(self.defects[i] > 0):
+		# 		self.defects[i] = (math.log(self.defects[i])) / t
 
 		for i in range(len(self.defectsn)):
 			if(self.defectsn[i] > 0):

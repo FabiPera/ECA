@@ -311,8 +311,11 @@ class FiApp(Gtk.Application):
 				else:
 					print("Intoduce a correct seed")
 
-			Files.generateReport(self.simPath, 1, self.rule, self.analysisOp)
-			Files.openFile(self.simPath + "Reporte.pdf")
+			opt = {"density": True , "entropy": True , "lyapunov":True , "meanfield":False, "attractor":False}
+			dict_evolucion = {"rule":str(self.rule), "seed":self.seed , "fill":str(self.switchConfValue), "length":str(self.length), "steps":str(self.steps),
+    "attractor_json": ['22_16_s_t_11721s_r_1m_l_42atractor_0_.json', '22_16_s_t_550s_r_14m_l_12atractor_3_.json', '22_16_s_t_1510s_r_12m_l_29atractor_5_.json', '22_16_s_t_98s_r_12m_l_11atractor_32784_.json', '22_16_s_t_28s_r_6m_l_5atractor_33153_.json', '22_16_s_t_16s_r_4m_l_3atractor_1285_.json', '22_16_s_t_2s_r_2m_l_1atractor_13107_.json', '22_16_s_t_1s_r_1m_l_1atractor_21845_.json'], "attractor_png":['22_16_s_t_11721s_r_1m_l_42atractor_0_.png', '22_16_s_t_550s_r_14m_l_12atractor_3_.png', '22_16_s_t_1510s_r_12m_l_29atractor_5_.png', '22_16_s_t_98s_r_12m_l_11atractor_32784_.png', '22_16_s_t_28s_r_6m_l_5atractor_33153_.png', '22_16_s_t_16s_r_4m_l_3atractor_1285_.png', '22_16_s_t_2s_r_2m_l_1atractor_13107_.png', '22_16_s_t_1s_r_1m_l_1atractor_21845_.png']}
+			Files.generateReport(self.simPath, opt, dict_evolucion)
+			Files.openFile(self.simPath + "Report.pdf")
 	
 	def saveSettings(self, button):
 		self.seed = self.mainWindow.tab1.getSeedValue()
