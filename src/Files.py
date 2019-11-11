@@ -131,7 +131,7 @@ def generateReport(path, optDict, evolDict):
 	tf.write("\\clearpage \n")
 	tf.write("\\begin{figure}[H]\n")
 	tf.write("	\\centering\n")
-	tf.write("	\\includegraphics[height=200mm, width=200mm, keepaspectratio]{simAnalysis.png} \n")
+	tf.write("	\\includegraphics[height=200mm, width=200mm, keepaspectratio]{SimAnalysis.png} \n")
 	tf.write("	\\caption{Rule " + evolDict["rule"] + " evolution} \n")
 	tf.write("\\end{figure}\n")
 	tf.write("\\begin{table}[H]\n")
