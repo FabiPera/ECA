@@ -277,13 +277,16 @@ class FiApp(Gtk.Application):
 			print("Rule analysis")
 			eca = ECA(self.rule, 10001)
 			eca.setRandConf(50)
-			analysis = Analysis(5000, int(math.log(10000, 2)), eca, [1, 1, 1])
+			analysis = Analysis(5000, int(math.log(10000, 2)), eca, self.analysisOp)
 			sim1 = Simulation(5000, 1, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
 			sim2 = Simulation(5000, 1, self.s0Color, self.s1Color, self.bColor, self.dColor, eca)
 			sim2.eca.x = analysis.setDefect()
 			sim2.xn = copy.deepcopy(sim2.eca.x)
 			analysis.ruleAnalysis(sim1, sim2, self.simPath)
-			#Files.generateReport(self.simPath, 0, self.rule, self.analysisOp)
+			analysis = Analysis(5000, int(math.log(10000, 2)), eca, self.analysisOp)
+			simData = {"rule":str(self.rule), "seed":"50", "fill":"", "length":str(self.length), "steps":"5000", "attractor_json": ['22_16_s_t_11721s_r_1m_l_42atractor_0_.json', '22_16_s_t_550s_r_14m_l_12atractor_3_.json', '22_16_s_t_1510s_r_12m_l_29atractor_5_.json', '22_16_s_t_98s_r_12m_l_11atractor_32784_.json', '22_16_s_t_28s_r_6m_l_5atractor_33153_.json', '22_16_s_t_16s_r_4m_l_3atractor_1285_.json', '22_16_s_t_2s_r_2m_l_1atractor_13107_.json', '22_16_s_t_1s_r_1m_l_1atractor_21845_.json'], "attractor_png":['22_16_s_t_11721s_r_1m_l_42atractor_0_.png', '22_16_s_t_550s_r_14m_l_12atractor_3_.png', '22_16_s_t_1510s_r_12m_l_29atractor_5_.png', '22_16_s_t_98s_r_12m_l_11atractor_32784_.png', '22_16_s_t_28s_r_6m_l_5atractor_33153_.png', '22_16_s_t_16s_r_4m_l_3atractor_1285_.png', '22_16_s_t_2s_r_2m_l_1atractor_13107_.png', '22_16_s_t_1s_r_1m_l_1atractor_21845_.png']}
+			Files.generateReport(self.simPath, self.analysisOp, simData)
+			Files.openFile(self.simPath + "Report.pdf")
 
 		else:
 			print("Simulation analysis")
