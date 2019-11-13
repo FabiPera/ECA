@@ -1,4 +1,4 @@
-import numpy as np, matplotlib.pyplot as plt, copy, math, threading
+import numpy as np, matplotlib.pyplot as plt, copy, math, threading, os
 from Bitstring import Bitstring
 from Simulation import ECA, Simulation
 from Plotter import *
@@ -78,6 +78,9 @@ class Analysis:
 			simComparison2.saveToPNG(path, "SimAlter.png")
 			plotLyap(self.defects, self.defectsn, path)
 
+		if(self.analysisOp["meanfield"]):
+			os.system("cp  ../img/meanfield/Plot" + str(self.eca.rule.binToInt()) + ".png " + path +"SimMeanField.png")
+
 	def ruleAnalysis(self, sim1, sim2, path):
 		threads = []
 		simComparison1 = Simulation(sim1.steps, sim1.cellSize, sim1.s0Color, sim1.s1Color, sim1.bColor, sim1.dColor, sim1.eca)
@@ -128,6 +131,9 @@ class Analysis:
 			simComparison1.saveToPNG(path, "SimOriginal.png")
 			simComparison2.saveToPNG(path, "SimAlter.png")
 			plotLyap(self.defects, self.defectsn, path)
+
+		if(self.analysisOp["meanfield"]):
+			os.system("cp  ../img/meanfield/Plot" + str(self.eca.rule.binToInt()) + ".png " + path +"SimMeanField.png")
 
 	def setDefect(self):
 		x = copy.deepcopy(self.eca.x)

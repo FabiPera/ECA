@@ -43,7 +43,7 @@ def writeGenAnalysis(tf, optDict, evolDict):
 		tf.write("	\\begin{subsection}{Mean Field Theory}\n")
 		tf.write("		\\begin{figure}[H]\n")
 		tf.write("			\\centering\n")
-		tf.write("			\\includegraphics[max width=200mm ,max height=200 mm , keepaspectratio]{Plot\\r.png} \n")
+		tf.write("			\\includegraphics[max width=200mm ,max height=200 mm , keepaspectratio]{SimMeanField.png} \n")
 		tf.write("			\\caption{Mean Field Plot}\n")
 		tf.write("		\\end{figure} \n")
 		tf.write("	\\end{subsection} \n")
